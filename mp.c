@@ -8,42 +8,25 @@
 */
 
 /* ----- preprocessor directives ----- */
-#include <stdio.h>
-
-#include "functions.c"
+#include "menu.c"
+#include "game.c"
+#include "leaderboard.c"
+#include "settings.c"
+#include "load.c"
 
 int main()
 {
     int option;
 
-    displayMainMenu();
-    do
-    {
-        askInput(&option);
+    mainMenu(&option);
 
-        // Input Validation
-        if (option != 0 && option != 1 && option != 2 && option !=3)
-            printf("Please select a valid option.");
-    } while (option != 0 && option != 1 && option != 2 && option !=3);
-    
-    // New Game
-    if (option == 1)
+    switch(option)
     {
-
+        case 1: newGame(); break;
+        case 2: leaderBoard(); break;
+        case 3: gameSettings(); break;
+        case 0: return 0;
     }
-    // Top Players
-    else if (option == 2)
-    {
-
-    }
-    // Settings
-    else if (option == 3)
-    {
-
-    }
-    // Exit
-    else if (option == 0)
-        return 0;
 }
 
 /**
