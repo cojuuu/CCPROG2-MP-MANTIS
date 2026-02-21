@@ -1,3 +1,6 @@
+#ifndef LOAD_C 
+#define LOAD_C 
+
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -51,3 +54,5 @@ bool loadPlayerData(Player playerData[], int *totalPlayer)
 
     return loadSuccess;
 }
+
+#endif // LOAD_C;
