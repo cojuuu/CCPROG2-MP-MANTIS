@@ -3,8 +3,11 @@
 
 #include "defs.h"
 
+#ifndef GAME_C 
+#define GAME_C 
+
 /**
- * Starts a new game of mantis from player selection to the actual game flow
+ * Starts a new game of Mantis from player selection to the actual game flow
  * @return The function doesn't return anything
  */
 void newGame()
@@ -23,10 +26,10 @@ void newGame()
 }
 
 /**
- * Asks the user for input with input validation
+ * Selects players from available players
  * @param selectedPlayers Selected players who will play the game
  * @param availPlayers Players extracted from the player file
- * @param playerCount Amount of players who will play the game
+ * @param playerCount Number of players who will play the game
  * @return The function doesn't return anything
  */
 void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCount)
@@ -86,7 +89,7 @@ void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCo
 /**
  * Displays the chosen players for the game
  * @param selectedPlayers Selected players who will play the game
- * @param playerCount Amount of players who will play the game
+ * @param playerCount Number of players who will play the game
  * @return The function doesn't return anything
  */
 void displayChosenPlayers(Player selectedPlayers[], int playerCount)
@@ -119,7 +122,7 @@ void displayAvailPlayers(Player availPlayers[], int totalPlayers)
 }
 
 /**
- * Adjusts the player array by removing the chosen player and adjusts the position of the suceeding players
+ * Adjusts the player array by removing the chosen player and adjusting the position of the succeeding players
  * @param availPlayers Players extracted from the player file
  * @param selectedPlayers Selected players who will play the game
  * @param totalPlayers Total available players
@@ -188,3 +191,5 @@ Player emptyPlayer()
 
     return p;
 }
+
+#endif // GAME_C;
