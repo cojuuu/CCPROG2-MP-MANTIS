@@ -1,10 +1,10 @@
+#ifndef GAME_C 
+#define GAME_C 
+
 #include <stdio.h>
 #include <string.h>
 
 #include "defs.h"
-
-#ifndef GAME_C 
-#define GAME_C 
 
 /**
  * Starts a new game of Mantis from player selection to the actual game flow
