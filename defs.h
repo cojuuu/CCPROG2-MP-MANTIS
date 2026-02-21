@@ -9,19 +9,45 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-/**
-* <Description of the structure>
-*/
-struct struct_name
-{
-/*
-<data type> <member1>; // Description of member1
-<data type> <member2>; // Description of member2
-...
-<data type> <memberN>; // Description of memberN
-*/
-};
+#include <stdbool.h>
 
-// Function Prototypes
+#define STR36 37
+#define MIN_PLAYERS 3
+#define MAX_PLAYERS 6
+#define MAX_PLAYER_DATA 50
+
+typedef char String36[STR36];
+
+/**
+ * Represents a player
+ */
+typedef struct
+{
+    String36 username; // Username of the player
+    int wins;          // Total wins of the player
+    int score;         // Highest score of the player
+} Player;
+
+// Menu Function Prototypes
+void mainMenu(int *option);
+void askOption(int *option, int min, int max);
+
+// Game Function Prototypes
+void newGame();
+void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCount);
+void displayChosenPlayers(Player selectedPlayers[], int playerCount);
+void displayAvailPlayers(Player availPlayers[], Player selectedPlayers[], int totalPlayers);
+void adjustPlayerArr(Player availPlayers[], int selectedPlayer, int totalPlayers);
+void addPlayer(Player availPlayers[], int *totalPlayers);
+Player emptyPlayer();
+
+// Leaderboard Function Prototypes
+void leaderBoard();
+
+// Load Function Prototypes
+bool loadPlayerData(Player playerData[], int *totalPlayer);
+
+// Settings Function Prototypes
+void gameSettings();
 
 #endif // DEFS_H;
