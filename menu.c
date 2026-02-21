@@ -1,3 +1,6 @@
+#ifndef MENU_C 
+#define MENU_C
+
 #include <stdio.h>
 
 #include "defs.h"
@@ -36,3 +39,5 @@ void askOption(int *option, int min, int max)
             printf("Please select a valid option.");
     } while (*option < min || max < *option);
 }
+
+#endif // MENU_C;
