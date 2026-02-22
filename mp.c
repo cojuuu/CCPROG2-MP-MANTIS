@@ -13,20 +13,11 @@
 #include "leaderboard.c"
 #include "settings.c"
 #include "load.c"
+#include "random.c"
 
 int main()
 {
-    int option;
-
-    mainMenu(&option);
-
-    switch(option)
-    {
-        case 1: newGame(); break;
-        case 2: leaderBoard(); break;
-        case 3: gameSettings(); break;
-        case 0: return 0;
-    }
+    mainMenu();
 }
 
 /**

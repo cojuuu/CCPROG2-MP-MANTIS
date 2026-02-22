@@ -17,6 +17,10 @@
 #define MAX_PLAYERS 6
 #define MAX_PLAYER_DATA 50
 #define TOP_10 10
+#define DEFAULT_WIN_POINTS 20
+#define MAX_WIN_POINTS 100
+#define MIN_SHUFFLE_SEED 0
+#define MAX_SHUFFLE_SEED 99
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -32,7 +36,7 @@ typedef struct
 } Player;
 
 // Menu Function Prototypes
-void mainMenu(int *option);
+void mainMenu();
 void askOption(int *option, int min, int max);
 
 // Game Function Prototypes
@@ -56,5 +60,13 @@ bool loadPlayerData(Player playerData[], int *totalPlayer);
 
 // Settings Function Prototypes
 void gameSettings();
+int setWinningPoints();
+int setShuffleSeed();
+void saveGameSettings(int winningPoints, int shuffleSeed);
+
+// Random Function Prototypes
+void initRandom();
+int randomInt();
+void shuffle(void *array, size_t n, size_t elem_size, unsigned int seed);
 
 #endif // DEFS_H;
