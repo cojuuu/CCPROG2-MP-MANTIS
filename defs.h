@@ -12,11 +12,13 @@
 #include <stdbool.h>
 
 #define STR36 37
+#define STR100 101
 #define MIN_PLAYERS 3
 #define MAX_PLAYERS 6
 #define MAX_PLAYER_DATA 50
 
 typedef char String36[STR36];
+typedef char String100[STR100];
 
 /**
  * Represents a player
@@ -38,7 +40,8 @@ void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCo
 void displayChosenPlayers(Player selectedPlayers[], int playerCount);
 void displayAvailPlayers(Player availPlayers[], int totalPlayers);
 void adjustPlayerArr(Player availPlayers[], int selectedPlayer, int totalPlayers);
-void addPlayer(Player availPlayers[], int *totalPlayers);
+void addPlayer(Player availPlayers[], Player selectedPlayers[], int *totalPlayers);
+bool playerFound(Player availPlayers[], String36 newPlayer, int totalPlayers);
 Player emptyPlayer();
 
 // Leaderboard Function Prototypes
