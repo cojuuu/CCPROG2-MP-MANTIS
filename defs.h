@@ -36,7 +36,7 @@ void askOption(int *option, int min, int max);
 void newGame();
 void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCount);
 void displayChosenPlayers(Player selectedPlayers[], int playerCount);
-void displayAvailPlayers(Player availPlayers[], Player selectedPlayers[], int totalPlayers);
+void displayAvailPlayers(Player availPlayers[], int totalPlayers);
 void adjustPlayerArr(Player availPlayers[], int selectedPlayer, int totalPlayers);
 void addPlayer(Player availPlayers[], int *totalPlayers);
 Player emptyPlayer();
