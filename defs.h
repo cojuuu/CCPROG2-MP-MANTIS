@@ -16,6 +16,7 @@
 #define MIN_PLAYERS 3
 #define MAX_PLAYERS 6
 #define MAX_PLAYER_DATA 50
+#define TOP_10 10
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -52,5 +53,8 @@ bool loadPlayerData(Player playerData[], int *totalPlayer);
 
 // Settings Function Prototypes
 void gameSettings();
+void displayLeaderBoardMenu(int *option);
+void leaderBoardWins(Player playerData[], int totalPlayerData);
+void leaderBoardScore(Player playerData[], int totalPlayerData);
 
 #endif // DEFS_H;
