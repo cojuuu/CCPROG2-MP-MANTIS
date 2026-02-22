@@ -9,15 +9,25 @@
  * Displays the Main Menu (New Game, Top Players, Settings, Exit) of Mantis
  * @return The function doesn't return anything
  */
-void mainMenu(int *option)
+void mainMenu()
 {
+    int option;
+
     printf("Main Menu\n");
     printf("  [1] New Game\n");
     printf("  [2] Top Players\n");
     printf("  [3] Settings\n");
     printf("  [0] Exit\n");
 
-    askOption(option, 0, 3);
+    askOption(&option, 0, 3);
+
+    switch(option)
+    {
+        case 1: newGame(); break;
+        case 2: leaderBoard(); break;
+        case 3: gameSettings(); break;
+        case 0: printf("Exiting the game...\n"); break;
+    }
 }
 
 /**
