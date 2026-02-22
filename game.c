@@ -69,7 +69,7 @@ void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCo
             switch(option)
             {
                 case 0: 
-                    addPlayer(availPlayers, &totalPlayers); 
+                    addPlayer(availPlayers, selectedPlayers, &totalPlayers); 
                     playerAdded = true; 
                     i--;
                     break;
@@ -146,15 +146,33 @@ void adjustPlayerArr(Player availPlayers[], int selectedPlayer, int totalPlayers
  * @param totalPlayers Total available players
  * @return The function doesn't return anything
  */
-void addPlayer(Player availPlayers[], int *totalPlayers)
+void addPlayer(Player availPlayers[], Player selectedPlayers[], int *totalPlayers)
 {
     FILE *playerFile;
     String36 newPlayer;
+    String100 temp;
     bool foundEmptyPlayer = false;
+    bool duplicateExist;
     int i = 0;
 
-    printf("New player username: ");
-    scanf("%s", newPlayer);
+    do
+    {
+        printf("New player username: ");
+        scanf("%s", temp);
+
+        if (strlen(temp) > 36)
+            printf("Username can only be 36 characters!\n");
+        else
+        {
+            duplicateExist = playerFound(availPlayers, temp, *totalPlayers);
+
+            if (duplicateExist)
+                printf("Username already exists!\n");
+        }
+
+    } while (strlen(temp) > 36 || duplicateExist);
+
+    strcpy(newPlayer, temp);
 
     // Increment total players
     *totalPlayers += 1;
@@ -179,6 +197,30 @@ void addPlayer(Player availPlayers[], int *totalPlayers)
     fprintf(playerFile, "\n%s,0,0", newPlayer);
 
     fclose(playerFile);
+}
+
+/**
+ * Checks if the new player's username already exist
+ * @param availPlayers Players extracted from the player file
+ * @param newPlayer Username of the new player
+ * @param totalPlayers Total available players
+ * @return True If the username already exist
+ * @return False Otherwise
+ */
+bool playerFound(Player availPlayers[], String36 newPlayer, int totalPlayers)
+{
+    int i = 0;
+    bool foundPlayer = false;
+
+    do
+    {
+        if (strcmp(newPlayer, availPlayers[i].username) == 0)
+            foundPlayer = true;
+        
+        i++;
+    } while (foundPlayer == false && i < totalPlayers);
+
+    return foundPlayer;
 }
 
 /**

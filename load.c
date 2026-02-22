@@ -18,6 +18,7 @@ bool loadPlayerData(Player playerData[], int *totalPlayer)
     FILE *playerFile;
     bool loadSuccess = true;
     int buffer = 0;
+    int i;
 
     // Open player data file
     playerFile = fopen("players.txt", "r");
@@ -51,6 +52,10 @@ bool loadPlayerData(Player playerData[], int *totalPlayer)
             }
         } while (!feof(playerFile) && loadSuccess == true);
     }
+
+    // Initialize the rest of the playerData variable to default values
+    for (i = *totalPlayer; i < MAX_PLAYER_DATA; i++)
+        playerData[i] = emptyPlayer();
 
     return loadSuccess;
 }
