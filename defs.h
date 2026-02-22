@@ -47,14 +47,14 @@ Player emptyPlayer();
 
 // Leaderboard Function Prototypes
 void leaderBoard();
+void displayLeaderBoardMenu(int *option);
+void leaderBoardWins(Player playerData[], int totalPlayerData);
+void leaderBoardScore(Player playerData[], int totalPlayerData);
 
 // Load Function Prototypes
 bool loadPlayerData(Player playerData[], int *totalPlayer);
 
 // Settings Function Prototypes
 void gameSettings();
-void displayLeaderBoardMenu(int *option);
-void leaderBoardWins(Player playerData[], int totalPlayerData);
-void leaderBoardScore(Player playerData[], int totalPlayerData);
 
 #endif // DEFS_H;
