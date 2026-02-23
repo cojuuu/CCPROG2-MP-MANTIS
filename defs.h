@@ -21,9 +21,18 @@
 #define MAX_WIN_POINTS 100
 #define MIN_SHUFFLE_SEED 0
 #define MAX_SHUFFLE_SEED 99
+#define MAX_CARDS 84
 
 typedef char String36[STR36];
 typedef char String100[STR100];
+
+/**
+ * Represents a color
+ */
+typedef struct 
+{
+    char color;
+} Color;
 
 /**
  * Represents a player
@@ -35,12 +44,24 @@ typedef struct
     int score;         // Highest score of the player
 } Player;
 
+/**
+ * Represents a card
+ */
+typedef struct 
+{
+    Color front;   // Front color of card
+    Color back[3]; // Back color of card
+    int points;    // Point value of card
+} Card;
+
 // Menu Function Prototypes
 void mainMenu();
 void askOption(int *option, int min, int max);
 
 // Game Function Prototypes
 void newGame();
+
+// Player Function Prototypes
 void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCount);
 void displayChosenPlayers(Player selectedPlayers[], int playerCount);
 void displayAvailPlayers(Player availPlayers[], int totalPlayers);
@@ -57,6 +78,7 @@ void leaderBoardScore(Player playerData[], int totalPlayerData);
 
 // Load Function Prototypes
 bool loadPlayerData(Player playerData[], int *totalPlayer);
+bool loadCards(Card decks[]);
 
 // Settings Function Prototypes
 void gameSettings();
