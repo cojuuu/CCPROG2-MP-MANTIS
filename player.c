@@ -9,126 +9,120 @@
 
 /**
  * Selects players from available players
- * @param selectedPlayers Selected players who will play the game
- * @param availPlayers Players extracted from the player file
- * @param playerCount Number of players who will play the game
+ * @param m A pointer to the game structure containing the game data
  * @return The function doesn't return anything
  */
-void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCount)
+void selectPlayers(Game *m)
 {
-    int i, option, totalPlayers = 0;
+    int i, option;
     bool playerDataLoaded, playerAdded;
 
-    // Initialize usernames to an empty string
-    for (i = 0; i < playerCount; i++)
+    for (i = 0; i < m->playerCount; i++)
     {
-        selectedPlayers[i] = emptyPlayer();
+        m->activePlayers[i] = emptyPlayer();
     }
     
     // Load player file
-    playerDataLoaded = loadPlayerData(availPlayers, &totalPlayers);
-    printf("Total player: %d\n", totalPlayers);
+    playerDataLoaded = loadPlayerData(m);
+    
     if (playerDataLoaded)
     {
-        for (i = 0; i < playerCount; i++)
+        for (i = 0; i < m->playerCount; i++)
         {
-            displayChosenPlayers(selectedPlayers, playerCount);
+            displayChosenPlayers(m);
 
             printf("\nSelect Player %d\n", i + 1);
             printf("  [0] <Add new player>\n");
 
-            displayAvailPlayers(availPlayers, totalPlayers - i);
+            displayAvailPlayers(m, i);
 
             do
             {
-                askOption(&option, 0, totalPlayers - i);
+                askOption(&option, 0, m->totalPlayers - i);
 
-                if (totalPlayers >= 50 && option == 0)
+                if (m->totalPlayers >= 50 && option == 0)
                     printf("Maximum player reached! Please select another option.");
-            } while (totalPlayers >= 50 && option == 0);
+            } while (m->totalPlayers >= 50 && option == 0);
 
             playerAdded = false;
             switch(option)
             {
                 case 0: 
-                    addPlayer(availPlayers, selectedPlayers, &totalPlayers); 
+                    addPlayer(m); 
                     playerAdded = true; 
                     i--;
                     break;
                 default: 
-                    selectedPlayers[i] = availPlayers[option - 1]; 
+                    m->activePlayers[i] = m->playerData[option - 1]; 
                     break;
             }
 
             if (!playerAdded)
-                adjustPlayerArr(availPlayers, option - 1, totalPlayers - i);
+                adjustPlayerArr(m, option - 1);
         }
 
-        displayChosenPlayers(selectedPlayers, playerCount);
+        displayChosenPlayers(m);
     }
 }
 
 /**
  * Displays the chosen players for the game
- * @param selectedPlayers Selected players who will play the game
- * @param playerCount Number of players who will play the game
+ * @param m A pointer to the game structure containing the game data
  * @return The function doesn't return anything
  */
-void displayChosenPlayers(Player selectedPlayers[], int playerCount)
+void displayChosenPlayers(Game *m)
 {
     int i;
 
-    for (i = 0; i < playerCount; i++)
+    for (i = 0; i < m->playerCount; i++)
     {
-        if (strcmp(selectedPlayers[i].username, "") == 0)
+        if (strcmp(m->activePlayers[i].username, "") == 0)
             printf("  P%d: ?\n", i + 1);
         else
-            printf("  P%d: %s\n", i + 1, selectedPlayers[i].username);
+            printf("  P%d: %s\n", i + 1, m->activePlayers[i].username);
     }
 }
 
 /**
  * Displays the available players of the game
- * @param availPlayers Players extracted from the player file
- * @param totalPlayers Total available players
+ * @param m A pointer to the game structure containing the game data
+ * @param playersChosen Amount of players already chosen
  * @return The function doesn't return anything
  */
-void displayAvailPlayers(Player availPlayers[], int totalPlayers)
+void displayAvailPlayers(Game *m, int playersChosen)
 {
     int i;
 
-    for (i = 0; i < totalPlayers; i++)
+    for (i = 0; i < m->totalPlayers - playersChosen; i++)
     {
-        printf("  [%d] %s\n", i + 1, availPlayers[i].username);
+        printf("  [%d] %s\n", i + 1, m->playerData[i].username);
     }
 }
 
 /**
  * Adjusts the player array by removing the chosen player and adjusting the position of the succeeding players
- * @param availPlayers Players extracted from the player file
+ * @param m A pointer to the game structure containing the game data
  * @param selectedPlayers Selected players who will play the game
- * @param totalPlayers Total available players
  * @return The function doesn't return anything
  */
-void adjustPlayerArr(Player availPlayers[], int selectedPlayer, int totalPlayers)
+void adjustPlayerArr(Game *m, int selectedPlayer)
 {
     int i;
 
-    for (i = selectedPlayer; i < totalPlayers - 1; i++)
+    for (i = selectedPlayer; i < m->totalPlayers - 1; i++)
     {
-        availPlayers[i] = availPlayers[i + 1];
+        m->playerData[i] = m->playerData[i + 1];
     }
 
-    availPlayers[i] = emptyPlayer();
+    m->playerData[i] = emptyPlayer();
 }
 
 /**
  * Adds a player to the array of available players
- * @param availPlayers Players extracted from the player file
- * @param totalPlayers Total available players
+ * @param m A pointer to the game structure containing the game data
  * @return The function doesn't return anything
  */
-void addPlayer(Player availPlayers[], Player selectedPlayers[], int *totalPlayers)
+void addPlayer(Game *m)
 {
     FILE *playerFile;
     String36 newPlayer;
@@ -146,7 +140,7 @@ void addPlayer(Player availPlayers[], Player selectedPlayers[], int *totalPlayer
             printf("Username can only be 36 characters!\n");
         else
         {
-            duplicateExist = playerFound(availPlayers, temp, *totalPlayers);
+            duplicateExist = playerFound(m, temp);
 
             if (duplicateExist)
                 printf("Username already exists!\n");
@@ -157,20 +151,20 @@ void addPlayer(Player availPlayers[], Player selectedPlayers[], int *totalPlayer
     strcpy(newPlayer, temp);
 
     // Increment total players
-    *totalPlayers += 1;
+    m->totalPlayers++;
 
     // Find empty player in availPlayer arr
     do
     {
         // Update player data in game
-        if (strcmp(availPlayers[i].username, "") == 0)
+        if (strcmp(m->playerData[i].username, "") == 0)
         {
-            strcpy(availPlayers[i].username, newPlayer);
+            strcpy(m->playerData[i].username, newPlayer);
             foundEmptyPlayer = true;
         }
 
         i++;
-    } while (i < *totalPlayers && !foundEmptyPlayer);
+    } while (i < m->totalPlayers && !foundEmptyPlayer);
 
     // Open player file
     playerFile = fopen("players.txt", "a");
@@ -183,24 +177,23 @@ void addPlayer(Player availPlayers[], Player selectedPlayers[], int *totalPlayer
 
 /**
  * Checks if the new player's username already exist
- * @param availPlayers Players extracted from the player file
+ * @param m A pointer to the game structure containing the game data
  * @param newPlayer Username of the new player
- * @param totalPlayers Total available players
  * @return True If the username already exist
  * @return False Otherwise
  */
-bool playerFound(Player availPlayers[], String36 newPlayer, int totalPlayers)
+bool playerFound(Game *m, String36 newPlayer)
 {
     int i = 0;
     bool foundPlayer = false;
 
     do
     {
-        if (strcmp(newPlayer, availPlayers[i].username) == 0)
+        if (strcmp(newPlayer, m->playerData[i].username) == 0)
             foundPlayer = true;
         
         i++;
-    } while (foundPlayer == false && i < totalPlayers);
+    } while (foundPlayer == false && i < m->totalPlayers);
 
     return foundPlayer;
 }

@@ -23,27 +23,12 @@
 #define MAX_SHUFFLE_SEED 99
 #define MAX_CARDS 84
 #define RANDOM -1
+#define BY_SCORE 67
+#define BY_WINS 69
 
 typedef char String36[STR36];
 typedef char String100[STR100];
-
-/**
- * Represents a color
- */
-typedef struct 
-{
-    char color;
-} Color;
-
-/**
- * Represents a player
- */
-typedef struct
-{
-    String36 username; // Username of the player
-    int wins;          // Total wins of the player
-    int score;         // Highest score of the player
-} Player;
+typedef char Color;
 
 /**
  * Represents a card
@@ -56,6 +41,19 @@ typedef struct
 } Card;
 
 /**
+ * Represents a player
+ */
+typedef struct
+{
+    String36 username; // Username of the player
+    int wins;          // Total wins of the player
+    int totalScore;    // Total score of the player
+
+    Card tank[MAX_CARDS]; // Tank cards of the player
+    int currentScore;     // Score pile of the player
+} Player;
+
+/**
  * Represents the game settings of Mantis
  */
 typedef struct 
@@ -64,38 +62,53 @@ typedef struct
     int shuffleSeed;   // Shuffle seed for shuffling cards
 } Config;
 
+/**
+ * Represents the game structure of Mantis
+ */
+typedef struct
+{
+    int playerCount;  // Amount of players who will play
+    int totalPlayers; // Total amount of players in "players.txt"
+
+    Player activePlayers[MAX_PLAYERS];  // Players who will play the game
+    Player playerData[MAX_PLAYER_DATA]; // Players from "players.txt"
+
+    Card drawPile[MAX_CARDS];
+
+    Config settings;
+} Game;
 
 // Menu Function Prototypes
 void mainMenu();
 void askOption(int *option, int min, int max);
 
 // Game Function Prototypes
-void newGame();
+void newGame(Game *m);
 
 // Player Function Prototypes
-void selectPlayers(Player selectedPlayers[], Player availPlayers[], int playerCount);
-void displayChosenPlayers(Player selectedPlayers[], int playerCount);
-void displayAvailPlayers(Player availPlayers[], int totalPlayers);
-void adjustPlayerArr(Player availPlayers[], int selectedPlayer, int totalPlayers);
-void addPlayer(Player availPlayers[], Player selectedPlayers[], int *totalPlayers);
-bool playerFound(Player availPlayers[], String36 newPlayer, int totalPlayers);
+void selectPlayers(Game *m);
+void displayChosenPlayers(Game *m);
+void displayAvailPlayers(Game *m, int playersChosen);
+void adjustPlayerArr(Game *m, int selectedPlayer);
+void addPlayer(Game *m);
+bool playerFound(Game *m, String36 newPlayer);
+
 Player emptyPlayer();
 
 // Leaderboard Function Prototypes
-void leaderBoard();
-void displayLeaderBoardMenu(int *option);
-void leaderBoardWins(Player playerData[], int totalPlayerData);
-void leaderBoardScore(Player playerData[], int totalPlayerData);
+void leaderBoard(Game *m);
+void sortPlayers(Game *m, int sortType);
+void displayLeaderboard(Game *m, int displayType);
 
 // Load Function Prototypes
-bool loadPlayerData(Player playerData[], int *totalPlayer);
-bool loadCards(Card decks[]);
+bool loadPlayerData(Game *m);
+bool loadCards(Game *m);
 
 // Settings Function Prototypes
-void gameSettings();
+void gameSettings(Game *m);
 int setWinningPoints();
 int setShuffleSeed();
-void saveGameSettings(Config settings);
+void saveGameSettings(Game *m);
 Config defaultSettings();
 
 // Random Function Prototypes

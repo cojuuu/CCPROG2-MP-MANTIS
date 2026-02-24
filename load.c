@@ -7,18 +7,17 @@
 #include "defs.h"
 
 /**
- * Loads player data from the "players.txt" file
- * @param playerData Where the extracted data will be stored
- * @param totalPlayers Total players loaded from the file
+ * Loads player data from the "players.txt" file and storing them in m->playerData[]
+ * @param m A pointer to the game structure containing the game data
  * @return true If the load was successful
  * @return false Otherwise
  */
-bool loadPlayerData(Player playerData[], int *totalPlayer)
+bool loadPlayerData(Game *m)
 {
     FILE *playerFile;
     bool loadSuccess = true;
     int buffer = 0;
-    int i;
+    int i = 0;
 
     // Open player data file
     playerFile = fopen("players.txt", "r");
@@ -36,14 +35,12 @@ bool loadPlayerData(Player playerData[], int *totalPlayer)
         {
             // Parses player data into respective variables
             buffer = fscanf(playerFile, "%36[^,],%d,%d\n", 
-                playerData[*totalPlayer].username, 
-               &playerData[*totalPlayer].wins, 
-               &playerData[*totalPlayer].score);
+                m->playerData[i].username, 
+               &m->playerData[i].wins, 
+               &m->playerData[i].totalScore);
 
             if (buffer == 3)
-            {
-                *totalPlayer += 1;
-            }
+                i++;
             
             if (buffer != 3 && !feof(playerFile))
             {
@@ -53,23 +50,25 @@ bool loadPlayerData(Player playerData[], int *totalPlayer)
         } while (!feof(playerFile) && loadSuccess == true);
     }
 
+    m->totalPlayers = i;    
+
     // Close player data file
     fclose(playerFile);
 
     // Initialize the rest of the playerData variable to default values
-    for (i = *totalPlayer; i < MAX_PLAYER_DATA; i++)
-        playerData[i] = emptyPlayer();
+    for (i = m->totalPlayers; i < MAX_PLAYER_DATA; i++)
+        m->playerData[i] = emptyPlayer();
 
     return loadSuccess;
 }
 
 /**
- * Loads card data from the "mantis.txt" file
- * @param decks Where the extracted card data will be stored
+ * Loads card data from the "mantis.txt" file to m->drawPile[]
+ * @param m A pointer to the game structure containing the game data
  * @return true If the load was successful
  * @return false Otherwise
  */
-bool loadCards(Card decks[])
+bool loadCards(Game *m)
 {
     FILE *cardFile;
     bool loadSuccess = true;
@@ -92,7 +91,9 @@ bool loadCards(Card decks[])
         {
             // Parses player data into respective variables
             buffer = fscanf(cardFile, "%c | %c%c%c %d\n", 
-                        &decks[i].front.color, &decks[i].back[0].color, &decks[i].back[1].color, &decks[i].back[2].color, &decks[i].points);
+                        &m->drawPile[i].front, 
+                        &m->drawPile[i].back[0], &m->drawPile[i].back[1], &m->drawPile[i].back[2], 
+                        &m->drawPile[i].points);
             
             if (buffer == 5)
                 i++;

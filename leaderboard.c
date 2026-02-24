@@ -2,119 +2,99 @@
 #define LEADERBOARD_C 
 
 #include <stdio.h>
+#include <string.h>
 
 #include "defs.h"
 
 /**
- * Leaderboard menu of Mantis
+ * Leaderboard menu of Mantis and handles user input based on what leaderboard they want to view
+ * @param m A pointer to the game structure containing the game data
  * @return The function doesn't return anything
  */
-void leaderBoard()
+void leaderBoard(Game *m)
 {
-    Player playerData[MAX_PLAYER_DATA];
     int option;
-    int totalPlayerData = 0;
 
-    displayLeaderBoardMenu(&option);
-    loadPlayerData(playerData, &totalPlayerData);
-
-    switch(option)
-    {
-        case 1: leaderBoardWins(playerData, totalPlayerData); break;
-        case 2: leaderBoardScore(playerData, totalPlayerData); break;
-    }
-}
-
-/**
- * Displays the different options of the leaderboard menu
- * @return The function updates the option variable to the user's chosen leaderboard view
- */
-void displayLeaderBoardMenu(int *option)
-{
     printf("Leaderboard\n");
     printf("  [1] Top Players (Wins)\n");
     printf("  [2] Top Players (Score)\n");
 
-    askOption(option, 1, 2);
-}
+    askOption(&option, 1, 2);
 
-/**
- * Leaderboard of the Top 10 players with the most wins
- * @return The function doesn't return anything
- */
-void leaderBoardWins(Player playerData[], int totalPlayerData)
-{
-    Player temp;
-    int i, j;
-
-    // Sorts player data from highest to lowest (wins)
-    for (i = 0; i < totalPlayerData; i++)
+    loadPlayerData(m);
+    
+    switch(option)
     {
-        for (j = 0; j < totalPlayerData - 1; j++)
-        {
-            if (playerData[j].wins < playerData[j + 1].wins)
-            {
-                temp = playerData[j];
-                playerData[j] = playerData[j + 1];
-                playerData[j + 1] = temp;
-            }
-        }
-    }
-
-    // Display Leaderboard
-    if (totalPlayerData < TOP_10)
-    {
-        for (i = 0; i < totalPlayerData; i++)
-        {
-            printf("%d: %s %d wins\n", i + 1, playerData[i].username, playerData[i].wins);
-        }
-    }
-    else
-    {
-        for (i = 0; i < TOP_10; i++)
-        {
-            printf("%d: %s %d wins\n", i + 1, playerData[i].username, playerData[i].wins);
-        }
+        case 1: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
+        case 2: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
     }
 }
 
 /**
- * Leaderboard of the Top 10 players with the highest scores
+ * Sorts an array of players from highest to lowest depending on the sort type
+ * @param m A pointer to the game structure containing the game data
+ * @param sortType Sorting method for arranging the players either by wins or scores
  * @return The function doesn't return anything
  */
-void leaderBoardScore(Player playerData[], int totalPlayerData)
+void sortPlayers(Game *m, int sortType)
 {
     Player temp;
     int i, j;
+    bool shouldSwap;
 
-    // Sorts player data from highest to lowest (wins)
-    for (i = 0; i < totalPlayerData; i++)
+    for (i = 0; i < m->totalPlayers; i++)
     {
-        for (j = 0; j < totalPlayerData - 1; j++)
+        for (j = 0; j < m->totalPlayers - 1; j++)
         {
-            if (playerData[j].score < playerData[j + 1].score)
+            if (sortType == BY_WINS)
+                shouldSwap = m->playerData[j].wins < m->playerData[j + 1].wins;
+            else if (sortType == BY_SCORE)
+                shouldSwap = m->playerData[j].totalScore < m->playerData[j + 1].totalScore;
+
+            if (shouldSwap)
             {
-                temp = playerData[j];
-                playerData[j] = playerData[j + 1];
-                playerData[j + 1] = temp;
-            }
+                temp = m->playerData[j];
+                m->playerData[j] = m->playerData[j + 1];
+                m->playerData[j + 1] = temp;
+            } 
         }
     }
+}
 
-    // Display Leaderboard
-    if (totalPlayerData < TOP_10)
+/**
+ * Displays the Top 10 players with either the highest wins or scores
+ * @param m A pointer to the game structure containing the game data
+ * @param displayType Determines the display criteria of the leaderboard (wins or scores)
+ * @return The function doesn't return anything
+ */
+void displayLeaderboard(Game *m, int displayType)
+{
+    bool emptyPlayerFound = false;
+    int i = 0;
+
+    if (displayType == BY_WINS)
     {
-        for (i = 0; i < totalPlayerData; i++)
+        do
         {
-            printf("%d: %s %d score\n", i + 1, playerData[i].username, playerData[i].score);
-        }
+            if (strcmp(m->playerData[i].username, "") != 0)
+                printf("%d: %s %d wins\n", i + 1, m->playerData[i].username, m->playerData[i].wins);
+            else if (strcmp(m->playerData[i].username, "") == 0)
+                emptyPlayerFound = true;
+
+            i++;
+        } while (i < TOP_10 && emptyPlayerFound == false);
     }
-    else
+    else if (displayType == BY_SCORE)
     {
-        for (i = 0; i < TOP_10; i++)
+        do
         {
-            printf("%d: %s %d score\n", i + 1, playerData[i].username, playerData[i].score);
-        }
+            if (strcmp(m->playerData[i].username, "") != 0)
+                printf("%d: %s %d score\n", i + 1, m->playerData[i].username, m->playerData[i].totalScore);
+            else if (strcmp(m->playerData[i].username, "") == 0)
+                emptyPlayerFound = true;
+
+            i++;
+        } while (i < TOP_10 && emptyPlayerFound == false);
     }
 }
 

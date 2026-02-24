@@ -6,11 +6,12 @@
 #include "defs.h"
 
 /**
- * Displays the Main Menu (New Game, Top Players, Settings, Exit) of Mantis
+ * Displays the Main Menu (New Game, Top Players, Settings, Exit) of Mantis and handles user input for starting the game or exiting.
  * @return The function doesn't return anything
  */
 void mainMenu()
 {
+    Game m;
     int option;
 
     printf("Main Menu\n");
@@ -23,9 +24,9 @@ void mainMenu()
 
     switch(option)
     {
-        case 1: newGame(); break;
-        case 2: leaderBoard(); break;
-        case 3: gameSettings(); break;
+        case 1: newGame(&m); break;
+        case 2: leaderBoard(&m); break;
+        case 3: gameSettings(&m); break;
         case 0: printf("Exiting the game...\n"); break;
     }
 }
