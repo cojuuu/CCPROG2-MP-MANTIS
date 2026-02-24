@@ -25,6 +25,7 @@
 #define RANDOM -1
 #define BY_SCORE 67
 #define BY_WINS 69
+#define STARTING_CARDS 4
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -41,6 +42,20 @@ typedef struct
 } Card;
 
 /**
+ * Represents the color count
+ */
+typedef struct
+{
+    int white;
+    int red;
+    int blue;
+    int green;
+    int yellow;
+    int cyan;
+    int purple;
+} Count;
+
+/**
  * Represents a player
  */
 typedef struct
@@ -50,6 +65,8 @@ typedef struct
     int totalScore;    // Total score of the player
 
     Card tank[MAX_CARDS]; // Tank cards of the player
+    Count count;
+    int cardCount;
     int currentScore;     // Score pile of the player
 } Player;
 
@@ -70,9 +87,12 @@ typedef struct
     int playerCount;  // Amount of players who will play
     int totalPlayers; // Total amount of players in "players.txt"
 
+    bool loadSuccess;
+
     Player activePlayers[MAX_PLAYERS];  // Players who will play the game
     Player playerData[MAX_PLAYER_DATA]; // Players from "players.txt"
 
+    int cardsInDeck;
     Card drawPile[MAX_CARDS];
 
     Config settings;
@@ -84,6 +104,14 @@ void askOption(int *option, int min, int max);
 
 // Game Function Prototypes
 void newGame(Game *m);
+void setUpGame(Game *m);
+Card drawCard(Game *m);
+void distributeCards(Game *m);
+void displayCards(Game *m);
+Card emptyCard();
+void initializePlayer(Game *m);
+void checkColorCount(Game *m);
+void displayTopDeck(Game *m);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);
@@ -92,7 +120,6 @@ void displayAvailPlayers(Game *m, int playersChosen);
 void adjustPlayerArr(Game *m, int selectedPlayer);
 void addPlayer(Game *m);
 bool playerFound(Game *m, String36 newPlayer);
-
 Player emptyPlayer();
 
 // Leaderboard Function Prototypes
@@ -103,6 +130,7 @@ void displayLeaderboard(Game *m, int displayType);
 // Load Function Prototypes
 bool loadPlayerData(Game *m);
 bool loadCards(Game *m);
+bool loadSettings(Game *m);
 
 // Settings Function Prototypes
 void gameSettings(Game *m);

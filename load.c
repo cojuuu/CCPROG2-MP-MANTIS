@@ -112,9 +112,52 @@ bool loadCards(Game *m)
         printf("Missing cards!\n");
         loadSuccess = false;
     }
+    else
+        m->cardsInDeck = MAX_CARDS;
 
     // Close card data file
     fclose(cardFile);
+
+    return loadSuccess;
+}
+
+/**
+ * Loads Mantis settings from the "settings.txt" file to m->settings
+ * @param m A pointer to the game structure containing the game data
+ * @return true If the load was successful
+ * @return false Otherwise
+ */
+bool loadSettings(Game *m)
+{
+    FILE *settingsFile;
+    bool loadSuccess = true;
+    int buffer = 0;
+
+    // Open card data file
+    settingsFile = fopen("settings.txt", "r");
+
+    // Checks if file was opened successfully
+    if (settingsFile == NULL)
+    {
+        fprintf(stderr, "mantis.txt not found!");
+        loadSuccess = false;
+    }
+
+    if (loadSuccess)
+    {
+        
+        // Parses player data into respective variables
+        buffer = fscanf(settingsFile, "%d\n%d", &m->settings.winningPoints, &m->settings.shuffleSeed);
+        
+        if (buffer != 2)
+        {
+            printf("Error cannot read card data!\n");
+            loadSuccess = false;
+        }  
+    }
+
+    // Close card data file
+    fclose(settingsFile);
 
     return loadSuccess;
 }
