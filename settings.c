@@ -7,13 +7,13 @@
 #include "defs.h"
 
 /**
- * Menu where players can modify the game settings of Mantis
- * @return The function doesn't return anything
+ * Settings menu of Mantis where players can modify game configuration
+ * @param m A pointer to the game structure containing the game data
+ * @return The function updates 
  */
-void gameSettings()
+void gameSettings(Game *m)
 {
     int option;
-    Config settings;
 
     do
     {
@@ -27,19 +27,19 @@ void gameSettings()
 
         switch(option)
         {
-        case 1: settings.winningPoints = setWinningPoints(); break;
-        case 2: settings.shuffleSeed = setShuffleSeed(); break;
-        case 3: settings = defaultSettings(); break;
+        case 1: m->settings.winningPoints = setWinningPoints(); break;
+        case 2: m->settings.shuffleSeed = setShuffleSeed(); break;
+        case 3: m->settings = defaultSettings(); printf("Default settings loaded!\n"); break;
         case 0: mainMenu(); break;
         }
 
-        saveGameSettings(settings);
+        saveGameSettings(m);
     } while (option != 0);
 }
 
 /**
- * Sets the winning points of Mantis
- * @return The player's desired winning points
+ * Sets the amount of points required to win Mantis
+ * @return The player's chosen amount of points
  */
 int setWinningPoints()
 {
@@ -59,7 +59,7 @@ int setWinningPoints()
 
 /**
  * Sets the shuffle seed of Mantis
- * @return The player's desired shuffle seed
+ * @return The player's chosen shuffle seed
  */
 int setShuffleSeed()
 {
@@ -92,21 +92,20 @@ Config defaultSettings()
 }
 
 /**
- * Saves the game settings of mantis
- * @param winningPoints The minimum number of points required to win the game
- * @param shuffleSeed Seed value used for shuffling
+ * Saves the game settings of mantis to "settings.txt"
+ * @param m A pointer to the game structure containing the game data
  * @return The function doesn't return anything
- */
-void saveGameSettings(Config settings)
+*/
+void saveGameSettings(Game *m)
 {
     FILE *settingsFile;
 
     settingsFile = fopen("settings.txt", "w");
     
-    fprintf(settingsFile, "%d\n", settings.winningPoints);
-    fprintf(settingsFile, "%d", settings.shuffleSeed);
+    fprintf(settingsFile, "%d\n%d", m->settings.winningPoints, m->settings.shuffleSeed);
 
     fclose(settingsFile);
 }
+
 
 #endif // SETTINGS_C;
