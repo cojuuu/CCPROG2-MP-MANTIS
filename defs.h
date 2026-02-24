@@ -22,6 +22,7 @@
 #define MIN_SHUFFLE_SEED 0
 #define MAX_SHUFFLE_SEED 99
 #define MAX_CARDS 84
+#define RANDOM -1
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -54,6 +55,16 @@ typedef struct
     int points;    // Point value of card
 } Card;
 
+/**
+ * Represents the game settings of Mantis
+ */
+typedef struct 
+{
+    int winningPoints; // Points required to win Mantis
+    int shuffleSeed;   // Shuffle seed for shuffling cards
+} Config;
+
+
 // Menu Function Prototypes
 void mainMenu();
 void askOption(int *option, int min, int max);
@@ -84,7 +95,8 @@ bool loadCards(Card decks[]);
 void gameSettings();
 int setWinningPoints();
 int setShuffleSeed();
-void saveGameSettings(int winningPoints, int shuffleSeed);
+void saveGameSettings(Config settings);
+Config defaultSettings();
 
 // Random Function Prototypes
 void initRandom();

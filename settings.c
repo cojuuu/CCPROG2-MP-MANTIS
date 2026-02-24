@@ -13,7 +13,7 @@
 void gameSettings()
 {
     int option;
-    int winningPoints, shuffleSeed; 
+    Config settings;
 
     do
     {
@@ -27,13 +27,13 @@ void gameSettings()
 
         switch(option)
         {
-        case 1: winningPoints = setWinningPoints(); break;
-        case 2: shuffleSeed = setShuffleSeed(); break;
-        case 3: winningPoints = DEFAULT_WIN_POINTS; shuffleSeed = randomInt(); break;
+        case 1: settings.winningPoints = setWinningPoints(); break;
+        case 2: settings.shuffleSeed = setShuffleSeed(); break;
+        case 3: settings = defaultSettings(); break;
         case 0: mainMenu(); break;
         }
 
-        saveGameSettings(winningPoints, shuffleSeed);
+        saveGameSettings(settings);
     } while (option != 0);
 }
 
@@ -78,19 +78,33 @@ int setShuffleSeed()
 }
 
 /**
+ * Sets the game configuration of Mantis to its default setting (20 WIN POINTS, RANDOM SHUFFLE SEED)
+ * @return Default settings of Mantis
+ */
+Config defaultSettings()
+{
+    Config d;
+
+    d.winningPoints = DEFAULT_WIN_POINTS; 
+    d.shuffleSeed = RANDOM;
+
+    return d;
+}
+
+/**
  * Saves the game settings of mantis
  * @param winningPoints The minimum number of points required to win the game
  * @param shuffleSeed Seed value used for shuffling
  * @return The function doesn't return anything
  */
-void saveGameSettings(int winningPoints, int shuffleSeed)
+void saveGameSettings(Config settings)
 {
     FILE *settingsFile;
 
     settingsFile = fopen("settings.txt", "w");
     
-    fprintf(settingsFile, "%d\n", winningPoints);
-    fprintf(settingsFile, "%d", shuffleSeed);
+    fprintf(settingsFile, "%d\n", settings.winningPoints);
+    fprintf(settingsFile, "%d", settings.shuffleSeed);
 
     fclose(settingsFile);
 }
