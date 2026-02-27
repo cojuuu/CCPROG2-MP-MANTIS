@@ -42,6 +42,15 @@ typedef struct
 } Card;
 
 /**
+ * Represents a deck
+ */
+typedef struct 
+{
+    Card cards[MAX_CARDS]; // Cards in the deck
+    int cardCount;         // Cards left in the deck
+} Deck;
+
+/**
  * Represents the color count
  */
 typedef struct
@@ -64,10 +73,9 @@ typedef struct
     int wins;          // Total wins of the player
     int totalScore;    // Total score of the player
 
-    Card tank[MAX_CARDS]; // Tank cards of the player
-    Count count;
-    int cardCount;
-    int currentScore;     // Score pile of the player
+    Deck tank;         // Tank deck of 
+    Count nColor;      //
+    int scorePile;     // Score pile of the player
 } Player;
 
 /**

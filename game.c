@@ -55,8 +55,8 @@ void distributeCards(Game *m)
     {
         for (j = 0; j < STARTING_CARDS; j++)
         {
-            m->activePlayers[i].tank[j] = drawCard(m);
-            m->activePlayers[i].cardCount++;
+            m->activePlayers[i].tank.cards[j] = drawCard(m);
+            m->activePlayers[i].tank.cardCount++;
         }
     }
 }
@@ -84,10 +84,10 @@ void displayCards(Game *m)
     for (i = 0; i < m->playerCount; i++)
     {
         printf("P%d => [ R: %d | O:%d | Y: %d | G:%d | B:%d | I:%d | V:%d ] // %d\n", i + 1,
-            m->activePlayers[i].count.red, m->activePlayers[i].count.white, 
-            m->activePlayers[i].count.yellow, m->activePlayers[i].count.green, 
-            m->activePlayers[i].count.blue, m->activePlayers[i].count.cyan, 
-            m->activePlayers[i].count.purple, m->activePlayers[i].currentScore);
+            m->activePlayers[i].nColor.red, m->activePlayers[i].nColor.white, 
+            m->activePlayers[i].nColor.yellow, m->activePlayers[i].nColor.green, 
+            m->activePlayers[i].nColor.blue, m->activePlayers[i].nColor.cyan, 
+            m->activePlayers[i].nColor.purple, m->activePlayers[i].scorePile);
     }
 }
 
@@ -99,24 +99,24 @@ void initializePlayer(Game *m)
     for (i = 0; i < m->playerCount; i++)
     {
         // Empty color count
-        m->activePlayers[i].count.white = 0;
-        m->activePlayers[i].count.red = 0;
-        m->activePlayers[i].count.blue = 0;
-        m->activePlayers[i].count.green = 0;
-        m->activePlayers[i].count.yellow = 0;
-        m->activePlayers[i].count.cyan = 0;
-        m->activePlayers[i].count.purple = 0;
+        m->activePlayers[i].nColor.white = 0;
+        m->activePlayers[i].nColor.red = 0;
+        m->activePlayers[i].nColor.blue = 0;
+        m->activePlayers[i].nColor.green = 0;
+        m->activePlayers[i].nColor.yellow = 0;
+        m->activePlayers[i].nColor.cyan = 0;
+        m->activePlayers[i].nColor.purple = 0;
 
         // Empty card count
-        m->activePlayers[i].cardCount = 0;
+        m->activePlayers[i].tank.cardCount = 0;
 
         // Empty current score
-        m->activePlayers[i].currentScore = 0;
+        m->activePlayers[i].scorePile = 0;
 
         for (j = 0; j < MAX_CARDS; j++)
         {
             // Empty tank
-            m->activePlayers[i].tank[j] = emptyCard();
+            m->activePlayers[i].tank.cards[j] = emptyCard();
         }
     }
 }
@@ -134,17 +134,17 @@ void checkColorCount(Game *m)
 
     for (i = 0; i < m->playerCount; i++)
     {
-        for (j = 0; j < m->activePlayers[i].cardCount; j++)
+        for (j = 0; j < m->activePlayers[i].tank.cardCount; j++)
         {
-            switch (m->activePlayers[i].tank[j].front)
+            switch (m->activePlayers[i].tank.cards[j].front)
             {
-                case 'R': m->activePlayers[i].count.red++; break;
-                case 'O': m->activePlayers[i].count.white++; break;
-                case 'Y': m->activePlayers[i].count.yellow++; break;
-                case 'G': m->activePlayers[i].count.green++; break;
-                case 'B': m->activePlayers[i].count.blue++; break;
-                case 'I': m->activePlayers[i].count.cyan++; break;
-                case 'V': m->activePlayers[i].count.purple++; break;
+                case 'R': m->activePlayers[i].nColor.red++; break;
+                case 'O': m->activePlayers[i].nColor.white++; break;
+                case 'Y': m->activePlayers[i].nColor.yellow++; break;
+                case 'G': m->activePlayers[i].nColor.green++; break;
+                case 'B': m->activePlayers[i].nColor.blue++; break;
+                case 'I': m->activePlayers[i].nColor.cyan++; break;
+                case 'V': m->activePlayers[i].nColor.purple++; break;
             }
         }
     }
