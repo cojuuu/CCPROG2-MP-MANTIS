@@ -26,6 +26,7 @@
 #define BY_SCORE 67
 #define BY_WINS 69
 #define STARTING_CARDS 4
+#define NOT_FOUND -2
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -95,6 +96,8 @@ typedef struct
     int playerCount;  // Amount of players who will play
     int totalPlayers; // Total amount of players in "players.txt"
 
+    int currentPlayer;
+
     bool loadSuccess;
 
     Player activePlayers[MAX_PLAYERS];  // Players who will play the game
@@ -121,6 +124,8 @@ void checkColorCount(Game *m);
 void displayTopDeck(Game *m);
 void promptPlayerMove(int currentPlayer, int *option);
 void gameFlow(Game *m);
+void tryToScore(Game *m);
+void tryToSteal(Game *m);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);

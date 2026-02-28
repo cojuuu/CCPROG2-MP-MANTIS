@@ -165,12 +165,54 @@ void promptPlayerMove(int currentPlayer, int *option)
 void gameFlow(Game *m)
 {
     int option;
-    int i;
 
-    for (int i = 0; i < m->playerCount; i++)
+    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
     {
-        promptPlayerMove(i + 1, &option);
+        promptPlayerMove(m->currentPlayer + 1, &option);
+
+        switch(option)
+        {
+            case 1: tryToScore(m); break;
+            case 2: tryToSteal(m); break;
+        }
     }
+}
+
+void tryToScore(Game *m)
+{
+    int emptyCardIndex;
+
+    // Draw Card
+    emptyCardIndex = findEmptyCard(m);
+    m->activePlayers[m->currentPlayer].tank.cards[emptyCardIndex] = drawCard(m);
+
+    // Check if drawn card has same card color in tank
+
+    // If drawn card in tank
+        // Put in Score Pile
+    
+    // If none, just add to tank
+}
+
+void tryToSteal(Game *m)
+{
+
+}
+
+int findEmptyCard(Game *m)
+{
+    int i = 0;
+    int emptyCardIndex = NOT_FOUND;
+    
+    while (emptyCardIndex == NOT_FOUND)
+    {
+        if (m->activePlayers[m->currentPlayer].tank.cards[i].points == 0)
+            emptyCardIndex = i;
+        
+        i++;
+    }
+
+    return emptyCardIndex;
 }
 
 #endif // GAME_C;
