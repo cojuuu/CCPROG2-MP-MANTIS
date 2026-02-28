@@ -124,7 +124,6 @@ void distributeCards(Game *m);
 void displayTankCards(Game *m);
 Card emptyCard();
 void initializePlayer(Game *m);
-void checkColorCount(Game *m);
 void modifyColorCount(Game *m, Color currentCard, char mode);
 void displayTopDeck(Game *m);
 void promptPlayerMove(int currentPlayer, int *option);
