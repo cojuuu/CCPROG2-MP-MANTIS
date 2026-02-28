@@ -12,14 +12,10 @@
  */
 void newGame(Game *m)
 {
-    // Ask how many players will play
     printf("How many players?\n");
     askOption(&m->playerCount, MIN_PLAYERS, MAX_PLAYERS);
 
-    // Select Players
     selectPlayers(m);
-
-    // Game Loop
     setUpGame(m);
     displayTopDeck(m);
 }
@@ -39,7 +35,7 @@ void setUpGame(Game *m)
     }
 
     loadCards(m);
-    shuffle(m->drawPile, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
+    shuffle(m->drawPile.cards, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
 
     initializePlayer(m);
     distributeCards(m);
@@ -66,12 +62,12 @@ Card drawCard(Game *m)
     Card drawnCard;
     int i;
 
-    drawnCard = m->drawPile[0];
-    m->cardsInDeck--;
+    drawnCard = m->drawPile.cards[0];
+    m->drawPile.cardCount--;
 
-    for (i = 0; i < m->cardsInDeck; i++)
+    for (i = 0; i < m->drawPile.cardCount; i++)
     {
-        m->drawPile[i] = m->drawPile[i + 1];
+        m->drawPile.cards[i] = m->drawPile.cards[i + 1];
     }
 
     return drawnCard;
@@ -153,7 +149,7 @@ void checkColorCount(Game *m)
 void displayTopDeck(Game *m)
 {
     printf("\nTop deck: %c%c%c (%d cards remaining in deck)\n", 
-        m->drawPile[0].back[0], m->drawPile[0].back[1], m->drawPile[0].back[2], m->cardsInDeck);
+        m->drawPile.cards[0].back[0], m->drawPile.cards[0].back[1], m->drawPile.cards[0].back[2], m->drawPile.cardCount);
 }
 
 #endif // GAME_C;

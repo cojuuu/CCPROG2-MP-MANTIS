@@ -100,8 +100,7 @@ typedef struct
     Player activePlayers[MAX_PLAYERS];  // Players who will play the game
     Player playerData[MAX_PLAYER_DATA]; // Players from "players.txt"
 
-    int cardsInDeck;
-    Card drawPile[MAX_CARDS];
+    Deck drawPile;
 
     Config settings;
 } Game;

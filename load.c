@@ -91,9 +91,9 @@ bool loadCards(Game *m)
         {
             // Parses player data into respective variables
             buffer = fscanf(cardFile, "%c | %c%c%c %d\n", 
-                        &m->drawPile[i].front, 
-                        &m->drawPile[i].back[0], &m->drawPile[i].back[1], &m->drawPile[i].back[2], 
-                        &m->drawPile[i].points);
+                        &m->drawPile.cards[i].front, 
+                        &m->drawPile.cards[i].back[0], &m->drawPile.cards[i].back[1], &m->drawPile.cards[i].back[2], 
+                        &m->drawPile.cards[i].points);
             
             if (buffer == 5)
                 i++;
@@ -113,7 +113,7 @@ bool loadCards(Game *m)
         loadSuccess = false;
     }
     else
-        m->cardsInDeck = MAX_CARDS;
+        m->drawPile.cardCount = MAX_CARDS;
 
     // Close card data file
     fclose(cardFile);
