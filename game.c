@@ -48,12 +48,11 @@ void distributeCards(Game *m)
 {
     int i, j;
 
-    for (i = 0; i < m->playerCount; i++)
+    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
     {
         for (j = 0; j < STARTING_CARDS; j++)
         {
-            m->activePlayers[i].tank.cards[j] = drawCard(m);
-            m->activePlayers[i].tank.cardCount++;
+            m->activePlayers[m->currentPlayer].tank.cards[j] = drawCard(m);
         }
     }
 }
@@ -70,6 +69,8 @@ Card drawCard(Game *m)
     {
         m->drawPile.cards[i] = m->drawPile.cards[i + 1];
     }
+
+    m->activePlayers[m->currentPlayer].tank.cardCount++;
 
     return drawnCard;
 }
