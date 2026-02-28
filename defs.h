@@ -26,6 +26,9 @@
 #define BY_SCORE 67
 #define BY_WINS 69
 #define STARTING_CARDS 4
+#define NOT_FOUND -2
+#define INCREMENT '+'
+#define DECREMENT '-'
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -62,7 +65,7 @@ typedef struct
     int yellow;
     int cyan;
     int purple;
-} Count;
+} Counter;
 
 /**
  * Represents a player
@@ -74,7 +77,7 @@ typedef struct
     int totalScore;    // Total score of the player
 
     Deck tank;         // Tank deck of 
-    Count nColor;      //
+    Counter nColor;    //
     int scorePile;     // Score pile of the player
 } Player;
 
@@ -95,13 +98,16 @@ typedef struct
     int playerCount;  // Amount of players who will play
     int totalPlayers; // Total amount of players in "players.txt"
 
+    int currentPlayer;
+    int sameColorCount;
+    int sameColorPoints;
+
     bool loadSuccess;
 
     Player activePlayers[MAX_PLAYERS];  // Players who will play the game
     Player playerData[MAX_PLAYER_DATA]; // Players from "players.txt"
 
-    int cardsInDeck;
-    Card drawPile[MAX_CARDS];
+    Deck drawPile;
 
     Config settings;
 } Game;
@@ -115,11 +121,18 @@ void newGame(Game *m);
 void setUpGame(Game *m);
 Card drawCard(Game *m);
 void distributeCards(Game *m);
-void displayCards(Game *m);
+void displayTankCards(Game *m);
 Card emptyCard();
 void initializePlayer(Game *m);
-void checkColorCount(Game *m);
+void modifyColorCount(Game *m, Color currentCard, char mode);
 void displayTopDeck(Game *m);
+void promptPlayerMove(int currentPlayer, int *option);
+void gameFlow(Game *m);
+void tryToScore(Game *m);
+void tryToSteal(Game *m);
+int findEmptyCard(Game *m);
+void adjustDeck(Deck deck, int removedCardIndex);
+void countSameColor(Game *m, Card drawnCard);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);

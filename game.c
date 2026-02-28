@@ -12,16 +12,13 @@
  */
 void newGame(Game *m)
 {
-    // Ask how many players will play
     printf("How many players?\n");
     askOption(&m->playerCount, MIN_PLAYERS, MAX_PLAYERS);
 
-    // Select Players
     selectPlayers(m);
-
-    // Game Loop
     setUpGame(m);
     displayTopDeck(m);
+    gameFlow(m);
 }
 
 /**
@@ -39,45 +36,129 @@ void setUpGame(Game *m)
     }
 
     loadCards(m);
-    shuffle(m->drawPile, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
+    shuffle(m->drawPile.cards, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
 
     initializePlayer(m);
     distributeCards(m);
-    checkColorCount(m);
-    displayCards(m);
+    displayTankCards(m);
 }
 
+/**
+ * Manages the main game loop, iterating through player turns and handling their moves
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
+void gameFlow(Game *m)
+{
+    int option;
+
+    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
+    {
+        promptPlayerMove(m->currentPlayer + 1, &option);
+
+        switch(option)
+        {
+            case 1: tryToScore(m); break;
+            case 2: tryToSteal(m); break;
+        }
+
+        displayTankCards(m);
+        displayTopDeck(m);
+    }
+}
+
+/**
+ * Executes the "Score" action: draws a card and checks if it matches colors in the player's tank
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
+void tryToScore(Game *m)
+{
+    int emptyCardIndex;
+    Card drawnCard;
+
+    printf("Resolving turn for Player %d...\n", m->currentPlayer + 1);
+
+    drawnCard = drawCard(m);
+    printf("- Drawn card color reveal: %c (%d pt/s)!\n", drawnCard.front, drawnCard.points);
+
+    countSameColor(m, drawnCard);
+
+    emptyCardIndex = findEmptyCard(m);
+    m->activePlayers[m->currentPlayer].tank.cards[emptyCardIndex] = drawnCard;
+    m->activePlayers[m->currentPlayer].tank.cardCount++;
+
+    if (m->sameColorCount > 0)
+    {
+        m->activePlayers[m->currentPlayer].scorePile += m->sameColorPoints + drawnCard.points;
+        printf("- Player %d has (%d) %c card/s worth a total of (%d) pts!\n", m->currentPlayer + 1, m->sameColorCount, drawnCard.front, m->sameColorPoints);
+        printf("- +%d points to Player 1's score pile!\n", m->sameColorPoints + drawnCard.points);
+    }
+    else
+    {
+        printf("- Player %d has no %c cards...\n", m->currentPlayer + 1, drawnCard.front);
+        printf("- Adding drawn card to Player 1's Tank\n");
+        modifyColorCount(m, drawnCard.front, INCREMENT);
+    }
+}
+
+/**
+ * Executes the "Steal" action against another player's tank
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
+void tryToSteal(Game *m)
+{
+
+}
+
+/**
+ * Deals the initial set of cards to all active players at the start of the game
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
 void distributeCards(Game *m)
 {
-    int i, j;
+    int i;
 
-    for (i = 0; i < m->playerCount; i++)
+    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
     {
-        for (j = 0; j < STARTING_CARDS; j++)
+        for (i = 0; i < STARTING_CARDS; i++)
         {
-            m->activePlayers[i].tank.cards[j] = drawCard(m);
-            m->activePlayers[i].tank.cardCount++;
+            m->activePlayers[m->currentPlayer].tank.cards[i] = drawCard(m);
+            m->activePlayers[m->currentPlayer].tank.cardCount++;
+            modifyColorCount(m, m->activePlayers[m->currentPlayer].tank.cards[i].front, INCREMENT);
         }
     }
 }
 
+/**
+ * Removes and returns the top card from the draw pile, shifting the remaining cards up
+ * @param m A pointer to the game structure containing the game data
+ * @return The Card structure that was at the top of the deck
+ */
 Card drawCard(Game *m)
 {
     Card drawnCard;
     int i;
 
-    drawnCard = m->drawPile[0];
-    m->cardsInDeck--;
+    drawnCard = m->drawPile.cards[0];
+    m->drawPile.cardCount--;
 
-    for (i = 0; i < m->cardsInDeck; i++)
+    for (i = 0; i < m->drawPile.cardCount; i++)
     {
-        m->drawPile[i] = m->drawPile[i + 1];
+        m->drawPile.cards[i] = m->drawPile.cards[i + 1];
     }
 
     return drawnCard;
 }
 
-void displayCards(Game *m)
+/**
+ * Prints the current state of all players' tanks and their total scores
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
+void displayTankCards(Game *m)
 {
     int i;
 
@@ -91,11 +172,15 @@ void displayCards(Game *m)
     }
 }
 
+/**
+ * Resets player statistics, scores, and tanks to their default empty states
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
 void initializePlayer(Game *m)
 {
     int i, j;
 
-    
     for (i = 0; i < m->playerCount; i++)
     {
         // Empty color count
@@ -121,6 +206,10 @@ void initializePlayer(Game *m)
     }
 }
 
+/**
+ * Creates and returns a card with null/zero values to represent an empty slot
+ * @return A Card structure initialized to empty values
+ */
 Card emptyCard()
 {
     Card e = {'\0', {'\0', '\0', '\0'}, 0};
@@ -128,33 +217,129 @@ Card emptyCard()
     return e;
 }
 
-void checkColorCount(Game *m)
+/**
+ * Increments or decrements the specific color counter for the current player
+ * @param m A pointer to the game structure containing the game data
+ * @param currentCard The color character to be modified
+ * @param mode The operation mode (INCREMENT or DECREMENT)
+ * @return The function doesn't return anything
+ */
+void modifyColorCount(Game *m, Color currentCard, char mode)
 {
-    int i, j;
-
-    for (i = 0; i < m->playerCount; i++)
+    if (mode == INCREMENT)
     {
-        for (j = 0; j < m->activePlayers[i].tank.cardCount; j++)
+        switch(currentCard)
         {
-            switch (m->activePlayers[i].tank.cards[j].front)
-            {
-                case 'R': m->activePlayers[i].nColor.red++; break;
-                case 'O': m->activePlayers[i].nColor.white++; break;
-                case 'Y': m->activePlayers[i].nColor.yellow++; break;
-                case 'G': m->activePlayers[i].nColor.green++; break;
-                case 'B': m->activePlayers[i].nColor.blue++; break;
-                case 'I': m->activePlayers[i].nColor.cyan++; break;
-                case 'V': m->activePlayers[i].nColor.purple++; break;
-            }
+            case 'R': m->activePlayers[m->currentPlayer].nColor.red++; break;
+            case 'O': m->activePlayers[m->currentPlayer].nColor.white++; break;
+            case 'Y': m->activePlayers[m->currentPlayer].nColor.yellow++; break;
+            case 'G': m->activePlayers[m->currentPlayer].nColor.green++; break;
+            case 'B': m->activePlayers[m->currentPlayer].nColor.blue++; break;
+            case 'I': m->activePlayers[m->currentPlayer].nColor.cyan++; break;
+            case 'V': m->activePlayers[m->currentPlayer].nColor.purple++; break;
+        }
+    }
+    else if (mode == DECREMENT)
+    {
+        switch(currentCard)
+        {
+            case 'R': m->activePlayers[m->currentPlayer].nColor.red--; break;
+            case 'O': m->activePlayers[m->currentPlayer].nColor.white--; break;
+            case 'Y': m->activePlayers[m->currentPlayer].nColor.yellow--; break;
+            case 'G': m->activePlayers[m->currentPlayer].nColor.green--; break;
+            case 'B': m->activePlayers[m->currentPlayer].nColor.blue--; break;
+            case 'I': m->activePlayers[m->currentPlayer].nColor.cyan--; break;
+            case 'V': m->activePlayers[m->currentPlayer].nColor.purple--; break;
         }
     }
 }
 
+/**
+ * Displays the back-side of the top card in the draw pile and the total deck count
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
 void displayTopDeck(Game *m)
 {
     printf("\nTop deck: %c%c%c (%d cards remaining in deck)\n", 
-        m->drawPile[0].back[0], m->drawPile[0].back[1], m->drawPile[0].back[2], m->cardsInDeck);
+        m->drawPile.cards[0].back[0], m->drawPile.cards[0].back[1], m->drawPile.cards[0].back[2], 
+        m->drawPile.cardCount);
 }
 
-#endif // GAME_C;
+/**
+ * Prompts the user to choose between scoring or stealing during their turn
+ * @param currentPlayer The index/number of the player currently acting
+ * @param option A pointer to the integer where the player's choice will be stored
+ * @return The function doesn't return anything
+ */
+void promptPlayerMove(int currentPlayer, int *option)
+{
+    printf("\nPlayer %d, what would you like to do?\n", currentPlayer);
+    printf("  [1] Try to Score\n");
+    printf("  [2] Try to Steal\n");
+    askOption(option, 1, 2);
+}
 
+/**
+ * Checks the current player's tank for cards matching the drawn card's color and calculates points
+ * @param m A pointer to the game structure containing the game data
+ * @param drawnCard The card that was just drawn from the deck
+ * @return The function doesn't return anything
+ */
+void countSameColor(Game *m, Card drawnCard)
+{
+    int i;
+    m->sameColorCount = 0;
+    m->sameColorPoints = 0;
+
+    for (i = 0; i < m->activePlayers[m->currentPlayer].tank.cardCount; i++)
+    {
+        if (m->activePlayers[m->currentPlayer].tank.cards[i].front == drawnCard.front)
+        {
+            m->sameColorCount++;
+            m->sameColorPoints += m->activePlayers[m->currentPlayer].tank.cards[i].points;
+            modifyColorCount(m, drawnCard.front, DECREMENT);
+        }
+    }
+}
+
+/**
+ * Shifts cards in a deck to fill a gap left by a removed card
+ * @param deck The deck structure to be modified
+ * @param removedCardIndex The index of the card that was removed
+ * @return The function doesn't return anything
+ */
+void adjustDeck(Deck deck, int removedCardIndex)
+{
+    int i;
+
+    for (i = removedCardIndex; i < deck.cardCount; i++)
+    {
+        deck.cards[i] = deck.cards[i + 1];
+    }
+    
+    deck.cards[i] = emptyCard();
+}
+
+/**
+ * Searches the current player's tank for the first available empty card slot
+ * @param m A pointer to the game structure containing the game data
+ * @return The index of the first empty card slot found
+ */
+int findEmptyCard(Game *m)
+{
+    int i = 0;
+    int emptyCardIndex = NOT_FOUND;
+    
+    while (emptyCardIndex == NOT_FOUND)
+    {
+        if (m->activePlayers[m->currentPlayer].tank.cards[i].points == 0)
+            emptyCardIndex = i;
+        
+        i++;
+    }
+
+    return emptyCardIndex;
+}
+
+#endif // GAME_C
