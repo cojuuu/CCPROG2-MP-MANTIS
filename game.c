@@ -18,6 +18,7 @@ void newGame(Game *m)
     selectPlayers(m);
     setUpGame(m);
     displayTopDeck(m);
+    gameFlow(m);
 }
 
 /**
@@ -40,7 +41,7 @@ void setUpGame(Game *m)
     initializePlayer(m);
     distributeCards(m);
     checkColorCount(m);
-    displayCards(m);
+    displayTankCards(m);
 }
 
 void distributeCards(Game *m)
@@ -73,7 +74,7 @@ Card drawCard(Game *m)
     return drawnCard;
 }
 
-void displayCards(Game *m)
+void displayTankCards(Game *m)
 {
     int i;
 
@@ -149,7 +150,27 @@ void checkColorCount(Game *m)
 void displayTopDeck(Game *m)
 {
     printf("\nTop deck: %c%c%c (%d cards remaining in deck)\n", 
-        m->drawPile.cards[0].back[0], m->drawPile.cards[0].back[1], m->drawPile.cards[0].back[2], m->drawPile.cardCount);
+        m->drawPile.cards[0].back[0], m->drawPile.cards[0].back[1], m->drawPile.cards[0].back[2], 
+        m->drawPile.cardCount);
+}
+
+void promptPlayerMove(int currentPlayer, int *option)
+{
+    printf("\nPlayer %d, what would you like to do?\n", currentPlayer);
+    printf("  [1] Try to Score\n");
+    printf("  [2] Try to Steal\n");
+    askOption(option, 1, 2);
+}
+
+void gameFlow(Game *m)
+{
+    int option;
+    int i;
+
+    for (int i = 0; i < m->playerCount; i++)
+    {
+        promptPlayerMove(i + 1, &option);
+    }
 }
 
 #endif // GAME_C;

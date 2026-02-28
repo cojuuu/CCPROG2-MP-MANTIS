@@ -114,11 +114,13 @@ void newGame(Game *m);
 void setUpGame(Game *m);
 Card drawCard(Game *m);
 void distributeCards(Game *m);
-void displayCards(Game *m);
+void displayTankCards(Game *m);
 Card emptyCard();
 void initializePlayer(Game *m);
 void checkColorCount(Game *m);
 void displayTopDeck(Game *m);
+void promptPlayerMove(int currentPlayer, int *option);
+void gameFlow(Game *m);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);
