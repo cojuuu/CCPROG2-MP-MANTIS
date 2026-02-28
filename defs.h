@@ -27,6 +27,8 @@
 #define BY_WINS 69
 #define STARTING_CARDS 4
 #define NOT_FOUND -2
+#define INCREMENT '+'
+#define DECREMENT '-'
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -123,7 +125,7 @@ void displayTankCards(Game *m);
 Card emptyCard();
 void initializePlayer(Game *m);
 void checkColorCount(Game *m);
-void incrementColorCount(Game *m, Color currentCard);
+void modifyColorCount(Game *m, Color currentCard, char mode);
 void displayTopDeck(Game *m);
 void promptPlayerMove(int currentPlayer, int *option);
 void gameFlow(Game *m);

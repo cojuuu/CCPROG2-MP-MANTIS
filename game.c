@@ -43,6 +43,60 @@ void setUpGame(Game *m)
     displayTankCards(m);
 }
 
+void gameFlow(Game *m)
+{
+    int option;
+
+    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
+    {
+        promptPlayerMove(m->currentPlayer + 1, &option);
+
+        switch(option)
+        {
+            case 1: tryToScore(m); break;
+            case 2: tryToSteal(m); break;
+        }
+
+        displayTankCards(m);
+        displayTopDeck(m);
+    }
+}
+
+void tryToScore(Game *m)
+{
+    int emptyCardIndex;
+    Card drawnCard;
+
+    printf("Resolving turn for Player %d...\n", m->currentPlayer + 1);
+
+    drawnCard = drawCard(m);
+    printf("- Drawn card color reveal: %c (%d pt/s)!\n", drawnCard.front, drawnCard.points);
+
+    countSameColor(m, drawnCard);
+
+    emptyCardIndex = findEmptyCard(m);
+    m->activePlayers[m->currentPlayer].tank.cards[emptyCardIndex] = drawnCard;
+    m->activePlayers[m->currentPlayer].tank.cardCount++;
+
+    if (m->sameColorCount > 0)
+    {
+        m->activePlayers[m->currentPlayer].scorePile += m->sameColorPoints + drawnCard.points;
+        printf("- Player %d has (%d) %c card/s worth a total of (%d) pts!\n", m->currentPlayer + 1, m->sameColorCount, drawnCard.front, m->sameColorPoints);
+        printf("- +%d points to Player 1's score pile!\n", m->sameColorPoints + drawnCard.points);
+    }
+    else
+    {
+        printf("- Player %d has no %c cards...\n", m->currentPlayer + 1, drawnCard.front);
+        printf("- Adding drawn card to Player 1's Tank\n");
+        modifyColorCount(m, drawnCard.front, INCREMENT);
+    }
+}
+
+void tryToSteal(Game *m)
+{
+
+}
+
 void distributeCards(Game *m)
 {
     int i;
@@ -53,7 +107,7 @@ void distributeCards(Game *m)
         {
             m->activePlayers[m->currentPlayer].tank.cards[i] = drawCard(m);
             m->activePlayers[m->currentPlayer].tank.cardCount++;
-            incrementColorCount(m, m->activePlayers[m->currentPlayer].tank.cards[i].front);
+            modifyColorCount(m, m->activePlayers[m->currentPlayer].tank.cards[i].front, INCREMENT);
         }
     }
 }
@@ -147,18 +201,36 @@ void checkColorCount(Game *m)
     }
 }
 
-void incrementColorCount(Game *m, Color currentCard)
+void modifyColorCount(Game *m, Color currentCard, char mode)
 {
-    switch(currentCard)
+    if (mode == INCREMENT)
     {
-        case 'R': m->activePlayers[m->currentPlayer].nColor.red++; break;
-        case 'O': m->activePlayers[m->currentPlayer].nColor.white++; break;
-        case 'Y': m->activePlayers[m->currentPlayer].nColor.yellow++; break;
-        case 'G': m->activePlayers[m->currentPlayer].nColor.green++; break;
-        case 'B': m->activePlayers[m->currentPlayer].nColor.blue++; break;
-        case 'I': m->activePlayers[m->currentPlayer].nColor.cyan++; break;
-        case 'V': m->activePlayers[m->currentPlayer].nColor.purple++; break;
+        switch(currentCard)
+        {
+            case 'R': m->activePlayers[m->currentPlayer].nColor.red++; break;
+            case 'O': m->activePlayers[m->currentPlayer].nColor.white++; break;
+            case 'Y': m->activePlayers[m->currentPlayer].nColor.yellow++; break;
+            case 'G': m->activePlayers[m->currentPlayer].nColor.green++; break;
+            case 'B': m->activePlayers[m->currentPlayer].nColor.blue++; break;
+            case 'I': m->activePlayers[m->currentPlayer].nColor.cyan++; break;
+            case 'V': m->activePlayers[m->currentPlayer].nColor.purple++; break;
+        }
     }
+    else if (mode == DECREMENT)
+    {
+        switch(currentCard)
+        {
+            case 'R': m->activePlayers[m->currentPlayer].nColor.red--; break;
+            case 'O': m->activePlayers[m->currentPlayer].nColor.white--; break;
+            case 'Y': m->activePlayers[m->currentPlayer].nColor.yellow--; break;
+            case 'G': m->activePlayers[m->currentPlayer].nColor.green--; break;
+            case 'B': m->activePlayers[m->currentPlayer].nColor.blue--; break;
+            case 'I': m->activePlayers[m->currentPlayer].nColor.cyan--; break;
+            case 'V': m->activePlayers[m->currentPlayer].nColor.purple--; break;
+        }
+    }
+
+    
 }
 
 void displayTopDeck(Game *m)
@@ -176,55 +248,6 @@ void promptPlayerMove(int currentPlayer, int *option)
     askOption(option, 1, 2);
 }
 
-void gameFlow(Game *m)
-{
-    int option;
-
-    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
-    {
-        promptPlayerMove(m->currentPlayer + 1, &option);
-
-        switch(option)
-        {
-            case 1: tryToScore(m); break;
-            case 2: tryToSteal(m); break;
-        }
-
-        displayTankCards(m);
-        displayTopDeck(m);
-    }
-}
-
-void tryToScore(Game *m)
-{
-    int emptyCardIndex;
-    Card drawnCard;
-
-    printf("Resolving turn for Player %d...\n", m->currentPlayer + 1);
-
-    drawnCard = drawCard(m);
-    printf("- Drawn card color reveal: %c (%d pt/s)!\n", drawnCard.front, drawnCard.points);
-
-    countSameColor(m, drawnCard);
-
-    emptyCardIndex = findEmptyCard(m);
-    m->activePlayers[m->currentPlayer].tank.cards[emptyCardIndex] = drawnCard;
-    m->activePlayers[m->currentPlayer].tank.cardCount++;
-
-    if (m->sameColorCount > 0)
-    {
-        m->activePlayers[m->currentPlayer].scorePile += m->sameColorPoints + drawnCard.points;
-        printf("- Player %d has (%d) %c card/s worth a total of (%d) pts!\n", m->currentPlayer + 1, m->sameColorCount, drawnCard.front, m->sameColorPoints);
-        printf("- +%d points to Player 1's score pile!\n", m->sameColorPoints + drawnCard.points);
-    }
-    else
-    {
-        printf("- Player %d has no %c cards...\n", m->currentPlayer + 1, drawnCard.front);
-        printf("- Adding drawn card to Player 1's Tank\n");
-        incrementColorCount(m, drawnCard.front);
-    }
-}
-
 void countSameColor(Game *m, Card drawnCard)
 {
     int i;
@@ -237,6 +260,7 @@ void countSameColor(Game *m, Card drawnCard)
         {
             m->sameColorCount++;
             m->sameColorPoints += m->activePlayers[m->currentPlayer].tank.cards[i].points;
+            modifyColorCount(m, drawnCard.front, DECREMENT);
         }
     }
     
@@ -252,11 +276,6 @@ void adjustDeck(Deck deck, int removedCardIndex)
     }
     
     deck.cards[i] = emptyCard();
-}
-
-void tryToSteal(Game *m)
-{
-
 }
 
 int findEmptyCard(Game *m)
