@@ -145,10 +145,14 @@ bool loadSettings(Game *m)
 
     if (loadSuccess)
     {
-        
         // Parses player data into respective variables
         buffer = fscanf(settingsFile, "%d\n%d", &m->settings.winningPoints, &m->settings.shuffleSeed);
-        
+        if (m->settings.shuffleSeed == RANDOM)
+        {
+            initRandom();
+            m->settings.shuffleSeed = randomInt();
+        }
+
         if (buffer != 2)
         {
             printf("Error cannot read card data!\n");

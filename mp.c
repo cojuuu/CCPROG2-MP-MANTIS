@@ -8,13 +8,13 @@
 */
 
 /* ----- preprocessor directives ----- */
-#include "menu.c"
 #include "game.c"
-#include "player.c"
 #include "leaderboard.c"
-#include "settings.c"
 #include "load.c"
+#include "menu.c"
+#include "player.c"
 #include "random.c"
+#include "settings.c"
 
 int main()
 {
