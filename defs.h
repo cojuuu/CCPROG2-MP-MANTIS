@@ -63,7 +63,7 @@ typedef struct
     int yellow;
     int cyan;
     int purple;
-} Count;
+} Counter;
 
 /**
  * Represents a player
@@ -75,7 +75,7 @@ typedef struct
     int totalScore;    // Total score of the player
 
     Deck tank;         // Tank deck of 
-    Count nColor;      //
+    Counter nColor;    //
     int scorePile;     // Score pile of the player
 } Player;
 
@@ -97,6 +97,8 @@ typedef struct
     int totalPlayers; // Total amount of players in "players.txt"
 
     int currentPlayer;
+    int sameColorCount;
+    int sameColorPoints;
 
     bool loadSuccess;
 
@@ -121,11 +123,15 @@ void displayTankCards(Game *m);
 Card emptyCard();
 void initializePlayer(Game *m);
 void checkColorCount(Game *m);
+void incrementColorCount(Game *m, Color currentCard);
 void displayTopDeck(Game *m);
 void promptPlayerMove(int currentPlayer, int *option);
 void gameFlow(Game *m);
 void tryToScore(Game *m);
 void tryToSteal(Game *m);
+int findEmptyCard(Game *m);
+void adjustDeck(Deck deck, int removedCardIndex);
+void countSameColor(Game *m, Card drawnCard);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);
