@@ -9,7 +9,6 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#include <stddef.h>
 #include <stdbool.h>
 
 #define STR36 37
