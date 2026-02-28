@@ -17,6 +17,9 @@ void selectPlayers(Game *m)
     int i, option;
     bool playerDataLoaded, playerAdded;
 
+    printf("How many players?\n");
+    askOption(&m->playerCount, MIN_PLAYERS, MAX_PLAYERS);
+
     for (i = 0; i < m->playerCount; i++)
     {
         m->activePlayers[i] = emptyPlayer();
