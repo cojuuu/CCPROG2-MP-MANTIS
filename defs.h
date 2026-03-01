@@ -58,13 +58,7 @@ typedef struct
  */
 typedef struct
 {
-    int white;  // Amount of white cards
-    int red;    // Amount of red cards
-    int blue;   // Amount of blue cards
-    int green;  // Amount of green cards
-    int yellow; // Amount of yellow cards
-    int cyan;   // Amount of cyan cards
-    int purple; // Amount of purple cards
+    int white, red, blue, green, yellow, cyan, purple;
 } Counter;
 
 /**
@@ -136,7 +130,7 @@ void tryToSteal(Game *m);
 int findEmptyCardSlot(Deck cards);
 void adjustDeck(Deck *deck, int removedCardIndex);
 void countSameColor(Game *m, Card drawnCard);
-void addToScorePile(Player *currentPlayer, Card drawnCard, int sameColorPoints);
+void addToScorePile(Player *currentPlayer, Card drawnCard);
 void addToTank(Player *currentPlayer, Card drawnCard);
 
 // Player Function Prototypes

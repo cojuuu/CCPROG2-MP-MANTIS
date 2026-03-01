@@ -78,13 +78,14 @@ void tryToScore(Game *m)
     if (m->sameColorCount > 0)
     {
         printf("- Player %d has (%d) %c card/s worth a total of (%d) pts!\n", m->currentPlayer + 1, m->sameColorCount, drawnCard.front, m->sameColorPoints);
-        printf("- +%d points to Player 1's score pile!\n", m->sameColorPoints + drawnCard.points);
-        addToScorePile(&m->activePlayers[m->currentPlayer], drawnCard, m->sameColorPoints);
+        printf("- +%d points to Player %d's score pile!\n", m->sameColorPoints + drawnCard.points, m->currentPlayer + 1);
+        addToScorePile(&m->activePlayers[m->currentPlayer], drawnCard);
+        m->activePlayers[m->currentPlayer].currentScore += drawnCard.points + m->sameColorPoints;
     }
     else
     {
         printf("- Player %d has no %c cards...\n", m->currentPlayer + 1, drawnCard.front);
-        printf("- Adding drawn card to Player 1's Tank\n");
+        printf("- Adding drawn card to Player %d's Tank\n", m->currentPlayer + 1);
         addToTank(&m->activePlayers[m->currentPlayer], drawnCard);
     }
 }
@@ -121,6 +122,11 @@ void checkWinner(Game *m)
     */
 }
 
+/**  
+ * Adds the drawn card to the player's tank
+ * @param currentPlayer The player receiving the card
+ * @param drawnCard The card that was just drawn from the deck
+ */
 void addToTank(Player *currentPlayer, Card drawnCard)
 {
     int emptyCardIndex = findEmptyCardSlot(currentPlayer->tank);
@@ -129,7 +135,12 @@ void addToTank(Player *currentPlayer, Card drawnCard)
     colorCount(currentPlayer, drawnCard.front, INCREMENT);
 }
 
-void addToScorePile(Player *currentPlayer, Card drawnCard, int sameColorPoints)
+/**  
+ * Adds the drawn card to the player's tank
+ * @param currentPlayer The player receiving the card
+ * @param drawnCard The card that was just drawn from the deck
+ */
+void addToScorePile(Player *currentPlayer, Card drawnCard)
 {
     int emptyCardIndex;
     int i;
@@ -144,10 +155,9 @@ void addToScorePile(Player *currentPlayer, Card drawnCard, int sameColorPoints)
             currentPlayer->scorePile.cards[emptyCardIndex] = currentPlayer->tank.cards[i];
             colorCount(currentPlayer, drawnCard.front, DECREMENT);
             adjustDeck(&currentPlayer->tank, i);
+            i--;
         }
     }
-
-    currentPlayer->currentScore += drawnCard.points + sameColorPoints;
 }
 
 /**
