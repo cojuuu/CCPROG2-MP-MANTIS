@@ -51,6 +51,7 @@ typedef struct
 {
     Card cards[MAX_CARDS]; // Cards in the deck
     int cardCount;         // Cards left in the deck
+    Counter colorCount;    // Amount of cards for each color
 } Deck;
 
 /**
@@ -73,9 +74,7 @@ typedef struct
     Deck tank;          // Tank deck of the player
     Deck scorePile;     // Score pile of the player
 
-    int currentScore;   // Current score of the player
-
-    Counter colorCount; // Amount of cards for each color   
+    int currentScore;   // Current score of the player  
 } Player;
 
 /**

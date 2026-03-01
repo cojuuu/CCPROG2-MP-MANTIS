@@ -136,7 +136,7 @@ void addToTank(Player *currentPlayer, Card drawnCard)
 }
 
 /**  
- * Adds the drawn card to the player's tank
+ * Adds the drawn card and other similar cards in the player's tank to the player's score pile
  * @param currentPlayer The player receiving the card
  * @param drawnCard The card that was just drawn from the deck
  */
@@ -153,6 +153,7 @@ void addToScorePile(Player *currentPlayer, Card drawnCard)
         {
             emptyCardIndex = findEmptyCardSlot(currentPlayer->scorePile);
             currentPlayer->scorePile.cards[emptyCardIndex] = currentPlayer->tank.cards[i];
+            currentPlayer->scorePile.cardCount++;
             colorCount(currentPlayer, drawnCard.front, DECREMENT);
             adjustDeck(&currentPlayer->tank, i);
             i--;
