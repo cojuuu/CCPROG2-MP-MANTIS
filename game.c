@@ -79,7 +79,8 @@ void tryToScore(Game *m)
     {
         printf("- Player %d has (%d) %c card/s worth a total of (%d) pts!\n", m->currentPlayer + 1, m->sameColorCount, drawnCard.front, m->sameColorPoints);
         printf("- +%d points to Player 1's score pile!\n", m->sameColorPoints + drawnCard.points);
-        addToScorePile(&m->activePlayers[m->currentPlayer], drawnCard, m->sameColorPoints);
+        addToScorePile(&m->activePlayers[m->currentPlayer], drawnCard);
+         m->activePlayers[m->currentPlayer].currentScore += drawnCard.points + m->sameColorPoints;
     }
     else
     {
@@ -129,7 +130,7 @@ void addToTank(Player *currentPlayer, Card drawnCard)
     colorCount(currentPlayer, drawnCard.front, INCREMENT);
 }
 
-void addToScorePile(Player *currentPlayer, Card drawnCard, int sameColorPoints)
+void addToScorePile(Player *currentPlayer, Card drawnCard)
 {
     int emptyCardIndex;
     int i;
@@ -144,10 +145,9 @@ void addToScorePile(Player *currentPlayer, Card drawnCard, int sameColorPoints)
             currentPlayer->scorePile.cards[emptyCardIndex] = currentPlayer->tank.cards[i];
             colorCount(currentPlayer, drawnCard.front, DECREMENT);
             adjustDeck(&currentPlayer->tank, i);
+            i--;
         }
     }
-
-    currentPlayer->currentScore += drawnCard.points + sameColorPoints;
 }
 
 /**

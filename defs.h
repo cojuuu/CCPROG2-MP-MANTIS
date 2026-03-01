@@ -130,7 +130,7 @@ void tryToSteal(Game *m);
 int findEmptyCardSlot(Deck cards);
 void adjustDeck(Deck *deck, int removedCardIndex);
 void countSameColor(Game *m, Card drawnCard);
-void addToScorePile(Player *currentPlayer, Card drawnCard, int sameColorPoints);
+void addToScorePile(Player *currentPlayer, Card drawnCard);
 void addToTank(Player *currentPlayer, Card drawnCard);
 
 // Player Function Prototypes
