@@ -58,13 +58,7 @@ typedef struct
  */
 typedef struct
 {
-    int white;  // Amount of white cards
-    int red;    // Amount of red cards
-    int blue;   // Amount of blue cards
-    int green;  // Amount of green cards
-    int yellow; // Amount of yellow cards
-    int cyan;   // Amount of cyan cards
-    int purple; // Amount of purple cards
+    int white, red, blue, green, yellow, cyan, purple;
 } Counter;
 
 /**
