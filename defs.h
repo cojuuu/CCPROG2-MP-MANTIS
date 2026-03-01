@@ -29,6 +29,13 @@
 #define NOT_FOUND -2
 #define INCREMENT '+'
 #define DECREMENT '-'
+#define RED 'R'
+#define WHITE 'O'
+#define YELLOW 'Y'
+#define GREEN 'G'
+#define BLUE 'B'
+#define CYAN 'I'
+#define PURPLE 'V'
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -45,21 +52,23 @@ typedef struct
 } Card;
 
 /**
- * Represents a deck
- */
-typedef struct 
-{
-    Card cards[MAX_CARDS]; // Cards in the deck
-    int cardCount;         // Cards left in the deck
-} Deck;
-
-/**
  * Represents the color count
  */
 typedef struct
 {
     int white, red, blue, green, yellow, cyan, purple;
 } Counter;
+
+/**
+ * Represents a deck
+ */
+typedef struct 
+{
+    Card cards[MAX_CARDS]; // Cards in the deck
+    int cardCount;         // Cards left in the deck
+    Counter colorCount;    // Amount of cards for each color
+    int totalScore;        // Total score in the deck
+} Deck;
 
 /**
  * Represents a player
@@ -74,8 +83,6 @@ typedef struct
     Deck scorePile;     // Score pile of the player
 
     int currentScore;   // Current score of the player
-
-    Counter colorCount; // Amount of cards for each color   
 } Player;
 
 /**
@@ -96,8 +103,9 @@ typedef struct
     int totalPlayers; // Total amount of players in "players.txt"
 
     int currentPlayer;   // Index of the player with the current turn
-    int sameColorCount;  // Amount of cards with the same color
-    int sameColorPoints; // Total points of cards with the same color
+
+    int sameColorPoints;
+    int sameColorCount;
 
     bool gameOver; // Flag indicating if the game is over
 
@@ -105,6 +113,7 @@ typedef struct
     Player playerData[MAX_PLAYER_DATA]; // Players from "players.txt"
 
     Deck drawPile; // Draw pile of Mantis
+    Card drawnCard; // Drawn card from draw pile
 
     Config settings; // Game configuration of Mantis
 } Game;
@@ -116,22 +125,22 @@ void askOption(int *option, int min, int max);
 // Game Function Prototypes
 void newGame(Game *m);
 void setUpGame(Game *m);
-Card drawCard(Game *m);
+void gameLoop(Game *m);
+void initializePlayer(Game *m);
 void distributeCards(Game *m);
 void displayPlayerState(Game *m);
-Card emptyCard();
-void initializePlayer(Game *m);
-void colorCount(Player *currentPlayer, Color currentCard, char mode);
 void displayTopDeck(Game *m);
 void promptPlayerMove(int currentPlayer, int *option);
-void gameLoop(Game *m);
 void tryToScore(Game *m);
-void tryToSteal(Game *m);
-int findEmptyCardSlot(Deck cards);
-void adjustDeck(Deck *deck, int removedCardIndex);
-void countSameColor(Game *m, Card drawnCard);
+Card drawCard(Game *m);
+void checkSameColor(Game *m);
 void addToScorePile(Player *currentPlayer, Card drawnCard);
 void addToTank(Player *currentPlayer, Card drawnCard);
+void calculateScore(Player *currentPlayer);
+void adjustDeck(Deck *deck, int removedCardIndex);
+void colorCount(Deck *currentDeck, Color currentCard, char mode);
+int emptyCardIndex(Deck cards);
+Card emptyCard();
 
 // Player Function Prototypes
 void selectPlayers(Game *m);
