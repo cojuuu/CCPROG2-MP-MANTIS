@@ -102,6 +102,11 @@ void saveGameSettings(Game *m)
 
     settingsFile = fopen("settings.txt", "w");
     
+    if (m->settings.winningPoints < 20)
+    {
+        m->settings.winningPoints = 20;
+    }
+
     fprintf(settingsFile, "%d\n%d", m->settings.winningPoints, m->settings.shuffleSeed);
 
     fclose(settingsFile);
