@@ -195,8 +195,9 @@ void checkSameColor(Game *m)
 
 /**  
  * Adds the drawn card and similar cards in the player's tank to the player's score pile
- * @param currentPlayer A pointer to the player receiving the card
- * @param drawnCard The card that was just drawn from the deck
+ * @param currentPlayer A pointer to the player receiving the card; 
+ *                      updating the current player's tank or score pile
+ * @param drawnCard The card that was drawn from the deck
  */
 void addToScorePile(Player *currentPlayer, Card drawnCard)
 {
@@ -228,7 +229,8 @@ void addToScorePile(Player *currentPlayer, Card drawnCard)
 
 /**  
  * Adds the drawn card to the player's tank
- * @param currentPlayer The player receiving the card
+ * @param currentPlayer A pointer to the player receiving the card;
+ *                      updating the deck structure, card count, and color count
  * @param drawnCard The card that was just drawn from the deck
  */
 void addToTank(Player *currentPlayer, Card drawnCard)
@@ -241,7 +243,7 @@ void addToTank(Player *currentPlayer, Card drawnCard)
 /**  
  * Calculates the total score in the score pile
  * @param currentPlayer A pointer to the player receiving the card; 
- *        updates m->activePlayer[m->currentPlayer].scorePile.totalScore
+ *                      updates the total score in the player's score pile
  * @return The function doesn't return anything
  */
 void calculateScore(Player *currentPlayer)
@@ -274,8 +276,9 @@ void adjustDeck(Deck *deck, int removedCardIndex)
 
 /**
  * Increments or decrements the color count of the deck
- * @param m A pointer to the game structure containing the game data
- * @param currentCard The color character to be modified
+ * @param currentDeck A pointer to the deck structure where the color count is stored;
+ *                    currentDeck->colorCount is either incremented or decremented
+ * @param currentCard The color of the current card
  * @param mode The operation mode (INCREMENT or DECREMENT)
  * @return The function doesn't return anything
  */
@@ -310,13 +313,13 @@ void colorCount(Deck *currentDeck, Color currentCard, char mode)
 }
 
 /**
- * Searches the current player's tank for the first available empty card slot
- * @param m A pointer to the game structure containing the game data
- * @return The index of the first empty card slot found
+ * Returns the index where the next card should be inserted
+ * @param currentDeck The deck being checked
+ * @return The index of the first empty card slot
  */
-int emptyCardIndex(Deck cards)
+int emptyCardIndex(Deck currentDeck)
 {
-    return cards.cardCount;
+    return currentDeck.cardCount;
 }
 
 /**

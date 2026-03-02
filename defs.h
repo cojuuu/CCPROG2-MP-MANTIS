@@ -138,7 +138,7 @@ void addToTank(Player *currentPlayer, Card drawnCard);
 void calculateScore(Player *currentPlayer);
 void adjustDeck(Deck *deck, int removedCardIndex);
 void colorCount(Deck *currentDeck, Color currentCard, char mode);
-int emptyCardIndex(Deck cards);
+int emptyCardIndex(Deck currentDeck);
 Card emptyCard();
 
 // Player Function Prototypes
