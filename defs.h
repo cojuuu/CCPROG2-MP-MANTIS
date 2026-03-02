@@ -81,8 +81,6 @@ typedef struct
 
     Deck tank;          // Tank deck of the player
     Deck scorePile;     // Score pile of the player
-
-    int currentScore;   // Current score of the player
 } Player;
 
 /**
@@ -103,11 +101,14 @@ typedef struct
     int totalPlayers; // Total amount of players in "players.txt"
 
     int currentPlayer;   // Index of the player with the current turn
+    int winner[MAX_PLAYERS]; // Index of the player/s who won the game
 
     int sameColorPoints;
     int sameColorCount;
 
     bool gameOver; // Flag indicating if the game is over
+    bool foundWinner;
+    bool tieGame;
 
     Player activePlayers[MAX_PLAYERS];  // Players who will play the game
     Player playerData[MAX_PLAYER_DATA]; // Players from "players.txt"
