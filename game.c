@@ -49,7 +49,7 @@ void gameLoop(Game *m)
         switch(option)
         {
             case 1: tryToScore(m); break;
-            // case 2: tryToSteal(m); break;
+            case 2: tryToSteal(m); break;
         }
 
         displayPlayerState(m);
@@ -134,7 +134,7 @@ void tryToScore(Game *m)
     m->drawnCard = drawCard(m);
     printf("- Drawn card color reveal: %c (%d pt/s)!\n", m->drawnCard.front, m->drawnCard.points);
 
-    checkSameColor(m);
+    checkSameColor(m, m->activePlayers[m->currentPlayer].tank);
 
     if (m->sameColorCount > 0)
     {
@@ -149,6 +149,92 @@ void tryToScore(Game *m)
         printf("- Adding drawn card to Player %d's Tank\n", m->currentPlayer + 1);
         addToTank(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
+}
+
+/**
+ * Executes the "Steal" action: draws a card and checks if it matches colors in the other player's tank
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
+void tryToSteal(Game *m)
+{
+    int chosenPlayer;
+
+    promptSteal(m, &chosenPlayer);
+    
+    printf("Resolving turn for Player %d...\n", m->currentPlayer + 1);
+
+    m->drawnCard = drawCard(m);
+    printf("- Drawn card color reveal: %c (%d pt/s)!\n", m->drawnCard.front, m->drawnCard.points);
+
+    checkSameColor(m, m->activePlayers[chosenPlayer].tank);
+
+    if (m->sameColorCount > 0)
+    {
+        printf("- Player %d has (%d) %c card/s!\n", chosenPlayer + 1, m->sameColorCount, m->drawnCard.front);
+        printf("- +%d (%c) cards to Player %d's Tank!\n", 1 + m->sameColorCount, m->drawnCard.front, m->currentPlayer + 1);
+        addToTank(&m->activePlayers[m->currentPlayer], m->drawnCard);
+        stealTank(&m->activePlayers[m->currentPlayer], &m->activePlayers[chosenPlayer], m->drawnCard.front);
+    }
+    else
+    {
+        printf("- Player %d has no %c cards...\n", chosenPlayer + 1, m->drawnCard.front);
+        printf("- Adding drawn card to Player %d's Tank\n", chosenPlayer + 1);
+        addToTank(&m->activePlayers[chosenPlayer], m->drawnCard);
+    }
+}
+
+/**
+ * Steals the cards from the stolen player's tank to the current player's tank
+ * @param currentPlayer A pointer to the player performing the steal
+ * @param stolenPlayer A pointer to player being stolen
+ * @param drawnCard The color of the drawn card
+ * @return The function doesn't return anything
+ */
+void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard)
+{
+    // Add cards from tank with same color to score pile
+    for (int i = 0; i < stolenPlayer->tank.cardCount; i++)
+    {
+        if (stolenPlayer->tank.cards[i].front == drawnCard)
+        {
+            // Add same color cards from stolen player's tank to current player's tank
+            currentPlayer->tank.cards[emptyCardIndex(currentPlayer->tank)] = stolenPlayer->tank.cards[i];
+            currentPlayer->tank.cardCount++;
+            colorCount(&currentPlayer->tank, drawnCard, INCREMENT);
+
+            // Remove same color cards in tank of stolen player
+            adjustDeck(&stolenPlayer->tank, i);
+            stolenPlayer->tank.cardCount--;
+            colorCount(&stolenPlayer->tank, drawnCard, DECREMENT);
+
+            i--;
+        }
+    }
+}
+
+/**
+ * Prompts the current player on which player they want to steal from
+ * @param m A pointer to the game structure containing the game data
+ * @param option A pointer where the player's option will be stored
+ * @return The function doesn't return anything
+ */
+void promptSteal(Game *m, int *option)
+{
+    printf("Who would you like to steal from?\n");
+    for (int i = 0; i < m->playerCount - 1; i++)
+    {
+        printf("  [%d] Player ", i + 1);
+        if (i >= m->currentPlayer)
+            printf("%d", i + 2);
+        else
+            printf("%d", i + 1);
+        printf("\n");
+    }
+    askOption(option, 1, m->playerCount - 1);
+
+    if (*option <= m->currentPlayer)
+        *option -= 1;
 }
 
 /**
@@ -178,17 +264,17 @@ Card drawCard(Game *m)
  *          updates m->sameColorCount and m->sameColorPoints based on matches found in the tank
  * @return The function doesn't return anything
  */
-void checkSameColor(Game *m)
+void checkSameColor(Game *m, Deck tank)
 {
     m->sameColorCount = 0;
     m->sameColorPoints = 0;
 
-    for (int i = 0; i < m->activePlayers[m->currentPlayer].tank.cardCount; i++)
+    for (int i = 0; i < tank.cardCount; i++)
     {
-        if (m->activePlayers[m->currentPlayer].tank.cards[i].front == m->drawnCard.front)
+        if (tank.cards[i].front == m->drawnCard.front)
         {
             m->sameColorCount++;
-            m->sameColorPoints += m->activePlayers[m->currentPlayer].tank.cards[i].points;
+            m->sameColorPoints += tank.cards[i].points;
         }
     }
 }
