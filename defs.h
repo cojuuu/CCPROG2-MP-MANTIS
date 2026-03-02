@@ -119,14 +119,13 @@ typedef struct
 } Game;
 
 // Menu Function Prototypes
-void mainMenu();
+void mainMenu(Game *m);
 void askOption(int *option, int min, int max);
 
 // Game Function Prototypes
 void newGame(Game *m);
 void setUpGame(Game *m);
 void gameLoop(Game *m);
-void initializePlayer(Game *m);
 void distributeCards(Game *m);
 void displayPlayerState(Game *m);
 void displayTopDeck(Game *m);
@@ -139,7 +138,7 @@ void addToTank(Player *currentPlayer, Card drawnCard);
 void calculateScore(Player *currentPlayer);
 void adjustDeck(Deck *deck, int removedCardIndex);
 void colorCount(Deck *currentDeck, Color currentCard, char mode);
-int emptyCardIndex(Deck cards);
+int emptyCardIndex(Deck currentDeck);
 Card emptyCard();
 
 // Player Function Prototypes

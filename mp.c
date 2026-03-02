@@ -18,7 +18,11 @@
 
 int main()
 {
-    mainMenu();
+    Game m;
+
+    memset(&m, 0, sizeof(m));
+
+    mainMenu(&m);
 }
 
 /**
