@@ -30,7 +30,7 @@ void gameSettings(Game *m)
         case 1: m->settings.winningPoints = setWinningPoints(); break;
         case 2: m->settings.shuffleSeed = setShuffleSeed(); break;
         case 3: m->settings = defaultSettings(); printf("Default settings loaded!\n"); break;
-        case 0: mainMenu(); break;
+        case 0: mainMenu(m); break;
         }
 
         saveGameSettings(m);

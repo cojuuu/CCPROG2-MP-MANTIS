@@ -119,7 +119,7 @@ typedef struct
 } Game;
 
 // Menu Function Prototypes
-void mainMenu();
+void mainMenu(Game *m);
 void askOption(int *option, int min, int max);
 
 // Game Function Prototypes
