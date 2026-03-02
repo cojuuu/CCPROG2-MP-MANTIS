@@ -55,10 +55,6 @@ bool loadPlayerData(Game *m)
     // Close player data file
     fclose(playerFile);
 
-    // Initialize the rest of the playerData variable to default values
-    for (i = m->totalPlayers; i < MAX_PLAYER_DATA; i++)
-        m->playerData[i] = emptyPlayer();
-
     return loadSuccess;
 }
 
