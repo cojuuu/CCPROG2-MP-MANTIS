@@ -42,18 +42,27 @@ void gameLoop(Game *m)
 {
     int option;
 
-    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
+    do
     {
-        promptPlayerMove(m->currentPlayer + 1, &option);
-
-        switch(option)
+        for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
         {
-            case 1: tryToScore(m); break;
-            case 2: tryToSteal(m); break;
-        }
+            promptPlayerMove(m->currentPlayer + 1, &option);
 
-        displayPlayerState(m);
-        displayTopDeck(m);
+            switch(option)
+            {
+                case 1: tryToScore(m); break;
+                case 2: tryToSteal(m); break;
+            }
+
+            displayPlayerState(m);
+            displayTopDeck(m);
+            checkWinner(m);
+        }
+    } while (!m->gameOver && m->drawPile.cardCount > 0);
+
+    if (m->drawPile.cardCount == 0 && !m->foundWinner)
+    {
+        checkSpecialWinner(m);
     }
 }
 
@@ -106,6 +115,36 @@ void displayTopDeck(Game *m)
     printf("\nTop deck: %c%c%c (%d cards remaining in deck)\n", 
         m->drawPile.cards[0].back[0], m->drawPile.cards[0].back[1], m->drawPile.cards[0].back[2], 
         m->drawPile.cardCount);
+}
+
+void checkWinner(Game *m)
+{
+    if (m->activePlayers[m->currentPlayer].scorePile.totalScore == m->settings.winningPoints)
+    {
+        m->winner[0] = m->currentPlayer;
+        m->foundWinner = true;
+        m->gameOver = true;
+    }
+}
+
+void checkSpecialWinner(Game *m)
+{ 
+    /*
+    Find the most card count in score pile
+
+    Check if there are more than one player with the same card count
+
+    If found player with same card count
+        Find the most card count in tank
+
+        Check if there are more than one player with the same card count
+
+        If found player with same card count
+
+        Tie game
+    */
+
+    
 }
 
 /**
