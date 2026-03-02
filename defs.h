@@ -126,7 +126,6 @@ void askOption(int *option, int min, int max);
 void newGame(Game *m);
 void setUpGame(Game *m);
 void gameLoop(Game *m);
-void initializePlayer(Game *m);
 void distributeCards(Game *m);
 void displayPlayerState(Game *m);
 void displayTopDeck(Game *m);

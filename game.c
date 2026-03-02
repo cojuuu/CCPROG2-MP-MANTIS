@@ -25,12 +25,9 @@ void newGame(Game *m)
  */
 void setUpGame(Game *m)
 {
-    m->gameOver = false;
-
     loadSettings(m);
     loadCards(m);
     shuffle(m->drawPile.cards, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
-    initializePlayer(m);
     distributeCards(m);
     displayPlayerState(m);
     displayTopDeck(m);
@@ -58,16 +55,6 @@ void gameLoop(Game *m)
         displayPlayerState(m);
         displayTopDeck(m);
     }
-}
-
-/**
- * Resets player statistics, scores, and tanks to their default empty states
- * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
- */
-void initializePlayer(Game *m)
-{
-    memset(m->activePlayers, 0, sizeof(m->activePlayers));
 }
 
 /**
