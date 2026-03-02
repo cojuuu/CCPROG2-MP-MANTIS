@@ -49,7 +49,7 @@ void gameLoop(Game *m)
         switch(option)
         {
             case 1: tryToScore(m); break;
-            // case 2: tryToSteal(m); break;
+            case 2: tryToSteal(m); break;
         }
 
         displayPlayerState(m);
@@ -149,6 +149,55 @@ void tryToScore(Game *m)
         printf("- Adding drawn card to Player %d's Tank\n", m->currentPlayer + 1);
         addToTank(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
+}
+
+/**
+ * Executes the "Steal" action: draws a card and checks if it matches colors in the other player's tank
+ * @param m A pointer to the game structure containing the game data
+ * @return The function doesn't return anything
+ */
+void tryToSteal(Game *m)
+{
+    int option = 0;
+
+    promptSteal(m, &option);
+    
+    printf("Resolving turn for Player %d...\n", m->currentPlayer + 1);
+
+    m->drawnCard = drawCard(m);
+    printf("- Drawn card color reveal: %c (%d pt/s)!\n", m->drawnCard.front, m->drawnCard.points);
+
+    if (true)
+    {
+
+    }
+    else
+    {
+
+    }
+    // Prompt user who they want to steal from
+
+    // Draw card from draw pile
+
+    // If found same color in other player's tank
+        // Place them in current player's tank
+    // Else
+        // Drawn card is added to the other player's tank
+}
+
+void promptSteal(Game *m, int *option)
+{
+    printf("Who would you like to steal from?\n");
+    for (int i = 0; i < m->playerCount - 1; i++)
+    {
+        printf("  [%d] Player ", i + 1);
+        if (i >= m->currentPlayer)
+            printf("%d", i + 2);
+        else
+            printf("%d", i + 1);
+        printf("\n");
+    }
+    askOption(option, 1, m->playerCount - 1);
 }
 
 /**

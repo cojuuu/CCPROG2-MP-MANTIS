@@ -131,6 +131,8 @@ void displayPlayerState(Game *m);
 void displayTopDeck(Game *m);
 void promptPlayerMove(int currentPlayer, int *option);
 void tryToScore(Game *m);
+void tryToSteal(Game *m);
+void promptSteal(Game *m, int *option);
 Card drawCard(Game *m);
 void checkSameColor(Game *m);
 void addToScorePile(Player *currentPlayer, Card drawnCard);
