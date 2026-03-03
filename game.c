@@ -16,6 +16,8 @@ void newGame(Game *m)
     selectPlayers(m);
     setUpGame(m);
     gameLoop(m);
+    displayWinner(m);
+    updatePlayerData(m);
 }
 
 /**
@@ -119,9 +121,10 @@ void displayTopDeck(Game *m)
 
 void checkWinner(Game *m)
 {
-    if (m->activePlayers[m->currentPlayer].scorePile.totalScore == m->settings.winningPoints)
+    if (m->activePlayers[m->currentPlayer].scorePile.totalScore >= m->settings.winningPoints)
     {
         m->winner[0] = m->currentPlayer;
+        m->winnerCount++;
         m->foundWinner = true;
         m->gameOver = true;
     }
@@ -129,79 +132,59 @@ void checkWinner(Game *m)
 
 void checkSpecialWinner(Game *m)
 { 
-    Player temp[MAX_PLAYERS];
-    int tempCount = 0;
+    int tiedIndices[MAX_PLAYERS];
+    int tiedCount = 0;
     int mostCards = -1;
 
-    // Find the most card count in score pile
     for (int i = 0; i < m->playerCount; i++)
-    {
         if (m->activePlayers[i].scorePile.cardCount > mostCards)
             mostCards = m->activePlayers[i].scorePile.cardCount;
-    }
 
-    // Check if there are more than one player with the same card count
     for (int i = 0; i < m->playerCount; i++)
-    {
         if (m->activePlayers[i].scorePile.cardCount == mostCards)
         {
-            temp[tempCount] = m->activePlayers[i]; 
-            tempCount++;
+            tiedIndices[tiedCount] = i;
+            tiedCount++;
         }
-    }
-
-    if (tempCount == 1)
+            
+    if (tiedCount == 1)
     {
+        m->winner[0] = tiedIndices[0];
+        m->winnerCount = 1;
         m->foundWinner = true;
     }
 
     if (!m->foundWinner)
     {
         mostCards = -1;
+        for (int i = 0; i < tiedCount; i++)
+            if (m->activePlayers[tiedIndices[i]].tank.cardCount > mostCards)
+                mostCards = m->activePlayers[tiedIndices[i]].tank.cardCount;
 
-        for (int i = 0; i < tempCount; i++)
-        {
-            if (m->activePlayers[i].tank.cardCount > mostCards)
-                mostCards = m->activePlayers[i].tank.cardCount;
-        }
-
-        memset(temp, 0, sizeof(temp));
-        tempCount = 0;
-
+        tiedCount = 0;
         for (int i = 0; i < m->playerCount; i++)
-        {
             if (m->activePlayers[i].tank.cardCount == mostCards)
             {
-                temp[tempCount] = m->activePlayers[i]; 
-                tempCount++;
+                tiedIndices[tiedCount] = i;
+                tiedCount++;
             }
-        }
 
-        if (tempCount == 1)
+        if (tiedCount == 1)
         {
+            m->winner[0] = tiedIndices[0];
+            m->winnerCount = 1;
             m->foundWinner = true;
         }
         else
         {
+            for (int i = 0; i < tiedCount; i++)
+            {
+                m->winner[i] = tiedIndices[i];
+                m->winnerCount++;
+            }
             m->tieGame = true;
         }
     }
-    /*
-    
-
-    
-
-    If found player with same card count
-        Find the most card count in tank
-
-        Check if there are more than one player with the same card count
-
-        If found player with same card count
-
-        Tie game
-    */
-
-    
 }
 
 /**
@@ -513,6 +496,41 @@ Card emptyCard()
     Card e = {'\0', {'\0', '\0', '\0'}, 0};
 
     return e;
+}
+
+void displayWinner(Game *g)
+{
+    printf("Winner/s:\n");
+    for (int i = 0; i < g->winnerCount; i++)
+    {
+        printf("%s\n", g->activePlayers[g->winner[i]].username);
+    }
+}
+
+void updatePlayerData(Game *g)
+{
+    FILE *playerFile;
+
+    for (int i = 0; i < g->playerCount; i++)
+    {
+        g->activePlayers[i].totalScore += g->activePlayers[i].scorePile.totalScore;
+    }
+
+    playerFile = fopen("players.txt", "w");
+
+    // Write data of players who just played
+    for (int i = 0; i < g->playerCount; i++)
+    {
+        fprintf(playerFile ,"%s,%d,%d\n", g->activePlayers[i].username, g->activePlayers[i].wins, g->activePlayers[i].totalScore);
+    }
+
+    // Write data of players who didn't play
+    for (int i = 0; i < g->totalPlayers - g->playerCount; i++)
+    {
+        fprintf(playerFile ,"%s,%d,%d\n", g->playerData[i].username, g->playerData[i].wins, g->playerData[i].totalScore);
+    }
+
+    fclose(playerFile);
 }
 
 #endif // GAME_C
