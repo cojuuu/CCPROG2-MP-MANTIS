@@ -9,6 +9,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+#include <stdio.h>
 #include <stdbool.h>
 
 #define STR36 37
@@ -102,6 +103,7 @@ typedef struct
 
     int currentPlayer;   // Index of the player with the current turn
     int winner[MAX_PLAYERS]; // Index of the player/s who won the game
+    int winnerCount;
 
     int sameColorPoints;
     int sameColorCount;
@@ -145,7 +147,8 @@ void colorCount(Deck *currentDeck, Color currentCard, char mode);
 int emptyCardIndex(Deck currentDeck);
 Card emptyCard();
 void checkWinner(Game *m);
-void checkSpecialWinner(Game *m);
+void displayWinner(Game *g);
+void updatePlayerData(Game *g);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);
