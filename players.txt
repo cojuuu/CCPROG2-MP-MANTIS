@@ -1,6 +1,6 @@
-damon,12,8
-nate,5,14
-lance,20,3
+damon,12,26
+nate,5,34
+lance,20,18
 ethan,7,11
 liam,15,9
 noah,2,18
