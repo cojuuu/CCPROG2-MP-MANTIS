@@ -129,10 +129,67 @@ void checkWinner(Game *m)
 
 void checkSpecialWinner(Game *m)
 { 
-    /*
-    Find the most card count in score pile
+    Player temp[MAX_PLAYERS];
+    int tempCount = 0;
+    int mostCards = -1;
 
-    Check if there are more than one player with the same card count
+    // Find the most card count in score pile
+    for (int i = 0; i < m->playerCount; i++)
+    {
+        if (m->activePlayers[i].scorePile.cardCount > mostCards)
+            mostCards = m->activePlayers[i].scorePile.cardCount;
+    }
+
+    // Check if there are more than one player with the same card count
+    for (int i = 0; i < m->playerCount; i++)
+    {
+        if (m->activePlayers[i].scorePile.cardCount == mostCards)
+        {
+            temp[tempCount] = m->activePlayers[i]; 
+            tempCount++;
+        }
+    }
+
+    if (tempCount == 1)
+    {
+        m->foundWinner = true;
+    }
+
+    if (!m->foundWinner)
+    {
+        mostCards = -1;
+
+        for (int i = 0; i < tempCount; i++)
+        {
+            if (m->activePlayers[i].tank.cardCount > mostCards)
+                mostCards = m->activePlayers[i].tank.cardCount;
+        }
+
+        memset(temp, 0, sizeof(temp));
+        tempCount = 0;
+
+        for (int i = 0; i < m->playerCount; i++)
+        {
+            if (m->activePlayers[i].tank.cardCount == mostCards)
+            {
+                temp[tempCount] = m->activePlayers[i]; 
+                tempCount++;
+            }
+        }
+
+        if (tempCount == 1)
+        {
+            m->foundWinner = true;
+        }
+        else
+        {
+            m->tieGame = true;
+        }
+    }
+    /*
+    
+
+    
 
     If found player with same card count
         Find the most card count in tank

@@ -144,6 +144,8 @@ void adjustDeck(Deck *deck, int removedCardIndex);
 void colorCount(Deck *currentDeck, Color currentCard, char mode);
 int emptyCardIndex(Deck currentDeck);
 Card emptyCard();
+void checkWinner(Game *m);
+void checkSpecialWinner(Game *m);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);
