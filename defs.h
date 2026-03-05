@@ -39,6 +39,9 @@
 #define BLUE 'B'
 #define CYAN 'I'
 #define PURPLE 'V'
+#define CONSOLE_WIDTH 80
+#define CONSOLE_HEIGHT 24
+
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -126,6 +129,7 @@ typedef struct
 // Menu Function Prototypes
 void mainMenu(Game *m);
 void askOption(int *option, int min, int max);
+void printLogo();
 
 // Game Function Prototypes
 void newGame(Game *m);
@@ -183,5 +187,12 @@ Config defaultSettings();
 void initRandom();
 int randomInt();
 void shuffle(void *array, size_t n, size_t elem_size, unsigned int seed);
+
+// Interface Function Prototypes
+void iMoveCursor(int x, int y);
+void iClear(int x, int y, int width, int height);
+void iHideCursor();
+void iShowCursor();
+void iSetColor(int color);
 
 #endif // DEFS_H;
