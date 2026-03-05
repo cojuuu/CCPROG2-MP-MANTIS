@@ -1,3 +1,11 @@
+/**
+ * Description : Contains the functions that handles the navigation of Mantis
+ * Author/s : De Dios, Justin Marco C.
+ *            Ocampo, Kysha Denise D.
+ *  Section : S12A & S22A
+ *  Last Modified : 03-05-2026
+ */
+
 #ifndef PLAYER_C 
 #define PLAYER_C 
 
@@ -8,9 +16,8 @@
 #include "defs.h"
 
 /**
- * Selects players from available players
+ * Selects from a list of available players with the option to add a new player
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void selectPlayers(Game *m)
 {
@@ -51,7 +58,7 @@ void selectPlayers(Game *m)
             switch(option)
             {
                 case 0: 
-                    addPlayer(m); 
+                    addNewPlayer(m); 
                     playerAdded = true; 
                     i--;
                     break;
@@ -71,7 +78,6 @@ void selectPlayers(Game *m)
 /**
  * Displays the chosen players for the game
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void displayChosenPlayers(Game *m)
 {
@@ -87,10 +93,9 @@ void displayChosenPlayers(Game *m)
 }
 
 /**
- * Displays the available players of the game
+ * Displays the players who have not yet been chosen
  * @param m A pointer to the game structure containing the game data
  * @param playersChosen Amount of players already chosen
- * @return The function doesn't return anything
  */
 void displayAvailPlayers(Game *m, int playersChosen)
 {
@@ -105,8 +110,7 @@ void displayAvailPlayers(Game *m, int playersChosen)
 /**
  * Adjusts the player array by removing the chosen player and adjusting the position of the succeeding players
  * @param m A pointer to the game structure containing the game data
- * @param selectedPlayers Selected players who will play the game
- * @return The function doesn't return anything
+ * @param selectedPlayers Index of the selected player who will play the game
  */
 void adjustPlayerArr(Game *m, int selectedPlayer)
 {
@@ -123,9 +127,8 @@ void adjustPlayerArr(Game *m, int selectedPlayer)
 /**
  * Adds a player to the array of available players
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
-void addPlayer(Game *m)
+void addNewPlayer(Game *m)
 {
     FILE *playerFile;
     String36 newPlayer;
@@ -202,8 +205,8 @@ bool playerFound(Game *m, String36 newPlayer)
 }
 
 /**
- * Initializes a Player struct with empty values
- * @return The function returns the Player struct with empty values
+ * Initializes a Player with empty values
+ * @return Player with empty values
  */
 Player emptyPlayer()
 {

@@ -1,9 +1,11 @@
 /**
-* Description : <short description of the file>
+* Description : Header file for the CCPROG2 machine project
+*               Contains constants, type definitions, structures,
+*               and function prototypes used by the program
 * Author/s : De Dios, Justin Marco C.
 *            Ocampo, Kysha Denise D.
 * Section : S12A & S22A
-* Last Modified : 02-01-2026
+* Last Modified : 03-05-2026
 */
 
 #ifndef DEFS_H
@@ -103,14 +105,14 @@ typedef struct
 
     int currentPlayer;   // Index of the player with the current turn
     int winner[MAX_PLAYERS]; // Index of the player/s who won the game
-    int winnerCount;
+    int winnerCount;     // Amount of winners
 
-    int sameColorPoints;
-    int sameColorCount;
+    int sameColorPoints; // Total points of the cards with the same color as drawn card
+    int sameColorCount;  // Amount of cards with the same color as drawn card
 
     bool gameOver; // Flag indicating if the game is over
-    bool foundWinner;
-    bool tieGame;
+    bool foundWinner; // Flag indicating if the winner was found
+    bool tieGame; // Flag indicating if it is a tie game
 
     Player activePlayers[MAX_PLAYERS];  // Players who will play the game
     Player playerData[MAX_PLAYER_DATA]; // Players from "players.txt"
@@ -156,7 +158,7 @@ void selectPlayers(Game *m);
 void displayChosenPlayers(Game *m);
 void displayAvailPlayers(Game *m, int playersChosen);
 void adjustPlayerArr(Game *m, int selectedPlayer);
-void addPlayer(Game *m);
+void addNewPlayer(Game *m);
 bool playerFound(Game *m, String36 newPlayer);
 Player emptyPlayer();
 

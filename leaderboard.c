@@ -1,3 +1,11 @@
+/**
+ * Description : Contains the functions that handles the leaderboard of Mantis
+ * Author/s : De Dios, Justin Marco C.
+ *            Ocampo, Kysha Denise D.
+ *  Section : S12A & S22A
+ *  Last Modified : 03-05-2026
+ */
+
 #ifndef LEADERBOARD_C 
 #define LEADERBOARD_C 
 
@@ -7,9 +15,8 @@
 #include "defs.h"
 
 /**
- * Leaderboard menu of Mantis and handles user input based on what leaderboard they want to view
+ * Displays the leaderboard menu and handles navigation in the different leaderboard views
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void leaderBoard(Game *m)
 {
@@ -62,7 +69,7 @@ void sortPlayers(Game *m, int sortType)
 }
 
 /**
- * Displays the Top 10 players with either the highest wins or scores
+ * Displays the Top 10 players depending on the display type
  * @param m A pointer to the game structure containing the game data
  * @param displayType Determines the display criteria of the leaderboard (wins or scores)
  * @return The function doesn't return anything

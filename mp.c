@@ -1,10 +1,18 @@
 /**
-* Description : <short description of the project>
+* Description : A text-based recreation of the card game Mantis in C
 * Author/s : De Dios, Justin Marco C.
 *            Ocampo, Kysha Denise D.
 * Section : S12A & S22A
-* Last Modified : 02-01-2026
-* Acknowledgments : <list of references used in the making of this project>
+* Last Modified : 03-05-2026
+* Acknowledgments : 
+* 1. Portfolio Courses - File Access Basics
+* Link: https://www.youtube.com/watch?v=HQNsriyMhtY&t=129s
+* 2. GeeksforGeeks - How to use memset()
+* Link: https://www.geeksforgeeks.org/c/memset-c-example/
+* 3. Neso Academy - Pointer to Structure Variable
+* Link: https://www.youtube.com/watch?v=VsnXsfNstVw
+* 4. GeeksforGeeks - Bubble Sort Algorithm
+* Link: https://www.geeksforgeeks.org/dsa/bubble-sort-algorithm/
 */
 
 /* ----- preprocessor directives ----- */

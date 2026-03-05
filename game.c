@@ -1,3 +1,11 @@
+/**
+ * Description : Contains the functions that handles the gameplay of Mantis
+ * Author/s : De Dios, Justin Marco C.
+ *            Ocampo, Kysha Denise D.
+ *  Section : S12A & S22A
+ *  Last Modified : 03-05-2026
+ */
+
 #ifndef GAME_C 
 #define GAME_C 
 
@@ -7,9 +15,8 @@
 #include "defs.h"
 
 /**
- * Starts a new game of Mantis from player selection to the actual game flow
+ * Starts a new game of Mantis from player selection, game flow, and updates the player stats based on the game result
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void newGame(Game *m)
 {
@@ -23,7 +30,6 @@ void newGame(Game *m)
 /**
  * Loads the settings and cards, shuffles the Draw Pile, and deals out the cards to the players
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void setUpGame(Game *m)
 {
@@ -38,7 +44,6 @@ void setUpGame(Game *m)
 /**
  * Manages the main game loop, iterating through player turns and handling their moves
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void gameLoop(Game *m)
 {
@@ -71,7 +76,6 @@ void gameLoop(Game *m)
 /**
  * Deals the initial set of cards to all active players at the start of the game
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void distributeCards(Game *m)
 {
@@ -91,7 +95,6 @@ void distributeCards(Game *m)
 /**
  * Prints the current state of all players' tanks and their total scores
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void displayPlayerState(Game *m)
 {
@@ -110,7 +113,6 @@ void displayPlayerState(Game *m)
 /**
  * Displays the back-side of the top card in the draw pile and the total deck count
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void displayTopDeck(Game *m)
 {
@@ -119,6 +121,10 @@ void displayTopDeck(Game *m)
         m->drawPile.cardCount);
 }
 
+/**
+ * Checks if a player has won the game if they have matched or exceeded the winning points
+ * @param m A pointer to the game structure containing the game data
+ */
 void checkWinner(Game *m)
 {
     if (m->activePlayers[m->currentPlayer].scorePile.totalScore >= m->settings.winningPoints)
@@ -130,6 +136,10 @@ void checkWinner(Game *m)
     }
 }
 
+/**
+ * Checks the special win condition when the draw pile runs out
+ * @param m A pointer to the game structure containing the game data
+ */
 void checkSpecialWinner(Game *m)
 { 
     int tiedIndices[MAX_PLAYERS];
@@ -189,9 +199,8 @@ void checkSpecialWinner(Game *m)
 
 /**
  * Prompts the user to choose between scoring or stealing during their turn
- * @param currentPlayer The index/number of the player currently acting
- * @param option A pointer to the integer where the player's choice will be stored
- * @return The function doesn't return anything
+ * @param currentPlayer The index of the currnet player making the move
+ * @param option A pointer to the user's chosen option
  */
 void promptPlayerMove(int currentPlayer, int *option)
 {
@@ -204,7 +213,6 @@ void promptPlayerMove(int currentPlayer, int *option)
 /**
  * Executes the "Score" action: draws a card and checks if it matches colors in the player's tank
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void tryToScore(Game *m)
 {
@@ -233,7 +241,6 @@ void tryToScore(Game *m)
 /**
  * Executes the "Steal" action: draws a card and checks if it matches colors in the other player's tank
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
  */
 void tryToSteal(Game *m)
 {
@@ -265,10 +272,9 @@ void tryToSteal(Game *m)
 
 /**
  * Steals the cards from the stolen player's tank to the current player's tank
- * @param currentPlayer A pointer to the player performing the steal
- * @param stolenPlayer A pointer to player being stolen
+ * @param currentPlayer A pointer to the current player's structure containing the player data
+ * @param currentPlayer A pointer to the stolen player's structure containing the player data
  * @param drawnCard The color of the drawn card
- * @return The function doesn't return anything
  */
 void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard)
 {
@@ -295,8 +301,7 @@ void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard)
 /**
  * Prompts the current player on which player they want to steal from
  * @param m A pointer to the game structure containing the game data
- * @param option A pointer where the player's option will be stored
- * @return The function doesn't return anything
+ * @param option A pointer to the user's chosen option
  */
 void promptSteal(Game *m, int *option)
 {
@@ -319,7 +324,7 @@ void promptSteal(Game *m, int *option)
 /**
  * Removes and returns the top card from the draw pile, shifting the remaining cards up
  * @param m A pointer to the game structure containing the game data
- * @return The Card structure that was at the top of the deck
+ * @return The Card that was at the top of the deck
  */
 Card drawCard(Game *m)
 {
@@ -339,9 +344,8 @@ Card drawCard(Game *m)
 
 /**
  * Checks the tank if there are cards with the same color as drawn card 
- * @param m A pointer to the game structure containing the game data; 
- *          updates m->sameColorCount and m->sameColorPoints based on matches found in the tank
- * @return The function doesn't return anything
+ * @param m A pointer to the game structure containing the game data
+ * @param tank Cards in the player's tank
  */
 void checkSameColor(Game *m, Deck tank)
 {
@@ -360,9 +364,8 @@ void checkSameColor(Game *m, Deck tank)
 
 /**  
  * Adds the drawn card and similar cards in the player's tank to the player's score pile
- * @param currentPlayer A pointer to the player receiving the card; 
- *                      updating the current player's tank or score pile
- * @param drawnCard The card that was drawn from the deck
+ * @param currentPlayer A pointer to the current player's structure containing the player data
+ * @param drawnCard The card drawn from the draw pile
  */
 void addToScorePile(Player *currentPlayer, Card drawnCard)
 {
@@ -394,9 +397,8 @@ void addToScorePile(Player *currentPlayer, Card drawnCard)
 
 /**  
  * Adds the drawn card to the player's tank
- * @param currentPlayer A pointer to the player receiving the card;
- *                      updating the deck structure, card count, and color count
- * @param drawnCard The card that was just drawn from the deck
+ * @param currentPlayer A pointer to the current player's structure containing the player data
+ * @param drawnCard The card drawn from the draw pile
  */
 void addToTank(Player *currentPlayer, Card drawnCard)
 {
@@ -407,9 +409,7 @@ void addToTank(Player *currentPlayer, Card drawnCard)
 
 /**  
  * Calculates the total score in the score pile
- * @param currentPlayer A pointer to the player receiving the card; 
- *                      updates the total score in the player's score pile
- * @return The function doesn't return anything
+ * @param currentPlayer A pointer to the current player's structure containing the player data
  */
 void calculateScore(Player *currentPlayer)
 {
@@ -425,7 +425,6 @@ void calculateScore(Player *currentPlayer)
  * Shifts cards in a deck to fill a gap left by a removed card
  * @param deck The deck structure to be modified
  * @param removedCardIndex The index of the card that was removed
- * @return The function doesn't return anything
  */
 void adjustDeck(Deck *deck, int removedCardIndex)
 {
@@ -441,11 +440,9 @@ void adjustDeck(Deck *deck, int removedCardIndex)
 
 /**
  * Increments or decrements the color count of the deck
- * @param currentDeck A pointer to the deck structure where the color count is stored;
- *                    currentDeck->colorCount is either incremented or decremented
+ * @param currentDeck A pointer to the current deck's structure containing the deck data
  * @param currentCard The color of the current card
  * @param mode The operation mode (INCREMENT or DECREMENT)
- * @return The function doesn't return anything
  */
 void colorCount(Deck *currentDeck, Color currentCard, char mode)
 {
@@ -498,6 +495,10 @@ Card emptyCard()
     return e;
 }
 
+/**
+ * Displays the winner/s of mantis
+ * @param currentDeck The deck being checked
+ */
 void displayWinner(Game *g)
 {
     printf("Winner/s:\n");
@@ -507,6 +508,10 @@ void displayWinner(Game *g)
     }
 }
 
+/**
+ * Updates "player.txt" with the updated player stats
+ * @param currentDeck The deck being checked
+ */
 void updatePlayerData(Game *g)
 {
     FILE *playerFile;

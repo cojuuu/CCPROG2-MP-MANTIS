@@ -1,3 +1,11 @@
+/**
+ * Description : Contains the functions that handles the settings of Mantis
+ * Author/s : De Dios, Justin Marco C.
+ *            Ocampo, Kysha Denise D.
+ *  Section : S12A & S22A
+ *  Last Modified : 03-05-2026
+ */
+
 #ifndef SETTINGS_C
 #define SETTINGS_C
 
@@ -9,7 +17,6 @@
 /**
  * Settings menu of Mantis where players can modify game configuration
  * @param m A pointer to the game structure containing the game data
- * @return The function updates 
  */
 void gameSettings(Game *m)
 {
@@ -38,8 +45,8 @@ void gameSettings(Game *m)
 }
 
 /**
- * Sets the amount of points required to win Mantis
- * @return The player's chosen amount of points
+ * Sets the winning points of Mantis
+ * @return The player's chosen winning points
  */
 int setWinningPoints()
 {
@@ -94,7 +101,6 @@ Config defaultSettings()
 /**
  * Saves the game settings of mantis to "settings.txt"
  * @param m A pointer to the game structure containing the game data
- * @return The function doesn't return anything
 */
 void saveGameSettings(Game *m)
 {

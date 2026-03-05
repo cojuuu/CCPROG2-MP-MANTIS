@@ -1,3 +1,11 @@
+/**
+ * Description : Contains the functions that handles the file loading of Mantis
+ * Author/s : De Dios, Justin Marco C.
+ *            Ocampo, Kysha Denise D.
+ *  Section : S12A & S22A
+ *  Last Modified : 03-05-2026
+ */
+
 #ifndef LOAD_C 
 #define LOAD_C 
 
@@ -59,10 +67,10 @@ bool loadPlayerData(Game *m)
 }
 
 /**
- * Loads card data from the "mantis.txt" file to m->drawPile[]
- * @param m A pointer to the game structure containing the game data
- * @return true If the load was successful
- * @return false Otherwise
+ * Loads card data from the "mantis.txt" file to m->drawPile.cards
+ * @param m A pointer to the game structure
+ * @return True If the load was successful
+ * @return False Otherwise
  */
 bool loadCards(Game *m)
 {
@@ -120,8 +128,8 @@ bool loadCards(Game *m)
 /**
  * Loads Mantis settings from the "settings.txt" file to m->settings
  * @param m A pointer to the game structure containing the game data
- * @return true If the load was successful
- * @return false Otherwise
+ * @return True If the load was successful
+ * @return False Otherwise
  */
 bool loadSettings(Game *m)
 {

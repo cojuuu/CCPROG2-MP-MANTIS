@@ -1,10 +1,7 @@
-/******************************************************************************
- *  Description     : <short description of the file>
- *  Author/s        : <student1 full name (last name, first name)>
- *                    <student2 full name (last name, first name)>
- *  Section         : <your section>
- *  Last Modified   : <date when last revision was made>
- ******************************************************************************/
+/* Programmed by: Kristine Kalaw
+Description: This is a set of functions to help with the card shuffling of the machine projec.
+Last modified: JAN-21-2026
+*/
 
 #ifndef RANDOM_C // Include this to prevent redefinition error
 #define RANDOM_C // Include this to prevent redefinition error

@@ -1,3 +1,11 @@
+/**
+ * Description : Contains the functions that handles the navigation of Mantis
+ * Author/s : De Dios, Justin Marco C.
+ *            Ocampo, Kysha Denise D.
+ *  Section : S12A & S22A
+ *  Last Modified : 03-05-2026
+ */
+
 #ifndef MENU_C 
 #define MENU_C
 
@@ -6,8 +14,8 @@
 #include "defs.h"
 
 /**
- * Displays the Main Menu (New Game, Top Players, Settings, Exit) of Mantis and handles user input for starting the game or exiting.
- * @return The function doesn't return anything
+ * Displays the Main Menu and controls Mantis' game navigation
+ * @param m A pointer to the game structure containing the game data
  */
 void mainMenu(Game *m)
 {
@@ -32,10 +40,9 @@ void mainMenu(Game *m)
 
 /**
  * Asks the user for input with input validation
- * @param option The user input based on a list of options
- * @param min The minimum number
- * @param max The maximum number
- * @return The function updates the address of option with the player's chosen option
+ * @param option A pointer to the user's chosen option
+ * @param min The minimum number that can be inputted
+ * @param max The maximum number that can be inputted
  */
 void askOption(int *option, int min, int max)
 {
