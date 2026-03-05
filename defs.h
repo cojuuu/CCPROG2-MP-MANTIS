@@ -149,6 +149,7 @@ Card emptyCard();
 void checkWinner(Game *m);
 void displayWinner(Game *g);
 void updatePlayerData(Game *g);
+void checkSpecialWinner(Game *g);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);
