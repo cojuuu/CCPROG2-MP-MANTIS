@@ -75,31 +75,6 @@ void leaderBoard(Game *m)
 
 
 
-// /**
-//  * Displays the leaderboard menu and handles navigation in the different leaderboard views
-//  * @param m A pointer to the game structure containing the game data
-//  */
-// void leaderBoard(Game *m)
-// {
-//     int option;
-
-//     printf("Leaderboard\n");
-//     printf("  [1] Top Players (Wins)\n");
-//     printf("  [2] Top Players (Score)\n");
-
-//     askOption(&option, 1, 2);
-
-//     loadPlayerData(m);
-    
-//     switch(option)
-//     {
-//         case 1: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
-//         case 2: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
-//     }
-// }
-
-
-
 /**
  * Sorts an array of players from highest to lowest depending on the sort type
  * @param m A pointer to the game structure containing the game data
@@ -139,15 +114,23 @@ void sortPlayers(Game *m, int sortType)
  */
 void displayLeaderboard(Game *m, int displayType)
 {
-    bool emptyPlayerFound = false;
+     bool emptyPlayerFound = false;
     int i = 0;
+
+    printLogo();
+    
+    printf("\n==========================================\n");
+    printf("            PLAYER LEADERBOARD             \n");
+    printf("==========================================\n");
 
     if (displayType == BY_WINS)
     {
+        printf(" %-4s | %-20s | %-10s \n", "RANK", "USERNAME", "WINS");
         do
         {
             if (strcmp(m->playerData[i].username, "") != 0)
-                printf("%d: %s %d wins\n", i + 1, m->playerData[i].username, m->playerData[i].wins);
+                printf(" %-4d | %-20s | %-10d \n", i + 1, m->playerData[i].username, m->playerData[i].wins);
+
             else if (strcmp(m->playerData[i].username, "") == 0)
                 emptyPlayerFound = true;
 
@@ -156,10 +139,11 @@ void displayLeaderboard(Game *m, int displayType)
     }
     else if (displayType == BY_SCORE)
     {
+        printf(" %-4s | %-20s | %-10s \n", "RANK", "USERNAME", "SCORE");
         do
         {
             if (strcmp(m->playerData[i].username, "") != 0)
-                printf("%d: %s %d score\n", i + 1, m->playerData[i].username, m->playerData[i].totalScore);
+                printf(" %-4d | %-20s | %-10d \n", i + 1, m->playerData[i].username, m->playerData[i].totalScore);
             else if (strcmp(m->playerData[i].username, "") == 0)
                 emptyPlayerFound = true;
 
