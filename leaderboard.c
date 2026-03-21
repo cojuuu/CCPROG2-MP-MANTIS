@@ -11,31 +11,92 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <conio.h>
 
 #include "defs.h"
 
 /**
- * Displays the leaderboard menu and handles navigation in the different leaderboard views
+ * Displays the Main Menu and controls Mantis' game navigation
  * @param m A pointer to the game structure containing the game data
  */
 void leaderBoard(Game *m)
 {
-    int option;
+    char *lbOptions[] = {"T O P  P L A Y E R S (\033[3mWINS\033[0m)\n", "T O P  P L A Y E R S (\033[3mSCORE\033[0m)\n"};
+    int selectedOption = 0;
+    int input;
+    bool optionSelected = false;
 
-    printf("Leaderboard\n");
-    printf("  [1] Top Players (Wins)\n");
-    printf("  [2] Top Players (Score)\n");
+    do
+    {
+        printLogo();
+        printf("\nLEADERBOARD\n\n");
 
-    askOption(&option, 1, 2);
+        for (int i = 0; i < 2; i++)
+        {
+            if (i == selectedOption)
+            {
+                iSetColor(6);
+                printf("\n\t%s\n", lbOptions[i]);
+                iSetColor(0);
+            }
+            else
+            {
+                printf("%s\n", lbOptions[i]);
+            }
+        }
 
-    loadPlayerData(m);
-    
-    switch(option)
+        input = getch();
+
+        switch(input)
+        {
+            case 'w': 
+            case 'W': selectedOption-= 1; break;
+            case 's': 
+            case 'S': selectedOption+= 1; break;
+            case 13: optionSelected = true; break; // enter key
+        }
+
+        if (selectedOption > 3)
+            selectedOption = 0;
+        else if (selectedOption < 0)
+            selectedOption = 3;
+
+        iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    } while (!optionSelected);
+
+    switch(selectedOption)
     {
         case 1: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
         case 2: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
     }
 }
+
+
+
+// /**
+//  * Displays the leaderboard menu and handles navigation in the different leaderboard views
+//  * @param m A pointer to the game structure containing the game data
+//  */
+// void leaderBoard(Game *m)
+// {
+//     int option;
+
+//     printf("Leaderboard\n");
+//     printf("  [1] Top Players (Wins)\n");
+//     printf("  [2] Top Players (Score)\n");
+
+//     askOption(&option, 1, 2);
+
+//     loadPlayerData(m);
+    
+//     switch(option)
+//     {
+//         case 1: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
+//         case 2: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
+//     }
+// }
+
+
 
 /**
  * Sorts an array of players from highest to lowest depending on the sort type
