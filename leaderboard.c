@@ -64,10 +64,12 @@ void leaderBoard(Game *m)
         iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
     } while (!optionSelected);
 
+    loadPlayerData(m);
+
     switch(selectedOption)
     {
-        case 1: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
-        case 2: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
+        case 0: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
+        case 1: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
     }
 }
 
