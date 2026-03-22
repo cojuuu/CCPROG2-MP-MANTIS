@@ -170,6 +170,7 @@ Player emptyPlayer();
 void leaderBoard(Game *m);
 void sortPlayers(Game *m, int sortType);
 void displayLeaderboard(Game *m, int displayType);
+void displayPodium(Game *m, int displayType);
 
 // Load Function Prototypes
 bool loadPlayerData(Game *m);
