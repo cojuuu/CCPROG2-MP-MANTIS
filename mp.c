@@ -23,6 +23,7 @@
 #include "settings.c"
 #include "load.c"
 #include "random.c"
+#include "interface.c"
 
 int main()
 {

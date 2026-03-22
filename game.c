@@ -144,14 +144,14 @@ void checkSpecialWinner(Game *m)
 { 
     int tiedIndices[MAX_PLAYERS];
     int tiedCount = 0;
-    int mostCards = -1;
+    int mostScore = -1;
 
     for (int i = 0; i < m->playerCount; i++)
-        if (m->activePlayers[i].scorePile.cardCount > mostCards)
-            mostCards = m->activePlayers[i].scorePile.cardCount;
+        if (m->activePlayers[i].scorePile.totalScore > mostScore)
+            mostScore = m->activePlayers[i].scorePile.totalScore;
 
     for (int i = 0; i < m->playerCount; i++)
-        if (m->activePlayers[i].scorePile.cardCount == mostCards)
+        if (m->activePlayers[i].scorePile.totalScore == mostScore)
         {
             tiedIndices[tiedCount] = i;
             tiedCount++;
@@ -166,14 +166,14 @@ void checkSpecialWinner(Game *m)
 
     if (!m->foundWinner)
     {
-        mostCards = -1;
+        int mostTanks = -1;
         for (int i = 0; i < tiedCount; i++)
-            if (m->activePlayers[tiedIndices[i]].tank.cardCount > mostCards)
-                mostCards = m->activePlayers[tiedIndices[i]].tank.cardCount;
+            if (m->activePlayers[tiedIndices[i]].tank.cardCount > mostTanks)
+                mostTanks = m->activePlayers[tiedIndices[i]].tank.cardCount;
 
         tiedCount = 0;
         for (int i = 0; i < m->playerCount; i++)
-            if (m->activePlayers[i].tank.cardCount == mostCards)
+            if (m->activePlayers[i].tank.cardCount == mostTanks)
             {
                 tiedIndices[tiedCount] = i;
                 tiedCount++;
