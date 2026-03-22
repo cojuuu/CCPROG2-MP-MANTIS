@@ -119,9 +119,8 @@ void displayLeaderboard(Game *m, int displayType)
 
     printLogo();
     
-    printf("\n==========================================\n");
-    printf("            PLAYER LEADERBOARD             \n");
-    printf("==========================================\n");
+    printf("\nTOP PLAYERS\n");
+   
 
     if (displayType == BY_WINS)
     {
@@ -129,6 +128,7 @@ void displayLeaderboard(Game *m, int displayType)
         do
         {
             if (strcmp(m->playerData[i].username, "") != 0)
+                displayPodium(m, displayType);
                 printf(" %-4d | %-20s | %-10d \n", i + 1, m->playerData[i].username, m->playerData[i].wins);
 
             else if (strcmp(m->playerData[i].username, "") == 0)
@@ -136,6 +136,7 @@ void displayLeaderboard(Game *m, int displayType)
 
             i++;
         } while (i < TOP_10 && emptyPlayerFound == false);
+        
     }
     else if (displayType == BY_SCORE)
     {
@@ -150,6 +151,71 @@ void displayLeaderboard(Game *m, int displayType)
             i++;
         } while (i < TOP_10 && emptyPlayerFound == false);
     }
+}
+
+
+void displayPodium(Game *m, int displayType)
+{
+    int boxWidth = 16;
+    int nameLen = strlen(m->playerData[0].username);
+    int i = 0
+
+    int totalSpace = boxWidth - nameLen;
+    int leftSpace = totalSpace / 2;
+    int rightSpace = totalSpace - leftSpace;
+
+    if(displayType == BY_WINS)
+    {
+        printf("                 P L A Y E R  P O D I U M\n\n");
+        iSetColor(4);
+        printf("                           1 s t\n");
+        printf("                      ________________\n");
+        printf("                     |                |\n");
+        printf("                     |%*s%.12s%*s|\n", leftSpace, "", m->playerData[0].username, rightSpace, "");
+        printf("                     |  WINS: %2d     |\n", m->playerData[0].wins);
+        printf("                     |________________|\n");
+        iSetColor(2);
+        printf("         2 n d\n");
+        printf("    ________________\n");
+        printf("   |                |\n");
+        printf("   |%*s%.12s%*s|\n", leftSpace, "", m->playerData[1].username, rightSpace, "");
+        printf("   |  WINS: %2d     |\n", m->playerData[1].wins);
+        printf("   |________________|\n");
+        iSetColor(7);
+        printf("                                               3 r d\n");
+        printf("                                          ________________\n");
+        printf("                                         |                |\n");
+        printf("                                         |%*s%.12s%*s|\n", leftSpace, "", m->playerData[2].username, rightSpace, "");
+        printf("                                         |  WINS: %2d     |\n", m->playerData[2].wins);
+        printf("                                         |________________|\n");
+         iSetColor(0);
+    }else if(displayType == BY_SCORE)
+    {
+        printf("                 P L A Y E R  P O D I U M\n\n");
+        iSetColor(4);
+        printf("                           1 s t\n");
+        printf("                      ________________\n");
+        printf("                     |                |\n");
+        printf("                     |%*s%.12s%*s|\n", leftSpace, "", m->playerData[0].username, rightSpace, "");
+        printf("                     |  SCORE: %2d    |\n", m->playerData[0].totalScore);
+        printf("                     |________________|\n");
+        iSetColor(2);
+        printf("         2 n d\n");
+        printf("    ________________\n");
+        printf("   |                |\n");
+        printf("   |%*s%.12s%*s|\n", leftSpace, "", m->playerData[1].username, rightSpace, "");
+        printf("   |  SCORE: %2d    |\n", m->playerData[1].totalScore);
+        printf("   |________________|\n");
+        iSetColor(7);
+        printf("                                               3 r d\n");
+        printf("                                          ________________\n");
+        printf("                                         |                |\n");
+        printf("                                         |%*s%.12s%*s|\n", leftSpace, "", m->playerData[2].username, rightSpace, "");
+        printf("                                         |  SCORE: %2d    |\n", m->playerData[2].totalScore);
+        printf("                                         |________________|\n");
+        iSetColor(0);
+    }
+    
 }
 
 #endif // LEADERBOARD_C; 
