@@ -124,32 +124,38 @@ void displayLeaderboard(Game *m, int displayType)
 
     if (displayType == BY_WINS)
     {
-        printf(" %-4s | %-20s | %-10s \n", "RANK", "USERNAME", "WINS");
-        do
+        for(i = 0; i < TOP_10 && strcmp(m->playerData[i].username, "") != 0; i++)
         {
-            if (strcmp(m->playerData[i].username, "") != 0)
+            if(i < 3)
+            {
                 displayPodium(m, displayType);
-                printf(" %-4d | %-20s | %-10d \n", i + 1, m->playerData[i].username, m->playerData[i].wins);
+            }else
+            {
+                if(i == 3)
+                {
+                printf(" %-4s | %-20s | %-10s \n", "RANK", "USERNAME", "WINS");
+                }
+            printf(" %-4d | %-20s | %-10d \n", i + 1, m->playerData[i].username, m->playerData[i].wins);
+            }
+        }
 
-            else if (strcmp(m->playerData[i].username, "") == 0)
-                emptyPlayerFound = true;
-
-            i++;
-        } while (i < TOP_10 && emptyPlayerFound == false);
-        
     }
     else if (displayType == BY_SCORE)
     {
-        printf(" %-4s | %-20s | %-10s \n", "RANK", "USERNAME", "SCORE");
-        do
+        for(i = 0; i < TOP_10 && strcmp(m->playerData[i].username, "") != 0; i++)
         {
-            if (strcmp(m->playerData[i].username, "") != 0)
-                printf(" %-4d | %-20s | %-10d \n", i + 1, m->playerData[i].username, m->playerData[i].totalScore);
-            else if (strcmp(m->playerData[i].username, "") == 0)
-                emptyPlayerFound = true;
-
-            i++;
-        } while (i < TOP_10 && emptyPlayerFound == false);
+            if(i < 3)
+            {
+                displayPodium(m, displayType);
+            }else
+            {
+                if(i == 3)
+                {
+                printf(" %-4s | %-20s | %-10s \n", "RANK", "USERNAME", "SCORE");
+                }
+            printf(" %-4d | %-20s | %-10d \n", i + 1, m->playerData[i].username, m->playerData[i].totalScore);
+            }
+        }
     }
 }
 
