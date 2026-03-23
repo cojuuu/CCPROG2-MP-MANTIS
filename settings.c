@@ -20,28 +20,61 @@
  */
 void gameSettings(Game *m)
 {
-    int option;
+    char *settingOptions[] = {"S E T  W I N N I N G  P O I N T S\n", "S E T  S H U F F L E  S E E D\n", "R E S T O R E  T O  D E F A U L T\n", "B A C K\n"};
+    int selectedOption = 0;
+    int input;
+    bool optionSelected = false;
 
     do
     {
-        printf("Settings\n");
-        printf("  [1] Set Winning Points\n");
-        printf("  [2] Set Shuffle Seed\n");
-        printf("  [3] Restore to default\n");
-        printf("  [0] Back\n");
+        printLogo();
+        printf("\nSETTINGS\n\n");
 
-        askOption(&option, 0, 3);
-
-        switch(option)
+        for (int i = 0; i < 4; i++)
         {
-        case 1: m->settings.winningPoints = setWinningPoints(); break;
-        case 2: m->settings.shuffleSeed = setShuffleSeed(); break;
-        case 3: m->settings = defaultSettings(); printf("Default settings loaded!\n"); break;
-        case 0: mainMenu(m); break;
+            if (i == selectedOption)
+            {
+                iSetColor(6);
+                printf("\n\t%s\n", settingOptions[i]);
+                iSetColor(0);
+            }
+            else
+            {
+                printf("%s\n", settingOptions[i]);
+            }
         }
 
-        saveGameSettings(m);
-    } while (option != 0);
+        input = getch();
+
+        switch(input)
+        {
+            case 'w': 
+            case 'W': selectedOption-= 1; break;
+            case 's': 
+            case 'S': selectedOption+= 1; break;
+            case 13: optionSelected = true; break; // enter key
+        }
+
+        if (selectedOption > 3)
+        {
+            selectedOption = 0;
+        }
+        else if (selectedOption < 0)
+        {
+            selectedOption = 3;
+        }
+
+            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    } while (!optionSelected);
+
+    switch(selectedOption)
+    {
+        case 0: m->settings.winningPoints = setWinningPoints(); break;
+        case 1: m->settings.shuffleSeed = setShuffleSeed(); break;
+        case 2: m->settings = defaultSettings(); printf("Default settings loaded!\n"); break;
+        case 3: mainMenu(m); break;
+    }
+     saveGameSettings(m);
 }
 
 /**
