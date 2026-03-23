@@ -71,7 +71,7 @@ void gameSettings(Game *m)
     {
         case 0: m->settings.winningPoints = setWinningPoints(); break;
         case 1: m->settings.shuffleSeed = setShuffleSeed(); break;
-        case 2: m->settings = defaultSettings(); printf("Default settings loaded!\n"); break;
+        case 2: m->settings = defaultSettings(); printf("D E F A U L T  S E T T I N G S  L O A D E D !\n"); break;
         case 3: mainMenu(m); break;
     }
      saveGameSettings(m);
@@ -107,7 +107,7 @@ int setShuffleSeed()
 
     do
     {
-        printf("Set Shuffle Seed: ");
+        printf("S E T  S H U F F L E  S E E D: ");
         scanf("%d", &shuffleSeed); 
 
         if (shuffleSeed < MIN_SHUFFLE_SEED || shuffleSeed > MAX_SHUFFLE_SEED)
