@@ -87,7 +87,7 @@ int setWinningPoints()
 
     do
     {
-        printf("Set Winning Points: ");
+        printf("S E T  W I N N I N G  P O I N T S: ");
         scanf("%d", &winningPoints); 
 
         if (winningPoints < DEFAULT_WIN_POINTS || winningPoints > MAX_WIN_POINTS)
