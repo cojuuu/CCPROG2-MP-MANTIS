@@ -21,11 +21,69 @@
  */
 void selectPlayers(Game *m)
 {
-    int i, option;
+    char *playerCountOption[] = {"3 Players   ", "4 Players\n",
+         "5 Players   ", "6 Players\n"};
+    int selectedPlayerCount = 0;
+    int input;
+    bool playerCountSelected = false;
+    int i, Option;
     bool playerDataLoaded, playerAdded;
+   
+    do
+    {        
+         printf("-----------------------------------------\n\n");
+         printf("        [ PLAYER CONFIGURATION ]              \n\n");
+         printf("-----------------------------------------\n\n");
+         printf("    Please define player count (%d-%d):        \n\n\n", MIN_PLAYERS, MAX_PLAYERS);
 
-    printf("How many players?\n");
-    askOption(&m->playerCount, MIN_PLAYERS, MAX_PLAYERS);
+        for (int i = 0; i < 4; i++)
+        {
+            if (i == selectedPlayerCount)
+            {
+                iSetColor(6);
+                printf("\t%s", playerCountOption[i]);
+                iSetColor(0);
+            }
+            else
+            {
+                printf("\t%s", playerCountOption[i]);
+            }
+        }
+
+        printf("\n-----------------------------------------\n");
+
+        input = getch();
+
+        switch(input)
+        {
+            case 'w': 
+            case 'W': selectedPlayerCount-= 1; break;
+            case 's': 
+            case 'S': selectedPlayerCount+= 1; break;
+            case 13: playerCountSelected = true; break; // enter key
+        }
+
+        if (selectedPlayerCount > 3)
+        {
+            selectedPlayerCount = 0;
+        }
+        else if (selectedPlayerCount < 0)
+        {
+            selectedPlayerCount = 3;
+        }
+
+            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    } while (!playerCountSelected);
+
+    switch(selectedPlayerCount)
+    {
+        case 0: m->playerCount = 3; break;
+        case 1: m->playerCount = 4; break;
+        case 2: m->playerCount = 5; break;
+        case 3: m->playerCount = 6; break;
+    }
+
+    printf("\n--------------------------------------------------------\n\n");
 
     for (i = 0; i < m->playerCount; i++)
     {
@@ -48,14 +106,14 @@ void selectPlayers(Game *m)
 
             do
             {
-                askOption(&option, 0, m->totalPlayers - i);
+                askOption(&Option, 0, m->totalPlayers - i);
 
-                if (m->totalPlayers >= 50 && option == 0)
+                if (m->totalPlayers >= 50 && Option == 0)
                     printf("Maximum player reached! Please select another option.");
-            } while (m->totalPlayers >= 50 && option == 0);
+            } while (m->totalPlayers >= 50 && Option == 0);
 
             playerAdded = false;
-            switch(option)
+            switch(Option)
             {
                 case 0: 
                     addNewPlayer(m); 
@@ -63,12 +121,12 @@ void selectPlayers(Game *m)
                     i--;
                     break;
                 default: 
-                    m->activePlayers[i] = m->playerData[option - 1]; 
+                    m->activePlayers[i] = m->playerData[Option - 1]; 
                     break;
             }
 
             if (!playerAdded)
-                adjustPlayerArr(m, option - 1);
+                adjustPlayerArr(m, Option - 1);
         }
 
         displayChosenPlayers(m);
@@ -81,14 +139,25 @@ void selectPlayers(Game *m)
  */
 void displayChosenPlayers(Game *m)
 {
+    printf("INITIALIZING PLAYERS...\n\n\n");
+
+    int playerRow;
+    int playersPerRow = 3;
     int i;
 
-    for (i = 0; i < m->playerCount; i++)
+    for (playerRow = 0; playerRow < m->playerCount; playerRow += playersPerRow)
     {
-        if (strcmp(m->activePlayers[i].username, "") == 0)
-            printf("  P%d: ?\n", i + 1);
-        else
-            printf("  P%d: %s\n", i + 1, m->activePlayers[i].username);
+        for (i = playerRow; i < playerRow + playersPerRow && i < m->playerCount; i++)
+        {
+            if (strcmp(m->activePlayers[i].username, "") == 0)
+                printf("  [ PLAYER %d: ? ]  ", i + 1);
+            else{
+                iSetColor(6);
+                printf("  [ PLAYER %d: %s ]  ", i + 1, m->activePlayers[i].username);
+                iSetColor(0); // Reset color
+            }
+        }
+        printf("\n");
     }
 }
 
