@@ -160,7 +160,7 @@ void checkSpecialWinner(Game *g);
 // Player Function Prototypes
 void selectPlayers(Game *m);
 void displayChosenPlayers(Game *m);
-void displayAvailPlayers(Game *m, int playersChosen);
+void displayAvailPlayers(Game *m, int playersChosen, int selectedPlayer);
 void adjustPlayerArr(Game *m, int selectedPlayer);
 void addNewPlayer(Game *m);
 bool playerFound(Game *m, String36 newPlayer);

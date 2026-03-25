@@ -26,8 +26,8 @@ void selectPlayers(Game *m)
     int selectedPlayerCount = 0;
     int input;
     bool playerCountSelected = false;
-    int i, Option;
-    bool playerDataLoaded, playerAdded;
+    int i;
+    bool playerDataLoaded;
    
     do
     {        
@@ -97,39 +97,52 @@ void selectPlayers(Game *m)
     {
         for (i = 0; i < m->playerCount; i++)
         {
+            int selectedPlayer = 0;
+            bool playerSelected = false;
+
+            do{
             displayChosenPlayers(m);
 
-            printf("\nSelect Player %d\n", i + 1);
-            printf("  [0] <Add new player>\n");
+            printf("\n>> Select Player %d\n\n", i + 1);
 
-            displayAvailPlayers(m, i);
+            displayAvailPlayers(m, i, selectedPlayer);
 
-            do
+            input = getch();
+
+             switch(input)
             {
-                askOption(&Option, 0, m->totalPlayers - i);
-
-                if (m->totalPlayers >= 50 && Option == 0)
-                    printf("Maximum player reached! Please select another option.");
-            } while (m->totalPlayers >= 50 && Option == 0);
-
-            playerAdded = false;
-            switch(Option)
-            {
-                case 0: 
-                    addNewPlayer(m); 
-                    playerAdded = true; 
-                    i--;
-                    break;
-                default: 
-                    m->activePlayers[i] = m->playerData[Option - 1]; 
-                    break;
+                case 'w': 
+                case 'W': selectedPlayer-= 1; break;
+                case 's': 
+                case 'S': selectedPlayer+= 1; break;
+                case 13: playerSelected = true; break; // enter key
             }
 
-            if (!playerAdded)
-                adjustPlayerArr(m, Option - 1);
-        }
+             int maxOption = m->totalPlayers - i;
+             if(selectedPlayer > maxOption)
+             {
+                 selectedPlayer = 0;
+             } else if (selectedPlayer < 0)
+             {
+                 selectedPlayer = maxOption;
+             }
 
+                iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+            } while (!playerSelected);
+
+            if(selectedPlayer == 0) 
+            {
+                    addNewPlayer(m); 
+                    i--;
+            }
+            else
+            {
+                    m->activePlayers[i] = m->playerData[selectedPlayer - 1]; 
+                    adjustPlayerArr(m, selectedPlayer - 1);
+            }
         displayChosenPlayers(m);
+        iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+         }
     }
 }
 
@@ -139,11 +152,21 @@ void selectPlayers(Game *m)
  */
 void displayChosenPlayers(Game *m)
 {
-    printf("INITIALIZING PLAYERS...\n\n\n");
+    int i;
+    int currentPlayer = 0;
+        for(i = 0; i < m->playerCount; i++)
+        {
+            if(strcmp(m->activePlayers[i].username, "") != 0)
+            currentPlayer++;
+        }
+
+    printf("INITIALIZING PLAYERS...");
+    iSetColor(6);
+    printf("                            %d / %d\n\n\n", currentPlayer, m->playerCount);
+    iSetColor(0);
 
     int playerRow;
     int playersPerRow = 3;
-    int i;
 
     for (playerRow = 0; playerRow < m->playerCount; playerRow += playersPerRow)
     {
@@ -157,7 +180,7 @@ void displayChosenPlayers(Game *m)
                 iSetColor(0); // Reset color
             }
         }
-        printf("\n");
+        printf("\n\n");
     }
 }
 
@@ -165,15 +188,39 @@ void displayChosenPlayers(Game *m)
  * Displays the players who have not yet been chosen
  * @param m A pointer to the game structure containing the game data
  * @param playersChosen Amount of players already chosen
+ * @param selectedPlayer Index of the currently selected player
  */
-void displayAvailPlayers(Game *m, int playersChosen)
+void displayAvailPlayers(Game *m, int playersChosen, int selectedPlayer)
 {
     int i;
+    int inRow = 1;
 
-    for (i = 0; i < m->totalPlayers - playersChosen; i++)
+    if(selectedPlayer == 0)
     {
-        printf("  [%d] %s\n", i + 1, m->playerData[i].username);
+        iSetColor(6);
+        printf("  >[0] <Add new player>< ");
+        iSetColor(0);
+    }else
+        printf("  [0] <Add new player> ");
+
+     for (i = 0; i < m->totalPlayers - playersChosen; i++)
+    {
+        if (i + 1 == selectedPlayer)
+        {
+            iSetColor(6);
+            printf("  >[%d] %-16s< ", i + 1, m->playerData[i].username);
+            iSetColor(0);
+        }
+        else
+        printf("  [%d] %-16s", i + 1, m->playerData[i].username);
+        inRow++;
+
+        if(inRow % 3 == 0)
+        {
+            printf("\n\n");
+        }
     }
+    printf("\n");
 }
 
 /**
@@ -209,16 +256,25 @@ void addNewPlayer(Game *m)
     do
     {
         printf("New player username: ");
+        iSetColor(6);
         scanf("%s", temp);
+        iSetColor(0);
 
         if (strlen(temp) > 36)
-            printf("Username can only be 36 characters!\n");
+         {   iSetColor(1);
+            printf("!! Username can only be 36 characters !!\n\n");
+            iSetColor(0);
+        }
         else
         {
             duplicateExist = playerFound(m, temp);
 
             if (duplicateExist)
-                printf("Username already exists!\n");
+            {
+                iSetColor(1);
+                printf("!! Username already exists !!\n\n");
+                iSetColor(0);
+            }
         }
 
     } while (strlen(temp) > 36 || duplicateExist);
