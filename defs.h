@@ -39,9 +39,16 @@
 #define BLUE 'B'
 #define CYAN 'I'
 #define PURPLE 'V'
+#define MAGENTA 'M'
+#define GRAY 'A'
 #define CONSOLE_WIDTH 80
-#define CONSOLE_HEIGHT 24
-
+#define CONSOLE_HEIGHT 80
+#define BIG 101
+#define SMALL 102
+#define FRONT 103
+#define BACK 104
+#define ACTIVE 105
+#define INACTIVE 106
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -109,6 +116,7 @@ typedef struct
     int currentPlayer;   // Index of the player with the current turn
     int winner[MAX_PLAYERS]; // Index of the player/s who won the game
     int winnerCount;     // Amount of winners
+    int stolenPlayer;    // Index of the player who got stolen from
 
     int sameColorPoints; // Total points of the cards with the same color as drawn card
     int sameColorCount;  // Amount of cards with the same color as drawn card
@@ -131,30 +139,25 @@ void mainMenu(Game *m);
 void askOption(int *option, int min, int max);
 void printLogo();
 
-// Game Function Prototypes
-void newGame(Game *m);
-void setUpGame(Game *m);
-void gameLoop(Game *m);
-void distributeCards(Game *m);
-void displayPlayerState(Game *m);
-void displayTopDeck(Game *m);
-void promptPlayerMove(int currentPlayer, int *option);
-void tryToScore(Game *m);
-void tryToSteal(Game *m);
-void promptSteal(Game *m, int *option);
+// Deck Function Prototypes
 Card drawCard(Game *m);
-void checkSameColor(Game *m, Deck tank);
-void addToScorePile(Player *currentPlayer, Card drawnCard);
-void addToTank(Player *currentPlayer, Card drawnCard);
-void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard);
-void calculateScore(Player *currentPlayer);
 void adjustDeck(Deck *deck, int removedCardIndex);
 void colorCount(Deck *currentDeck, Color currentCard, char mode);
 int emptyCardIndex(Deck currentDeck);
 Card emptyCard();
+void distributeCards(Game *m);
+void displayTopDeck(Game *m);
+void displayCard(Card currentCard, int cardSize, int cardSide);
+void displayFrontSideDeck(Deck currentDeck, int cardSize);
+void checkSameColor(Game *m, Deck tank);
+void revealCard(Card drawnCard);
+void printEmoticon(Color currentColor);
+
+// Game Function Prototypes
+void newGame(Game *m);
+void setUpGame(Game *m);
+void gameLoop(Game *m);
 void checkWinner(Game *m);
-void displayWinner(Game *g);
-void updatePlayerData(Game *g);
 void checkSpecialWinner(Game *g);
 
 // Player Function Prototypes
@@ -165,6 +168,17 @@ void adjustPlayerArr(Game *m, int selectedPlayer);
 void addNewPlayer(Game *m);
 bool playerFound(Game *m, String36 newPlayer);
 Player emptyPlayer();
+void addToScorePile(Player *currentPlayer, Card drawnCard);
+void addToTank(Player *currentPlayer, Card drawnCard);
+void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard);
+void calculateScore(Player *currentPlayer);
+void displayPlayerState(Game *m, int playerType);
+void displayWinner(Game *g);
+void promptPlayerMove(Game *m, int *option);
+void tryToScore(Game *m);
+void tryToSteal(Game *m);
+void promptSteal(Game *m);
+void updatePlayerData(Game *g);
 
 // Leaderboard Function Prototypes
 void leaderBoard(Game *m);
@@ -195,5 +209,8 @@ void iClear(int x, int y, int width, int height);
 void iHideCursor();
 void iShowCursor();
 void iSetColor(int color);
+void setColor(Color currentColor);
+void pauseScreen(double seconds);
+void waitEnter();
 
 #endif // DEFS_H;

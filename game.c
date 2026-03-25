@@ -3,7 +3,7 @@
  * Author/s : De Dios, Justin Marco C.
  *            Ocampo, Kysha Denise D.
  *  Section : S12A & S22A
- *  Last Modified : 03-05-2026
+ *  Last Modified : 03-25-2026
  */
 
 #ifndef GAME_C 
@@ -21,6 +21,7 @@
 void newGame(Game *m)
 {
     selectPlayers(m);
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
     setUpGame(m);
     gameLoop(m);
     displayWinner(m);
@@ -37,8 +38,6 @@ void setUpGame(Game *m)
     loadCards(m);
     shuffle(m->drawPile.cards, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
     distributeCards(m);
-    displayPlayerState(m);
-    displayTopDeck(m);
 }
 
 /**
@@ -53,16 +52,20 @@ void gameLoop(Game *m)
     {
         for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
         {
-            promptPlayerMove(m->currentPlayer + 1, &option);
+            displayPlayerState(m, INACTIVE);
+            displayTopDeck(m);
+            displayPlayerState(m, ACTIVE);
+
+            promptPlayerMove(m, &option);
 
             switch(option)
             {
                 case 1: tryToScore(m); break;
                 case 2: tryToSteal(m); break;
             }
+            waitEnter();
+            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
 
-            displayPlayerState(m);
-            displayTopDeck(m);
             checkWinner(m);
         }
     } while (!m->gameOver && m->drawPile.cardCount > 0);
@@ -71,54 +74,6 @@ void gameLoop(Game *m)
     {
         checkSpecialWinner(m);
     }
-}
-
-/**
- * Deals the initial set of cards to all active players at the start of the game
- * @param m A pointer to the game structure containing the game data
- */
-void distributeCards(Game *m)
-{
-    int i;
-
-    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
-    {
-        for (i = 0; i < STARTING_CARDS; i++)
-        {
-            m->activePlayers[m->currentPlayer].tank.cards[i] = drawCard(m);
-            m->activePlayers[m->currentPlayer].tank.cardCount++;
-            colorCount(&m->activePlayers[m->currentPlayer].tank, m->activePlayers[m->currentPlayer].tank.cards[i].front, INCREMENT);
-        }
-    }
-}
-
-/**
- * Prints the current state of all players' tanks and their total scores
- * @param m A pointer to the game structure containing the game data
- */
-void displayPlayerState(Game *m)
-{
-    int i;
-
-    for (i = 0; i < m->playerCount; i++)
-    {
-        printf("P%d => [ R: %d | O:%d | Y: %d | G:%d | B:%d | I:%d | V:%d ] // %d\n", i + 1,
-            m->activePlayers[i].tank.colorCount.red, m->activePlayers[i].tank.colorCount.white, 
-            m->activePlayers[i].tank.colorCount.yellow, m->activePlayers[i].tank.colorCount.green, 
-            m->activePlayers[i].tank.colorCount.blue, m->activePlayers[i].tank.colorCount.cyan, 
-            m->activePlayers[i].tank.colorCount.purple, m->activePlayers[i].scorePile.totalScore);
-    }
-}
-
-/**
- * Displays the back-side of the top card in the draw pile and the total deck count
- * @param m A pointer to the game structure containing the game data
- */
-void displayTopDeck(Game *m)
-{
-    printf("\nTop deck: %c%c%c (%d cards remaining in deck)\n", 
-        m->drawPile.cards[0].back[0], m->drawPile.cards[0].back[1], m->drawPile.cards[0].back[2], 
-        m->drawPile.cardCount);
 }
 
 /**
@@ -145,6 +100,7 @@ void checkSpecialWinner(Game *m)
     int tiedIndices[MAX_PLAYERS];
     int tiedCount = 0;
     int mostScore = -1;
+    int mostTanks = -1;
 
     for (int i = 0; i < m->playerCount; i++)
         if (m->activePlayers[i].scorePile.totalScore > mostScore)
@@ -166,7 +122,6 @@ void checkSpecialWinner(Game *m)
 
     if (!m->foundWinner)
     {
-        int mostTanks = -1;
         for (int i = 0; i < tiedCount; i++)
             if (m->activePlayers[tiedIndices[i]].tank.cardCount > mostTanks)
                 mostTanks = m->activePlayers[tiedIndices[i]].tank.cardCount;
@@ -198,13 +153,72 @@ void checkSpecialWinner(Game *m)
 }
 
 /**
+ * Deals the initial set of cards to all active players at the start of the game
+ * @param m A pointer to the game structure containing the game data
+ */
+void distributeCards(Game *m)
+{
+    int i;
+
+    for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
+    {
+        for (i = 0; i < STARTING_CARDS; i++)
+        {
+            m->activePlayers[m->currentPlayer].tank.cards[i] = drawCard(m);
+            m->activePlayers[m->currentPlayer].tank.cardCount++;
+            colorCount(&m->activePlayers[m->currentPlayer].tank, m->activePlayers[m->currentPlayer].tank.cards[i].front, INCREMENT);
+        }
+    }
+}
+
+/**
+ * Prints the current state of all players' tanks and their total scores
+ * @param m A pointer to the game structure containing the game data
+ */
+void displayPlayerState(Game *m, int playerType)
+{
+    int i;
+
+    if (playerType == INACTIVE)
+    {
+        for (i = 0; i < m->playerCount; i++)
+        {
+            if (i != m->currentPlayer)
+            {
+                printf("[%s]\n", m->activePlayers[i].username);
+                displayFrontSideDeck(m->activePlayers[i].tank, SMALL);
+                printf("\n");
+                printf("[Score: %d]\n\n", m->activePlayers[i].scorePile.totalScore);
+            }
+        }
+    }
+    else if (playerType == ACTIVE)
+    {
+        printf("\n[%s]\n", m->activePlayers[m->currentPlayer].username);
+        displayFrontSideDeck(m->activePlayers[m->currentPlayer].tank, BIG);
+        printf("[Score]: %d\n", m->activePlayers[m->currentPlayer].scorePile.totalScore);
+    }
+}
+
+/**
+ * Displays the back-side of the top card in the draw pile and the total deck count
+ * @param m A pointer to the game structure containing the game data
+ */
+void displayTopDeck(Game *m)
+{
+    printf("[TOP DECK]\n");
+    displayCard(m->drawPile.cards[0], BIG, BACK);
+    printf("(%d left)\n", m->drawPile.cardCount);
+}
+
+/**
  * Prompts the user to choose between scoring or stealing during their turn
  * @param currentPlayer The index of the currnet player making the move
  * @param option A pointer to the user's chosen option
  */
-void promptPlayerMove(int currentPlayer, int *option)
+void promptPlayerMove(Game *m, int *option)
 {
-    printf("\nPlayer %d, what would you like to do?\n", currentPlayer);
+    printf("\n%s, what would you like to do?\n", m->activePlayers[m->currentPlayer].username);
     printf("  [1] Try to Score\n");
     printf("  [2] Try to Steal\n");
     askOption(option, 1, 2);
@@ -216,24 +230,32 @@ void promptPlayerMove(int currentPlayer, int *option)
  */
 void tryToScore(Game *m)
 {
-    printf("Resolving turn for Player %d...\n", m->currentPlayer + 1);
-
     m->drawnCard = drawCard(m);
-    printf("- Drawn card color reveal: %c (%d pt/s)!\n", m->drawnCard.front, m->drawnCard.points);
+    revealCard(m->drawnCard);
 
     checkSameColor(m, m->activePlayers[m->currentPlayer].tank);
-
     if (m->sameColorCount > 0)
     {
-        printf("- Player %d has (%d) %c card/s worth a total of (%d) pts!\n", 
-            m->currentPlayer + 1, m->sameColorCount, m->drawnCard.front, m->sameColorPoints);
-        printf("- +%d points to Player %d's score pile!\n", m->sameColorPoints + m->drawnCard.points, m->currentPlayer + 1);
+        pauseScreen(2.0);
+        printf("%s has (%d) ", m->activePlayers[m->currentPlayer].username, m->sameColorCount);
+        setColor(m->drawnCard.front);
+        printf("%c ", m->drawnCard.front);
+        setColor(WHITE);
+        printf("card/s worth a total of (%d) pts!\n", m->sameColorPoints);
+        pauseScreen(2.0);
+        printf("+%d points to %s's score pile!\n", m->sameColorPoints + m->drawnCard.points, m->activePlayers[m->currentPlayer].username);
         addToScorePile(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
     else
     {
-        printf("- Player %d has no %c cards...\n", m->currentPlayer + 1, m->drawnCard.front);
-        printf("- Adding drawn card to Player %d's Tank\n", m->currentPlayer + 1);
+        pauseScreen(2.0);
+        printf("%s has no ", m->activePlayers[m->currentPlayer].username);
+        setColor(m->drawnCard.front);
+        printf("%c ", m->drawnCard.front);
+        setColor(WHITE);
+        printf("cards...\n");
+        pauseScreen(2.0);
+        printf("Adding drawn card to %s's Tank\n", m->activePlayers[m->currentPlayer].username);
         addToTank(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
 }
@@ -244,29 +266,40 @@ void tryToScore(Game *m)
  */
 void tryToSteal(Game *m)
 {
-    int chosenPlayer;
-
-    promptSteal(m, &chosenPlayer);
-    
-    printf("Resolving turn for Player %d...\n", m->currentPlayer + 1);
-
+    promptSteal(m);
     m->drawnCard = drawCard(m);
-    printf("- Drawn card color reveal: %c (%d pt/s)!\n", m->drawnCard.front, m->drawnCard.points);
+    revealCard(m->drawnCard);
 
-    checkSameColor(m, m->activePlayers[chosenPlayer].tank);
+    checkSameColor(m, m->activePlayers[m->stolenPlayer].tank);
 
     if (m->sameColorCount > 0)
     {
-        printf("- Player %d has (%d) %c card/s!\n", chosenPlayer + 1, m->sameColorCount, m->drawnCard.front);
-        printf("- +%d (%c) cards to Player %d's Tank!\n", 1 + m->sameColorCount, m->drawnCard.front, m->currentPlayer + 1);
+        pauseScreen(2.0);
+        printf("%s has (%d) ", m->activePlayers[m->stolenPlayer].username, m->sameColorCount);
+        setColor(m->drawnCard.front);
+        printf("%c", m->drawnCard.front);
+        setColor(WHITE);
+        printf(" cards/s!\n");
+        pauseScreen(2.0);
+        printf("+%d (", 1 + m->sameColorCount);
+        setColor(m->drawnCard.front);
+        printf("%c", m->drawnCard.front);
+        setColor(WHITE);
+        printf(") cards to %s's Tank!\n", m->activePlayers[m->currentPlayer].username);
         addToTank(&m->activePlayers[m->currentPlayer], m->drawnCard);
-        stealTank(&m->activePlayers[m->currentPlayer], &m->activePlayers[chosenPlayer], m->drawnCard.front);
+        stealTank(&m->activePlayers[m->currentPlayer], &m->activePlayers[m->stolenPlayer], m->drawnCard.front);
     }
     else
     {
-        printf("- Player %d has no %c cards...\n", chosenPlayer + 1, m->drawnCard.front);
-        printf("- Adding drawn card to Player %d's Tank\n", chosenPlayer + 1);
-        addToTank(&m->activePlayers[chosenPlayer], m->drawnCard);
+        pauseScreen(2.0);
+        printf("%s has no ", m->activePlayers[m->stolenPlayer].username);
+        setColor(m->drawnCard.front);
+        printf("%c ", m->drawnCard.front);
+        setColor(WHITE);
+        printf("cards...\n");
+        pauseScreen(2.0);
+        printf("Adding drawn card to %s's Tank\n", m->activePlayers[m->stolenPlayer].username);
+        addToTank(&m->activePlayers[m->stolenPlayer], m->drawnCard);
     }
 }
 
@@ -303,22 +336,22 @@ void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard)
  * @param m A pointer to the game structure containing the game data
  * @param option A pointer to the user's chosen option
  */
-void promptSteal(Game *m, int *option)
+void promptSteal(Game *m)
 {
-    printf("Who would you like to steal from?\n");
+    printf("\nWho would you like to steal from?\n");
     for (int i = 0; i < m->playerCount - 1; i++)
     {
-        printf("  [%d] Player ", i + 1);
+        printf("  [%d] ", i + 1);
         if (i >= m->currentPlayer)
-            printf("%d", i + 2);
+            printf("%s", m->activePlayers[i + 1].username);
         else
-            printf("%d", i + 1);
+            printf("%s", m->activePlayers[i].username);
         printf("\n");
     }
-    askOption(option, 1, m->playerCount - 1);
+    askOption(&m->stolenPlayer, 1, m->playerCount - 1);
 
-    if (*option <= m->currentPlayer)
-        *option -= 1;
+    if (m->stolenPlayer <= m->currentPlayer)
+        m->stolenPlayer -= 1;
 }
 
 /**
@@ -536,6 +569,151 @@ void updatePlayerData(Game *g)
     }
 
     fclose(playerFile);
+}
+
+/**
+ * Prints the an emoticon of it's respective color
+ * @param currentColor The color of the current card
+ * @return void
+ */
+void printEmoticon(Color currentColor)
+{
+    setColor(currentColor);
+    switch (currentColor)
+    {
+        case WHITE: printf(":/"); break;
+        case RED: printf(":O"); break;
+        case BLUE: printf(":("); break;
+        case GREEN: printf("XD"); break;
+        case YELLOW: printf("B)"); break;
+        case CYAN: printf(":>"); break;
+        case PURPLE: printf(":3"); break;
+    }
+}
+
+/**
+ * Displays the card depending on the user's desired size or desired side
+ * @param currentCard The card being displayed
+ * @param cardSize The desired card size to be displayed (BIG or SMALL)
+ * @param cardSide The desired card side to be displayed (FRONT or BACK)
+ * @return void
+ */
+void displayCard(Card currentCard, int cardSize, int cardSide)
+{
+    if (cardSize == SMALL)
+    {
+        setColor(currentCard.front);
+        printf("[ ");
+        printEmoticon(currentCard.front);
+        printf(" ] ");
+    }
+    else if (cardSize == BIG)
+    {
+        if (cardSide == FRONT)
+        {
+            setColor(currentCard.front);
+            printf("+------+\n");
+            printf("|      |\n");
+            printf("|  ");
+            printEmoticon(currentCard.front);
+            printf("  |\n");
+            printf("|      |\n");
+            printf("+------+\n");
+        }
+        else if (cardSide == BACK)
+        {
+            printf("+------+\n");
+            printf("| ");
+            printEmoticon(currentCard.back[0]);
+            setColor(WHITE);
+            printf("   |\n");
+            printf("|  ");
+            printEmoticon(currentCard.back[1]);
+            setColor(WHITE);
+            printf("  |\n");
+            printf("|   ");
+            printEmoticon(currentCard.back[2]);
+            setColor(WHITE);
+            printf(" |\n");
+            printf("+------+\n");
+        }
+    }
+    setColor(WHITE);
+}
+
+/**
+ * Displays card deck's front side
+ * @param currentDeck The deck being displayed
+ * @param cardSize The desired card size to be displayed (BIG or SMALL)
+ * @return void
+ */
+void displayFrontSideDeck(Deck currentDeck, int cardSize)
+{
+    int i;
+
+    if (cardSize == SMALL)
+    {
+        for (i = 0; i < currentDeck.cardCount; i++)
+        {
+            displayCard(currentDeck.cards[i], SMALL, FRONT);
+        }
+    }
+    else if (cardSize == BIG)
+    {
+        for (i = 0; i < currentDeck.cardCount; i++)
+        {
+            setColor(currentDeck.cards[i].front);
+            printf("+------+ ");
+        }
+        printf("\n");
+        for (i = 0; i < currentDeck.cardCount; i++)
+        {
+            setColor(currentDeck.cards[i].front);
+            printf("|      | ");
+        }
+        printf("\n");
+        for (i = 0; i < currentDeck.cardCount; i++)
+        {
+            setColor(currentDeck.cards[i].front);
+            printf("|  ");
+            printEmoticon(currentDeck.cards[i].front);
+            printf("  | ");
+        }
+        printf("\n");
+        for (i = 0; i < currentDeck.cardCount; i++)
+        {
+            setColor(currentDeck.cards[i].front);
+            printf("|      | ");
+        }
+        printf("\n");
+        for (i = 0; i < currentDeck.cardCount; i++)
+        {
+            setColor(currentDeck.cards[i].front);
+            printf("+------+ ");
+        }
+        printf("\n");
+    }
+    setColor(WHITE);
+}
+
+/**
+ * Reveals the front side of the drawn card
+ * @param drawnCard The card drawn from the draw pile
+ * @return void
+ */
+void revealCard(Card drawnCard)
+{
+    int i;
+    
+    printf("Revealing card");
+    for (i = 0; i < 3; i++)
+    {
+        pauseScreen(1.0);
+        printf(".");
+    }
+    printf("\n");
+    displayCard(drawnCard, BIG, FRONT);
+    printf("Drawn card worth (%d pt/s)!\n", drawnCard.points);
 }
 
 #endif // GAME_C
