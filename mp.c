@@ -13,6 +13,8 @@
 * Link: https://www.youtube.com/watch?v=VsnXsfNstVw
 * 4. GeeksforGeeks - Bubble Sort Algorithm
 * Link: https://www.geeksforgeeks.org/dsa/bubble-sort-algorithm/
+* 
+* Link: https://stackoverflow.com/questions/17125440/c-win32-console-color
 */
 
 /* ----- preprocessor directives ----- */
@@ -30,8 +32,9 @@ int main()
     Game m;
 
     memset(&m, 0, sizeof(m));
-
     mainMenu(&m);
+
+    return 0;
 }
 
 /**
