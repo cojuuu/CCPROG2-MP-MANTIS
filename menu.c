@@ -3,7 +3,7 @@
  * Author/s : De Dios, Justin Marco C.
  *            Ocampo, Kysha Denise D.
  *  Section : S12A & S22A
- *  Last Modified : 03-05-2026
+ *  Last Modified : 03-27-2026
  */
 
 #ifndef MENU_C 
@@ -22,6 +22,7 @@ void mainMenu(Game *m)
 {
     String36 menuOptions[] = {"N E W  G A M E", "T O P  P L A Y E R S", "S E T T I N G S", "E X I T"};
     
+    iClear(0, 0, 50, 50);
     printLogo();
     printf("\nMAIN MENU\n");
     interactiveMenu(&m->nav, menuOptions, 4);

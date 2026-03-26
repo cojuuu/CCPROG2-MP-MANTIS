@@ -37,7 +37,10 @@ void setUpGame(Game *m)
     loadSettings(m);
 
     if (m->settings.shuffleSeed == RANDOM)
+    {
+        initRandom();
         m->settings.shuffleSeed = randomInt();
+    }
 
     loadCards(m);
     shuffle(m->drawPile.cards, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
