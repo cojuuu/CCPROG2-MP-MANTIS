@@ -213,8 +213,8 @@ bool loadSettings(Game *m);
 
 // Settings Function Prototypes
 void gameSettings(Game *m);
-int setWinningPoints();
-int setShuffleSeed();
+void setWinningPoints(Game *m);
+void setShuffleSeed(Game *m);
 void saveGameSettings(Game *m);
 Config defaultSettings();
 

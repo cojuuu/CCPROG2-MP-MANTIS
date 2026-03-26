@@ -56,7 +56,7 @@ void askOption(int *option, int min, int max)
 
 void printLogo()
 {
-    iSetColor(6);
+    setColor(MAGENTA);
     printf(" /$$      /$$  /$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$  /$$$$$$ \n");
     printf("| $$$    /$$$ /$$__  $$| $$$ | $$|__  $$__/|_  $$_/ /$$__  $$\n");
     printf("| $$$$  /$$$$| $$  \\ $$| $$$$| $$   | $$     | $$  | $$  \\__/\n");
@@ -65,7 +65,7 @@ void printLogo()
     printf("| $$\\  $ | $$| $$  | $$| $$\\  $$$   | $$     | $$   /$$  \\ $$\n");
     printf("| $$ \\/  | $$| $$  | $$| $$ \\  $$   | $$    /$$$$$$|  $$$$$$/\n");
     printf("|__/     |__/|__/  |__/|__/  \\__/   |__/   |______/ \\______/ \n");
-    iSetColor(0);
+    setColor(WHITE);
 }
 
 void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
@@ -82,7 +82,7 @@ void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
             if (i == nav->selectedOption)
             {
                 iSetColor(7);
-                printf("\n  %s <<\n", navOptions[i]);
+                printf("\n  >> %s\n", navOptions[i]);
                 iSetColor(0);
             }
             else
