@@ -50,6 +50,13 @@
 #define ACTIVE 105
 #define INACTIVE 106
 
+#define w_KEY 119
+#define W_KEY 87
+#define s_KEY 115
+#define S_KEY 83
+#define ENTER_KEY 13
+
+
 typedef char String36[STR36];
 typedef char String100[STR100];
 typedef char Color;
@@ -107,7 +114,9 @@ typedef struct
 
 typedef struct 
 {
-    int input;
+    int x, y;
+
+    int kbInput;
     int selectedOption;
     bool optionSelected;
 } Navigator;
@@ -148,6 +157,7 @@ typedef struct
 void mainMenu(Game *m);
 void askOption(int *option, int min, int max);
 void printLogo();
+void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount);
 
 // Deck Function Prototypes
 Card drawCard(Game *m);
@@ -184,7 +194,7 @@ void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard);
 void calculateScore(Player *currentPlayer);
 void displayPlayerState(Game *m, int playerType);
 void displayWinner(Game *g);
-void promptPlayerMove(Game *m, int *option);
+void promptPlayerMove(Game *m);
 void tryToScore(Game *m);
 void tryToSteal(Game *m);
 void promptSteal(Game *m);
@@ -222,5 +232,6 @@ void iSetColor(int color);
 void setColor(Color currentColor);
 void pauseScreen(double seconds);
 void waitEnter();
+void getCursorPosition(int *x, int *y);
 
 #endif // DEFS_H;

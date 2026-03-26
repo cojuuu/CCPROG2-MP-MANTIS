@@ -105,4 +105,48 @@ void printLogo()
     iSetColor(0);
 }
 
+void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
+{
+    int i;
+    nav->selectedOption = 0;
+    nav->optionSelected = false;
+
+    getCursorPosition(&nav->x, &nav->y);
+    do
+    {
+        for (i = 0; i < optionCount; i++)
+        {
+            if (i == nav->selectedOption)
+            {
+                iSetColor(7);
+                printf("\n  %s <<\n", navOptions[i]);
+                iSetColor(0);
+            }
+            else
+            {
+                printf("\n%s\n", navOptions[i]);
+            }
+        }
+
+        nav->kbInput = getch();
+
+        switch (nav->kbInput)
+        {
+            case w_KEY:
+            case W_KEY: nav->selectedOption--; break;
+            case s_KEY:
+            case S_KEY: nav->selectedOption++; break;
+            case ENTER_KEY: nav->optionSelected = true; break;
+        }
+
+        if (nav->selectedOption > optionCount - 1)
+            nav->selectedOption = 0;
+        else if (nav->selectedOption < 0)
+            nav->selectedOption = optionCount - 1;
+
+        if (!nav->optionSelected)
+            iClear(nav->x, nav->y, 50, optionCount * 2);
+    } while (!nav->optionSelected);
+}
+
 #endif // MENU_C;

@@ -46,8 +46,6 @@ void setUpGame(Game *m)
  */
 void gameLoop(Game *m)
 {
-    int option;
-
     do
     {
         for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
@@ -56,12 +54,12 @@ void gameLoop(Game *m)
             displayTopDeck(m);
             displayPlayerState(m, ACTIVE);
 
-            promptPlayerMove(m, &option);
+            promptPlayerMove(m);
 
-            switch(option)
+            switch(m->nav.selectedOption)
             {
-                case 1: tryToScore(m); break;
-                case 2: tryToSteal(m); break;
+                case 0: tryToScore(m); break;
+                case 1: tryToSteal(m); break;
             }
             waitEnter();
             iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
@@ -218,20 +216,27 @@ void displayTopDeck(Game *m)
  */
 void promptSteal(Game *m)
 {
-    printf("\nWho would you like to steal from?\n");
-    for (int i = 0; i < m->playerCount - 1; i++)
-    {
-        printf("  [%d] ", i + 1);
-        if (i >= m->currentPlayer)
-            printf("%s", m->activePlayers[i + 1].username);
-        else
-            printf("%s", m->activePlayers[i].username);
-        printf("\n");
-    }
-    askOption(&m->stolenPlayer, 1, m->playerCount - 1);
+    String36 stealOptions[MAX_PLAYERS];
+    int optionsAdded = 0;
+    int i;
 
-    if (m->stolenPlayer <= m->currentPlayer)
-        m->stolenPlayer -= 1;
+    for (i = 0; i < m->playerCount; i++)
+    {
+        if (i != m->currentPlayer)
+        {
+            strcpy(stealOptions[optionsAdded], m->activePlayers[i].username);
+            optionsAdded++;
+        }
+    }
+
+    getCursorPosition(&m->nav.x, &m->nav.y);
+    iClear(m->nav.x, m->nav.y - 5, 50, 5);
+    printf("%s, who would you like to steal from?\n", m->activePlayers[m->currentPlayer].username);
+    interactiveMenu(&m->nav, stealOptions, m->playerCount - 1);
+    m->stolenPlayer = m->nav.selectedOption;
+
+    if (m->stolenPlayer >= m->currentPlayer)
+        m->stolenPlayer++;
 }
 
 /**
@@ -239,12 +244,12 @@ void promptSteal(Game *m)
  * @param currentPlayer The index of the currnet player making the move
  * @param option A pointer to the user's chosen option
  */
-void promptPlayerMove(Game *m, int *option)
+void promptPlayerMove(Game *m)
 {
+    String36 playerMoves[] = {"S C O R E", "S T E A L"};
+
     printf("\n%s, what would you like to do?\n", m->activePlayers[m->currentPlayer].username);
-    printf("  [1] Try to Score\n");
-    printf("  [2] Try to Steal\n");
-    askOption(option, 1, 2);
+    interactiveMenu(&m->nav, playerMoves, 2);
 }
 
 /**
