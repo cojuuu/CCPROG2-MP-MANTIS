@@ -212,6 +212,29 @@ void displayTopDeck(Game *m)
 }
 
 /**
+ * Prompts the current player on which player they want to steal from
+ * @param m A pointer to the game structure containing the game data
+ * @param option A pointer to the user's chosen option
+ */
+void promptSteal(Game *m)
+{
+    printf("\nWho would you like to steal from?\n");
+    for (int i = 0; i < m->playerCount - 1; i++)
+    {
+        printf("  [%d] ", i + 1);
+        if (i >= m->currentPlayer)
+            printf("%s", m->activePlayers[i + 1].username);
+        else
+            printf("%s", m->activePlayers[i].username);
+        printf("\n");
+    }
+    askOption(&m->stolenPlayer, 1, m->playerCount - 1);
+
+    if (m->stolenPlayer <= m->currentPlayer)
+        m->stolenPlayer -= 1;
+}
+
+/**
  * Prompts the user to choose between scoring or stealing during their turn
  * @param currentPlayer The index of the currnet player making the move
  * @param option A pointer to the user's chosen option
@@ -329,29 +352,6 @@ void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard)
             i--;
         }
     }
-}
-
-/**
- * Prompts the current player on which player they want to steal from
- * @param m A pointer to the game structure containing the game data
- * @param option A pointer to the user's chosen option
- */
-void promptSteal(Game *m)
-{
-    printf("\nWho would you like to steal from?\n");
-    for (int i = 0; i < m->playerCount - 1; i++)
-    {
-        printf("  [%d] ", i + 1);
-        if (i >= m->currentPlayer)
-            printf("%s", m->activePlayers[i + 1].username);
-        else
-            printf("%s", m->activePlayers[i].username);
-        printf("\n");
-    }
-    askOption(&m->stolenPlayer, 1, m->playerCount - 1);
-
-    if (m->stolenPlayer <= m->currentPlayer)
-        m->stolenPlayer -= 1;
 }
 
 /**

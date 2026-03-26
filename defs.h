@@ -105,6 +105,14 @@ typedef struct
     int shuffleSeed;   // Shuffle seed for shuffling cards
 } Config;
 
+typedef struct 
+{
+    int input;
+    int selectedOption;
+    bool optionSelected;
+} Navigator;
+
+
 /**
  * Represents the game structure of Mantis
  */
@@ -132,6 +140,8 @@ typedef struct
     Card drawnCard; // Drawn card from draw pile
 
     Config settings; // Game configuration of Mantis
+
+    Navigator nav;
 } Game;
 
 // Menu Function Prototypes
