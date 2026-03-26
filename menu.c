@@ -20,50 +20,13 @@
  */
 void mainMenu(Game *m)
 {
-    char *menuOptions[] = {"N E W  G A M E\n", "T O P  P L A Y E R S\n", "S E T T I N G S\n", "E X I T\n"};
-    int selectedOption = 0;
-    int input;
-    bool optionSelected = false;
-
-    do
-    {
-        printLogo();
-        printf("\nMAIN MENU\n\n");
-
-        for (int i = 0; i < 4; i++)
-        {
-            if (i == selectedOption)
-            {
-                iSetColor(6);
-                printf("\n\t%s\n", menuOptions[i]);
-                iSetColor(0);
-            }
-            else
-            {
-                printf("%s\n", menuOptions[i]);
-            }
-        }
-
-        input = getch();
-
-        switch(input)
-        {
-            case 'w': 
-            case 'W': selectedOption-= 1; break;
-            case 's': 
-            case 'S': selectedOption+= 1; break;
-            case 13: optionSelected = true; break; // enter key
-        }
-
-        if (selectedOption > 3)
-            selectedOption = 0;
-        else if (selectedOption < 0)
-            selectedOption = 3;
-
-        iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
-    } while (!optionSelected);
-
-    switch(selectedOption)
+    String36 menuOptions[] = {"N E W  G A M E", "T O P  P L A Y E R S", "S E T T I N G S", "E X I T"};
+    
+    printLogo();
+    printf("\nMAIN MENU\n");
+    interactiveMenu(&m->nav, menuOptions, 4);
+    iClear(0, 0, CONSOLE_WIDTH, 20);
+    switch(m->nav.selectedOption)
     {
         case 0: newGame(m); break;
         case 1: leaderBoard(m); break;
@@ -144,8 +107,7 @@ void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
         else if (nav->selectedOption < 0)
             nav->selectedOption = optionCount - 1;
 
-        if (!nav->optionSelected)
-            iClear(nav->x, nav->y, 50, optionCount * 2);
+        iClear(nav->x, nav->y, 50, optionCount * 2);
     } while (!nav->optionSelected);
 }
 
