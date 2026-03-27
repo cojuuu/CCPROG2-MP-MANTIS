@@ -22,7 +22,6 @@ void gameSettings(Game *m)
 {
     String36 settingOptions[] = {"S E T  W I N N I N G  P O I N T S", "S E T  S H U F F L E  S E E D", "R E S T O R E  T O  D E F A U L T", "B A C K"};
     
-    iClear(0, 0, 60, 25);
     printLogo();
     printf("\nSETTINGS\n");
     loadSettings(m);
@@ -39,8 +38,17 @@ void gameSettings(Game *m)
     {
         case 0: setWinningPoints(m); break;
         case 1: setShuffleSeed(m); break;
-        case 2: m->settings = defaultSettings(); saveGameSettings(m); gameSettings(m); break;
-        case 3: saveGameSettings(m); iClear(0, 0, MANTIS_LOGO_WIDTH, SETTINGS_MENU_HEIGHT); mainMenu(m); break;
+        case 2: 
+            m->settings = defaultSettings(); 
+            saveGameSettings(m); 
+            iClear(0, 0, MANTIS_LOGO_WIDTH, SETTINGS_MENU_HEIGHT); 
+            gameSettings(m); 
+            break;
+        case 3: 
+            saveGameSettings(m); 
+            iClear(0, 0, MANTIS_LOGO_WIDTH, SETTINGS_MENU_HEIGHT); 
+            mainMenu(m); 
+            break;
     }
 }
 

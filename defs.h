@@ -41,8 +41,8 @@
 #define PURPLE 'V'
 #define MAGENTA 'M'
 #define GRAY 'A'
-#define CONSOLE_WIDTH 80
-#define CONSOLE_HEIGHT 80
+#define CONSOLE_WIDTH 100
+#define CONSOLE_HEIGHT 40
 #define BIG 101
 #define SMALL 102
 #define FRONT 103
@@ -50,6 +50,7 @@
 #define ACTIVE 105
 #define INACTIVE 106
 
+#define MANTIS_LOGO_HEIGHT 8
 #define MANTIS_LOGO_WIDTH 65
 #define SETTINGS_MENU_HEIGHT 25
 
@@ -235,7 +236,7 @@ void iShowCursor();
 void iSetColor(int color);
 void setColor(Color currentColor);
 void pauseScreen(double seconds);
-void waitEnter();
+void waitEnter(char *message);
 void getCursorPosition(int *x, int *y);
 
 #endif // DEFS_H;

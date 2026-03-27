@@ -179,9 +179,9 @@ void pauseScreen(double seconds)
 /* This function waits for the user to press enter to continue the program
 @return (void)
 */
-void waitEnter()
+void waitEnter(char *message)
 {
-  printf("\nPress enter to continue...\n");
+  printf("\n%s\n", message);
   getchar();
 }
 

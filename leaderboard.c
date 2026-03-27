@@ -21,55 +21,18 @@
  */
 void leaderBoard(Game *m)
 {
-    char *lbOptions[] = {"T O P  P L A Y E R S (\033[3mWINS\033[0m)\n", "T O P  P L A Y E R S (\033[3mSCORE\033[0m)\n"};
-    int selectedOption = 0;
-    int input;
-    bool optionSelected = false;
+    String36 lbOptions[] = {"T O P  P L A Y E R S (WIN)", "T O P  P L A Y E R S (SCORE)", "B A C K"};
 
-    do
-    {
-        printLogo();
-        printf("\nLEADERBOARD\n\n");
-
-        for (int i = 0; i < 2; i++)
-        {
-            if (i == selectedOption)
-            {
-                iSetColor(6);
-                printf("\n\t%s\n", lbOptions[i]);
-                iSetColor(0);
-            }
-            else
-            {
-                printf("%s\n", lbOptions[i]);
-            }
-        }
-
-        input = getch();
-
-        switch(input)
-        {
-            case 'w': 
-            case 'W': selectedOption-= 1; break;
-            case 's': 
-            case 'S': selectedOption+= 1; break;
-            case 13: optionSelected = true; break; // enter key
-        }
-
-        if (selectedOption > 3)
-            selectedOption = 0;
-        else if (selectedOption < 0)
-            selectedOption = 3;
-
-        iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
-    } while (!optionSelected);
+    printLogo();
+    printf("\nLEADERBOARD\n");
+    interactiveMenu(&m->nav, lbOptions, 3);
 
     loadPlayerData(m);
-
-    switch(selectedOption)
+    switch(m->nav.selectedOption)
     {
         case 0: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
         case 1: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
+        case 2: iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT); mainMenu(m); break;
     }
 }
 
@@ -114,14 +77,13 @@ void sortPlayers(Game *m, int sortType)
  */
 void displayLeaderboard(Game *m, int displayType)
 {
-     bool emptyPlayerFound = false;
+    bool emptyPlayerFound = false;
     int i = 0;
 
+    iClear(0, 0, MANTIS_LOGO_WIDTH, MANTIS_LOGO_HEIGHT);
     printLogo();
-    
-    printf("\nTOP PLAYERS\n\n");
-    printf("              P L A Y E R  R A N K I N G\n\n");
-   
+    printf("\nTOP PLAYERS\n");
+    printf("\n              P L A Y E R  R A N K I N G\n");   
 
     if (displayType == BY_WINS)
     {
@@ -143,14 +105,14 @@ void displayLeaderboard(Game *m, int displayType)
                 if(i == 3)
                 {
                 printf("     +------+----------------------+------------+\n");
-                printf("     | RANK | USERNAME             | SCORE      |\n");
+                printf("     | RANK | USERNAME             | WINS       |\n");
                 printf("     +------+----------------------+------------+\n");
                 }
             printf("     | %-4d | %-20s | %-10d |\n", i + 1, m->playerData[i].username, m->playerData[i].wins);
             }
             }
         }
-        printf("      +------+----------------------+------------+\n");
+        printf("     +------+----------------------+------------+\n");
     }
     else if (displayType == BY_SCORE)
     {
@@ -178,10 +140,16 @@ void displayLeaderboard(Game *m, int displayType)
             printf("      | %-4d | %-20s | %-10d |\n", i + 1, m->playerData[i].username, m->playerData[i].totalScore);
             }
         }
-        printf("    +------+----------------------+------------+\n");
+        printf("      +------+----------------------+------------+\n");
     }
-}
 
+    setColor(MAGENTA);
+    waitEnter("\t    Press enter to go back...");
+    setColor(WHITE);
+
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    leaderBoard(m);
+}
 
 /**
  * Displays the podium for the top 3 players depending on the display type
@@ -194,7 +162,7 @@ void displayPodium(Game *m, int displayType)
     int boxWidth = 16;
     int nameLen, totalSpace, leftSpace, rightSpace;
 
-    if(displayType == BY_WINS)
+    if (displayType == BY_WINS)
     {
         iSetColor(4);
         nameLen = strlen(m->playerData[0].username);
@@ -225,7 +193,8 @@ void displayPodium(Game *m, int displayType)
         printf("|________________||________________||________________|\n\n\n");           
 
          iSetColor(0);
-    }else if(displayType == BY_SCORE)
+    }
+    else if(displayType == BY_SCORE)
     {
         iSetColor(4);
         nameLen = strlen(m->playerData[0].username);
@@ -257,7 +226,6 @@ void displayPodium(Game *m, int displayType)
 
          iSetColor(0);
     }
-    
 }
 
 #endif // LEADERBOARD_C; 

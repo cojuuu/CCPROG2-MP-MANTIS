@@ -31,7 +31,7 @@ int main()
 {
     Game m;
     memset(&m, 0, sizeof(m));
-    iClear(0, 0, 1, 1);
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
     mainMenu(&m);
 
     return 0;

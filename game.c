@@ -68,7 +68,7 @@ void gameLoop(Game *m)
                 case 0: tryToScore(m); break;
                 case 1: tryToSteal(m); break;
             }
-            waitEnter();
+            waitEnter("Press enter to continue...");
             iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
 
             checkWinner(m);

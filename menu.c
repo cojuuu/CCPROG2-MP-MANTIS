@@ -10,7 +10,12 @@
 #define MENU_C
 
 #include <stdio.h>
+
+#ifdef _WIN32
 #include <conio.h>
+#else
+#include "conhelper.h"
+#endif
 
 #include "defs.h"
 
