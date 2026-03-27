@@ -22,11 +22,10 @@ void mainMenu(Game *m)
 {
     String36 menuOptions[] = {"N E W  G A M E", "T O P  P L A Y E R S", "S E T T I N G S", "E X I T"};
     
-    iClear(0, 0, 50, 50);
     printLogo();
     printf("\nMAIN MENU\n");
     interactiveMenu(&m->nav, menuOptions, 4);
-    iClear(0, 0, CONSOLE_WIDTH, 20);
+    iClear(0, 0, MANTIS_LOGO_WIDTH, 20);
     switch(m->nav.selectedOption)
     {
         case 0: newGame(m); break;

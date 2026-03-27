@@ -50,6 +50,10 @@
 #define ACTIVE 105
 #define INACTIVE 106
 
+#define MANTIS_LOGO_WIDTH 65
+#define SETTINGS_MENU_HEIGHT 25
+
+
 #define w_KEY 119
 #define W_KEY 87
 #define s_KEY 115

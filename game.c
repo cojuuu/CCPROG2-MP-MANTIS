@@ -237,7 +237,7 @@ void promptSteal(Game *m)
     }
 
     getCursorPosition(&m->nav.x, &m->nav.y);
-    iClear(m->nav.x, m->nav.y - 5, 50, 5);
+    iClear(m->nav.x, m->nav.y - 1, 50, 5);
     printf("%s, who would you like to steal from?\n", m->activePlayers[m->currentPlayer].username);
     interactiveMenu(&m->nav, stealOptions, m->playerCount - 1);
     m->stolenPlayer = m->nav.selectedOption;
