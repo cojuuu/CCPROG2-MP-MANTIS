@@ -15,6 +15,8 @@
 * Link: https://www.geeksforgeeks.org/dsa/bubble-sort-algorithm/
 * 
 * Link: https://stackoverflow.com/questions/17125440/c-win32-console-color
+https://github.com/zohaibwarraich1/conio.h-alternative/blob/main/conhelper.h
+https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type+Something+&x=none&v=4&h=4&w=80&we=false
 */
 
 /* ----- preprocessor directives ----- */

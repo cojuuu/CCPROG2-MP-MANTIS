@@ -10,6 +10,7 @@
 #define MENU_C
 
 #include <stdio.h>
+#include <string.h>
 
 #ifdef _WIN32
 #include <conio.h>
@@ -86,9 +87,9 @@ void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
         {
             if (i == nav->selectedOption)
             {
-                iSetColor(7);
+                setColor(MAGENTA);
                 printf("\n  >> %s\n", navOptions[i]);
-                iSetColor(0);
+                setColor(WHITE);
             }
             else
             {
@@ -100,10 +101,10 @@ void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
 
         switch (nav->kbInput)
         {
-            case w_KEY:
-            case W_KEY: nav->selectedOption--; break;
-            case s_KEY:
-            case S_KEY: nav->selectedOption++; break;
+            case 'w':
+            case 'W': nav->selectedOption--; break;
+            case 's':
+            case 'S': nav->selectedOption++; break;
             case ENTER_KEY: nav->optionSelected = true; break;
         }
 
@@ -112,7 +113,71 @@ void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
         else if (nav->selectedOption < 0)
             nav->selectedOption = optionCount - 1;
 
-        iClear(nav->x, nav->y, 50, optionCount * 2);
+        iClear(nav->x, nav->y, CONSOLE_WIDTH, optionCount * 2);
+    } while (!nav->optionSelected);
+}
+
+void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int rowOptCount, int colOptCount)
+{
+    int x, y;
+    nav->selected.x = 0;
+    nav->selected.y = 0;
+    nav->optionSelected = false;
+
+    getCursorPosition(&nav->cursorPos.x, &nav->cursorPos.y);
+    do
+    {
+        for (y = 0; y < rowOptCount; y++)
+        {
+            for (x = 0; x < colOptCount; x++)
+            {
+                if ((x == nav->selected.x) && (y == nav->selected.y))
+                {
+                    setColor(MAGENTA);
+                    printf(">> %-36s", navOptions[y][x]);
+                    setColor(WHITE);
+                }
+                else
+                {
+                    printf("   %-36s", navOptions[y][x]);
+                }
+            }
+            printf("\n\n");
+        }
+
+        nav->kbInput = getch();
+
+        switch (nav->kbInput)
+        {
+            case 'w':
+            case 'W': 
+                nav->selected.y--; 
+                break;
+            case 's':
+            case 'S': 
+                nav->selected.y++; 
+                break;
+            case 'a':
+            case 'A': 
+                nav->selected.x--; 
+                break;
+            case 'd':
+            case 'D': 
+                nav->selected.x++;  
+                break;
+            case ENTER_KEY: nav->optionSelected = true; break;
+        }
+
+        if (nav->selected.y > rowOptCount - 1)
+            nav->selected.y = 0;
+        else if (nav->selected.y < 0)
+            nav->selected.y = rowOptCount - 1;
+        else if (nav->selected.x > colOptCount - 1)
+            nav->selected.x = 0;
+        else if (nav->selected.x < 0)
+            nav->selected.x = colOptCount - 1;
+
+        iClear(nav->cursorPos.x, nav->cursorPos.y, CONSOLE_WIDTH, rowOptCount * 2);
     } while (!nav->optionSelected);
 }
 

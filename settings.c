@@ -41,12 +41,12 @@ void gameSettings(Game *m)
         case 2: 
             m->settings = defaultSettings(); 
             saveGameSettings(m); 
-            iClear(0, 0, MANTIS_LOGO_WIDTH, SETTINGS_MENU_HEIGHT); 
+            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT); 
             gameSettings(m); 
             break;
         case 3: 
             saveGameSettings(m); 
-            iClear(0, 0, MANTIS_LOGO_WIDTH, SETTINGS_MENU_HEIGHT); 
+            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT); 
             mainMenu(m); 
             break;
     }
@@ -71,12 +71,12 @@ void setWinningPoints(Game *m)
         {
             setColor(RED);
             printf("  Minimum of 20 win points. Maximum of 100 win points. Please enter another value!");
-            iClear(m->nav.x, m->nav.y, 100, 2);
+            iClear(m->nav.x, m->nav.y, CONSOLE_WIDTH, 2);
         }
     } while (m->settings.winningPoints < DEFAULT_WIN_POINTS || m->settings.winningPoints > MAX_WIN_POINTS);
 
     getCursorPosition(&m->nav.x, &m->nav.y);
-    iClear(m->nav.x, m->nav.y, 100, 1);
+    iClear(m->nav.x, m->nav.y, CONSOLE_WIDTH, 1);
     setColor(GREEN);
     printf("   Winning points was successfully changed!\n"); 
     setColor(WHITE);
@@ -87,7 +87,7 @@ void setWinningPoints(Game *m)
         printf(".");
         pauseScreen(2.0);
     }
-    iClear(0, 0, 100, 50);
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
     saveGameSettings(m);
     gameSettings(m);
 }

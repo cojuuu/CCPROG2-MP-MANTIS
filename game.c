@@ -190,7 +190,7 @@ void displayPlayerState(Game *m, int playerType)
         {
             if (i != m->currentPlayer)
             {
-                printf("[%s]\n", m->activePlayers[i].username);
+                printf("%s ", m->activePlayers[i].username);
                 displayFrontSideDeck(m->activePlayers[i].tank, SMALL);
                 printf("\n");
                 printf("[Score: %d]\n\n", m->activePlayers[i].scorePile.totalScore);
@@ -199,8 +199,9 @@ void displayPlayerState(Game *m, int playerType)
     }
     else if (playerType == ACTIVE)
     {
-        printf("\n[%s]\n", m->activePlayers[m->currentPlayer].username);
+        printf("\n");
         displayFrontSideDeck(m->activePlayers[m->currentPlayer].tank, BIG);
+        printf("\t%s  ", m->activePlayers[m->currentPlayer].username);
         printf("[Score]: %d\n", m->activePlayers[m->currentPlayer].scorePile.totalScore);
     }
 }

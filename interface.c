@@ -65,7 +65,7 @@ void iClear(int x, int y, int width, int height)
     {
       printf(" ");
     }
-    printf("\n");
+    // printf("\n");
   }
   iMoveCursor(x, y);
 }

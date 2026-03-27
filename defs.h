@@ -54,13 +54,9 @@
 #define MANTIS_LOGO_WIDTH 65
 #define SETTINGS_MENU_HEIGHT 25
 
-
-#define w_KEY 119
-#define W_KEY 87
-#define s_KEY 115
-#define S_KEY 83
 #define ENTER_KEY 13
 
+#define MAX_OPT_COL 3
 
 typedef char String36[STR36];
 typedef char String100[STR100];
@@ -83,6 +79,12 @@ typedef struct
 {
     int white, red, blue, green, yellow, cyan, purple;
 } Counter;
+
+typedef struct
+{
+    int x, y;
+} Cord;
+
 
 /**
  * Represents a deck
@@ -119,10 +121,15 @@ typedef struct
 
 typedef struct 
 {
-    int x, y;
+    int x;
+    int y;
 
     int kbInput;
     int selectedOption;
+
+    Cord cursorPos;
+    Cord selected;
+
     bool optionSelected;
 } Navigator;
 
@@ -142,6 +149,8 @@ typedef struct
 
     int sameColorPoints; // Total points of the cards with the same color as drawn card
     int sameColorCount;  // Amount of cards with the same color as drawn card
+
+    int chosenPlayer;
 
     bool gameOver; // Flag indicating if the game is over
     bool foundWinner; // Flag indicating if the winner was found
@@ -163,6 +172,7 @@ void mainMenu(Game *m);
 void askOption(int *option, int min, int max);
 void printLogo();
 void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount);
+void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int rowOptCount, int colOptCount);
 
 // Deck Function Prototypes
 Card drawCard(Game *m);
@@ -188,7 +198,7 @@ void checkSpecialWinner(Game *g);
 // Player Function Prototypes
 void selectPlayers(Game *m);
 void displayChosenPlayers(Game *m);
-void displayAvailPlayers(Game *m, int playersChosen, int selectedPlayer);
+void displayAvailPlayers(Game *m, int playersChosen);
 void adjustPlayerArr(Game *m, int selectedPlayer);
 void addNewPlayer(Game *m);
 bool playerFound(Game *m, String36 newPlayer);
@@ -204,6 +214,7 @@ void tryToScore(Game *m);
 void tryToSteal(Game *m);
 void promptSteal(Game *m);
 void updatePlayerData(Game *g);
+int searchPlayer(String36 currentPlayer, Player playerList[]);
 
 // Leaderboard Function Prototypes
 void leaderBoard(Game *m);

@@ -21,128 +21,55 @@
  */
 void selectPlayers(Game *m)
 {
-    char *playerCountOption[] = {"3 Players   ", "4 Players\n",
-         "5 Players   ", "6 Players\n"};
-    int selectedPlayerCount = 0;
-    int input;
-    bool playerCountSelected = false;
-    int i;
+    String36 playerCountOptions[][MAX_OPT_COL] = {{"3 Players", "4 Players"},
+                                                  {"5 Players", "6 Players"}};
     bool playerDataLoaded;
-   
-    do
-    {        
-         printf("-----------------------------------------\n\n");
-         printf("        [ PLAYER CONFIGURATION ]              \n\n");
-         printf("-----------------------------------------\n\n");
-         printf("    Please define player count (%d-%d):        \n\n\n", MIN_PLAYERS, MAX_PLAYERS);
+    int i;
 
-        for (int i = 0; i < 4; i++)
-        {
-            if (i == selectedPlayerCount)
-            {
-                iSetColor(6);
-                printf("\t%s", playerCountOption[i]);
-                iSetColor(0);
-            }
-            else
-            {
-                printf("\t%s", playerCountOption[i]);
-            }
-        }
+    printf("-----------------------------------------\n\n");
+    printf("        [ PLAYER CONFIGURATION ]              \n\n");
+    printf("-----------------------------------------\n\n");
+    printf("    Please define player count (%d-%d):        \n\n\n", MIN_PLAYERS, MAX_PLAYERS);
+    interactiveMenu2D(&m->nav, playerCountOptions, 2, 2);
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
 
-        printf("\n-----------------------------------------\n");
+    if (m->nav.selected.x == 0 && m->nav.selected.y == 0)
+        m->playerCount = 3;
+    else if (m->nav.selected.x == 1 && m->nav.selected.y == 0)
+        m->playerCount = 4;
+    else if (m->nav.selected.x == 0 && m->nav.selected.y == 1)
+        m->playerCount = 5;
+    else if (m->nav.selected.x == 1 && m->nav.selected.y == 1)
+        m->playerCount = 6;
 
-        input = getch();
-
-        switch(input)
-        {
-            case 'w': 
-            case 'W': selectedPlayerCount-= 1; break;
-            case 's': 
-            case 'S': selectedPlayerCount+= 1; break;
-            case 13: playerCountSelected = true; break; // enter key
-        }
-
-        if (selectedPlayerCount > 3)
-        {
-            selectedPlayerCount = 0;
-        }
-        else if (selectedPlayerCount < 0)
-        {
-            selectedPlayerCount = 3;
-        }
-
-            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
-    } while (!playerCountSelected);
-
-    switch(selectedPlayerCount)
-    {
-        case 0: m->playerCount = 3; break;
-        case 1: m->playerCount = 4; break;
-        case 2: m->playerCount = 5; break;
-        case 3: m->playerCount = 6; break;
-    }
-
-    printf("\n--------------------------------------------------------\n\n");
-
-    for (i = 0; i < m->playerCount; i++)
-    {
-        m->activePlayers[i] = emptyPlayer();
-    }
-    
-    // Load player file
     playerDataLoaded = loadPlayerData(m);
     
     if (playerDataLoaded)
     {
         for (i = 0; i < m->playerCount; i++)
         {
-            int selectedPlayer = 0;
-            bool playerSelected = false;
-
-            do{
             displayChosenPlayers(m);
+            displayAvailPlayers(m, i);
 
-            printf("\n>> Select Player %d\n\n", i + 1);
-
-            displayAvailPlayers(m, i, selectedPlayer);
-
-            input = getch();
-
-             switch(input)
+            if (m->chosenPlayer == -1)
             {
-                case 'w': 
-                case 'W': selectedPlayer-= 1; break;
-                case 's': 
-                case 'S': selectedPlayer+= 1; break;
-                case 13: playerSelected = true; break; // enter key
-            }
-
-             int maxOption = m->totalPlayers - i;
-             if(selectedPlayer > maxOption)
-             {
-                 selectedPlayer = 0;
-             } else if (selectedPlayer < 0)
-             {
-                 selectedPlayer = maxOption;
-             }
-
-                iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
-            } while (!playerSelected);
-
-            if(selectedPlayer == 0) 
-            {
-                    addNewPlayer(m); 
-                    i--;
+                addNewPlayer(m);
+                i--;
             }
             else
-            {
-                    m->activePlayers[i] = m->playerData[selectedPlayer - 1]; 
-                    adjustPlayerArr(m, selectedPlayer - 1);
+            { 
+                m->activePlayers[i] = m->playerData[m->chosenPlayer];
+                adjustPlayerArr(m, m->chosenPlayer);
             }
+
+            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+        }
+            /*
         displayChosenPlayers(m);
         iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
          }
+        }
+        */
     }
 }
 
@@ -153,34 +80,33 @@ void selectPlayers(Game *m)
 void displayChosenPlayers(Game *m)
 {
     int i;
-    int currentPlayer = 0;
-        for(i = 0; i < m->playerCount; i++)
-        {
-            if(strcmp(m->activePlayers[i].username, "") != 0)
-            currentPlayer++;
-        }
+    int nChosenPlayers = 0;
 
-    printf("INITIALIZING PLAYERS...");
-    iSetColor(6);
-    printf("                            %d / %d\n\n\n", currentPlayer, m->playerCount);
-    iSetColor(0);
-
-    int playerRow;
-    int playersPerRow = 3;
-
-    for (playerRow = 0; playerRow < m->playerCount; playerRow += playersPerRow)
+    for(i = 0; i < m->playerCount; i++)
     {
-        for (i = playerRow; i < playerRow + playersPerRow && i < m->playerCount; i++)
+        if(strcmp(m->activePlayers[i].username, "") != 0)
+            nChosenPlayers++;
+    }
+
+    printf("\n--------------------------------------------------------\n");
+    printf("\nINITIALIZING PLAYERS...");
+    setColor(MAGENTA);
+    printf("                            %d / %d\n\n\n", nChosenPlayers, m->playerCount);
+    setColor(WHITE);
+
+    for (i = 0; i < m->playerCount; i++)
+    {
+        if (strcmp(m->activePlayers[i].username, "") == 0)
+            printf("  [ PLAYER %d: ? ]  ", i + 1);
+        else
         {
-            if (strcmp(m->activePlayers[i].username, "") == 0)
-                printf("  [ PLAYER %d: ? ]  ", i + 1);
-            else{
-                iSetColor(6);
-                printf("  [ PLAYER %d: %s ]  ", i + 1, m->activePlayers[i].username);
-                iSetColor(0); // Reset color
-            }
+            setColor(MAGENTA);
+            printf("  [ PLAYER %d: %s ]  ", i + 1, m->activePlayers[i].username);
+            setColor(WHITE);
         }
-        printf("\n\n");
+
+        if (i % 3 == 2)
+            printf("\n\n");
     }
 }
 
@@ -190,37 +116,33 @@ void displayChosenPlayers(Game *m)
  * @param playersChosen Amount of players already chosen
  * @param selectedPlayer Index of the currently selected player
  */
-void displayAvailPlayers(Game *m, int playersChosen, int selectedPlayer)
+void displayAvailPlayers(Game *m, int playersChosen)
 {
+    String36 selectPlayerOptions[17][MAX_OPT_COL];
     int i;
-    int inRow = 1;
+    int col = 0, row = 0;
 
-    if(selectedPlayer == 0)
+    memset(selectPlayerOptions, 0, sizeof(selectPlayerOptions));
+
+    strcpy(selectPlayerOptions[0][0], "[Add new player]");
+    col = 1;
+
+    for (i = 0; i < m->totalPlayers; i++)
     {
-        iSetColor(6);
-        printf("  >[0] <Add new player>< ");
-        iSetColor(0);
-    }else
-        printf("  [0] <Add new player> ");
-
-     for (i = 0; i < m->totalPlayers - playersChosen; i++)
-    {
-        if (i + 1 == selectedPlayer)
+        if (col == MAX_OPT_COL)
         {
-            iSetColor(6);
-            printf("  >[%d] %-16s< ", i + 1, m->playerData[i].username);
-            iSetColor(0);
+            col = 0;
+            row++;
         }
-        else
-        printf("  [%d] %-16s", i + 1, m->playerData[i].username);
-        inRow++;
 
-        if(inRow % 3 == 0)
-        {
-            printf("\n\n");
-        }
+        strcpy(selectPlayerOptions[row][col], m->playerData[i].username);
+        col++;
     }
-    printf("\n");
+
+    printf("\nSELECT PLAYER %d\n\n\n", playersChosen + 1);
+    interactiveMenu2D(&m->nav, selectPlayerOptions, row + 1, MAX_OPT_COL);
+
+    m->chosenPlayer = searchPlayer(selectPlayerOptions[m->nav.selected.y][m->nav.selected.x], m->playerData);
 }
 
 /**
@@ -338,6 +260,26 @@ Player emptyPlayer()
     Player p = {"", 0, 0};
 
     return p;
+}
+
+int searchPlayer(String36 currentPlayer, Player playerList[])
+{
+    int i = 0;
+    int playerIndex = -1;
+    bool playerFound = false;
+
+    do
+    {
+        if (strcmp(currentPlayer, playerList[i].username) == 0)
+        {
+            playerIndex = i;
+            playerFound = true;
+        }
+
+        i++;
+    } while (!playerFound);
+    
+    return playerIndex;
 }
 
 #endif // PLAYER_C;
