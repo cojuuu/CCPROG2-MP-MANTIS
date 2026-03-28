@@ -60,6 +60,10 @@ void askOption(int *option, int min, int max)
     } while (*option < min || max < *option);
 }
 
+/**
+ * Prints the logo of Mantis
+ * @return void
+*/
 void printLogo()
 {
     setColor(MAGENTA);
@@ -74,6 +78,13 @@ void printLogo()
     setColor(WHITE);
 }
 
+/**
+ * WS interactive menu
+ * @param nav A pointer to the navigator variable (kbInput, selectedOption, cursorPos, selected, optionSelected)
+ * @param navOptions Navigation options
+ * @param optionCount Amount of navigation options
+ * @return void
+*/
 void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
 {
     int i;
@@ -117,6 +128,14 @@ void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
     } while (!nav->optionSelected);
 }
 
+/**
+ * WASD interactive menu
+ * @param nav A pointer to the navigator variable (kbInput, selectedOption, cursorPos, selected, optionSelected)
+ * @param navOptions Navigation options
+ * @param rowOptCount Amount of rows in the navigation options
+ * @param colOptCount Amount of columns in the navigation options
+ * @return void
+*/
 void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int rowOptCount, int colOptCount)
 {
     int x, y;
@@ -156,6 +175,8 @@ void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int r
             case 's':
             case 'S': 
                 nav->selected.y++; 
+                if (strcmp(navOptions[nav->selected.y][nav->selected.x], "") == 0)
+                    nav->selected.y--;
                 break;
             case 'a':
             case 'A': 
@@ -163,7 +184,9 @@ void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int r
                 break;
             case 'd':
             case 'D': 
-                nav->selected.x++;  
+                nav->selected.x++;
+                if (strcmp(navOptions[nav->selected.y][nav->selected.x], "") == 0)
+                    nav->selected.x--;  
                 break;
             case ENTER_KEY: nav->optionSelected = true; break;
         }
@@ -171,16 +194,28 @@ void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int r
         if (nav->selected.y > rowOptCount - 1)
             nav->selected.y = 0;
         else if (nav->selected.y < 0)
+        {
             nav->selected.y = rowOptCount - 1;
+            if (strcmp(navOptions[nav->selected.y][nav->selected.x], "") == 0)
+                nav->selected.y = 0;   
+        }
         else if (nav->selected.x > colOptCount - 1)
             nav->selected.x = 0;
         else if (nav->selected.x < 0)
+        {
             nav->selected.x = colOptCount - 1;
-
+            if (strcmp(navOptions[nav->selected.y][nav->selected.x], "") == 0)
+                nav->selected.x = 0;   
+        }
+        
         iClear(nav->cursorPos.x, nav->cursorPos.y, CONSOLE_WIDTH, rowOptCount * 2);
     } while (!nav->optionSelected);
 }
 
+/*
+ * Prints the "Game Over" screen of Mantis
+ * @return void
+*/
 void printGameOver()
 {
     setColor(MAGENTA);
