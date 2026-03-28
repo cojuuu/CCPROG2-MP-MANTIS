@@ -249,5 +249,5 @@ void setColor(Color currentColor);
 void pauseScreen(double seconds);
 void waitEnter(char *message);
 void getCursorPosition(int *x, int *y);
-
+void printGameOver();
 #endif // DEFS_H;

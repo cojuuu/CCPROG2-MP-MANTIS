@@ -26,10 +26,10 @@ void selectPlayers(Game *m)
     bool playerDataLoaded;
     int i;
 
-    printf("-----------------------------------------\n\n");
-    printf("        [ PLAYER CONFIGURATION ]              \n\n");
-    printf("-----------------------------------------\n\n");
-    printf("    Please define player count (%d-%d):        \n\n\n", MIN_PLAYERS, MAX_PLAYERS);
+    printf("---------------------------------------------------\n\n");
+    printf("             [ PLAYER CONFIGURATION ]              \n\n");
+    printf("---------------------------------------------------\n\n");
+    printf("        Please define player count (%d-%d):        \n\n\n", MIN_PLAYERS, MAX_PLAYERS);
     interactiveMenu2D(&m->nav, playerCountOptions, 2, 2);
     iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
 
@@ -64,12 +64,6 @@ void selectPlayers(Game *m)
 
             iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
         }
-            /*
-        displayChosenPlayers(m);
-        iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
-         }
-        }
-        */
     }
 }
 
@@ -88,8 +82,7 @@ void displayChosenPlayers(Game *m)
             nChosenPlayers++;
     }
 
-    printf("\n--------------------------------------------------------\n");
-    printf("\nINITIALIZING PLAYERS...");
+    printf("INITIALIZING PLAYERS...");
     setColor(MAGENTA);
     printf("                            %d / %d\n\n\n", nChosenPlayers, m->playerCount);
     setColor(WHITE);
@@ -105,7 +98,7 @@ void displayChosenPlayers(Game *m)
             setColor(WHITE);
         }
 
-        if (i % 3 == 2)
+        if (i % 3 == 2 || i == m->playerCount - 1)
             printf("\n\n");
     }
 }
@@ -142,7 +135,10 @@ void displayAvailPlayers(Game *m, int playersChosen)
     printf("\nSELECT PLAYER %d\n\n\n", playersChosen + 1);
     interactiveMenu2D(&m->nav, selectPlayerOptions, row + 1, MAX_OPT_COL);
 
-    m->chosenPlayer = searchPlayer(selectPlayerOptions[m->nav.selected.y][m->nav.selected.x], m->playerData);
+    if (m->nav.selected.x == 0 && m->nav.selected.y == 0)
+        m->chosenPlayer = -1;
+    else
+        m->chosenPlayer = searchPlayer(selectPlayerOptions[m->nav.selected.y][m->nav.selected.x], m->playerData);
 }
 
 /**
@@ -173,19 +169,28 @@ void addNewPlayer(Game *m)
     String100 temp;
     bool foundEmptyPlayer = false;
     bool duplicateExist;
+    bool invalidUsername = false;
     int i = 0;
 
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    printf("+------------------------------------------------------+\n");
+    printf("|                     ADD NEW PLAYER                   |\n");
+    printf("+------------------------------------------------------+\n");
+    printf("  Enter username (max 36 chars):\n");
+    getCursorPosition(&m->nav.x, &m->nav.y);
     do
     {
-        printf("New player username: ");
-        iSetColor(6);
+        printf("  > ");
+        setColor(MAGENTA);
         scanf("%s", temp);
-        iSetColor(0);
+        setColor(WHITE);
 
         if (strlen(temp) > 36)
-         {   iSetColor(1);
-            printf("!! Username can only be 36 characters !!\n\n");
-            iSetColor(0);
+        {   
+            setColor(RED);
+            printf("  Username can only be below or equal to 36 characters!");
+            setColor(WHITE);
+            invalidUsername = true;
         }
         else
         {
@@ -193,23 +198,25 @@ void addNewPlayer(Game *m)
 
             if (duplicateExist)
             {
-                iSetColor(1);
-                printf("!! Username already exists !!\n\n");
-                iSetColor(0);
+                setColor(RED);
+                printf("  Username already exists!");
+                setColor(WHITE);
             }
         }
 
-    } while (strlen(temp) > 36 || duplicateExist);
+        if (duplicateExist || invalidUsername)
+            iClear(m->nav.x, m->nav.y, CONSOLE_WIDTH, 1);
+    } while (duplicateExist || invalidUsername);
+
+    setColor(GREEN);
+    printf("  Player successfully added!");
+    setColor(WHITE);
 
     strcpy(newPlayer, temp);
-
-    // Increment total players
     m->totalPlayers++;
 
-    // Find empty player in availPlayer arr
     do
     {
-        // Update player data in game
         if (strcmp(m->playerData[i].username, "") == 0)
         {
             strcpy(m->playerData[i].username, newPlayer);
@@ -219,13 +226,13 @@ void addNewPlayer(Game *m)
         i++;
     } while (i < m->totalPlayers && !foundEmptyPlayer);
 
-    // Open player file
     playerFile = fopen("players.txt", "a");
 
-    // Append new player into file
     fprintf(playerFile, "\n%s,0,0", newPlayer);
 
     fclose(playerFile);
+
+    pauseScreen(3.0);
 }
 
 /**

@@ -26,6 +26,12 @@ void newGame(Game *m)
     gameLoop(m);
     displayWinner(m);
     updatePlayerData(m);
+    setColor(MAGENTA);
+    waitEnter("    Press enter to go back to the main menu...");
+    setColor(WHITE);
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    memset(m, 0, sizeof(*m));
+    mainMenu(m);
 }
 
 /**
@@ -93,6 +99,7 @@ void checkWinner(Game *m)
         m->winnerCount++;
         m->foundWinner = true;
         m->gameOver = true;
+        m->currentPlayer = m->playerCount;
     }
 }
 
@@ -272,25 +279,25 @@ void tryToScore(Game *m)
     checkSameColor(m, m->activePlayers[m->currentPlayer].tank);
     if (m->sameColorCount > 0)
     {
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("%s has (%d) ", m->activePlayers[m->currentPlayer].username, m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("card/s worth a total of (%d) pts!\n", m->sameColorPoints);
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("+%d points to %s's score pile!\n", m->sameColorPoints + m->drawnCard.points, m->activePlayers[m->currentPlayer].username);
         addToScorePile(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
     else
     {
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("%s has no ", m->activePlayers[m->currentPlayer].username);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("cards...\n");
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("Adding drawn card to %s's Tank\n", m->activePlayers[m->currentPlayer].username);
         addToTank(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
@@ -310,13 +317,13 @@ void tryToSteal(Game *m)
 
     if (m->sameColorCount > 0)
     {
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("%s has (%d) ", m->activePlayers[m->stolenPlayer].username, m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c", m->drawnCard.front);
         setColor(WHITE);
         printf(" cards/s!\n");
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("+%d (", 1 + m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c", m->drawnCard.front);
@@ -327,13 +334,13 @@ void tryToSteal(Game *m)
     }
     else
     {
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("%s has no ", m->activePlayers[m->stolenPlayer].username);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("cards...\n");
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("Adding drawn card to %s's Tank\n", m->activePlayers[m->stolenPlayer].username);
         addToTank(&m->activePlayers[m->stolenPlayer], m->drawnCard);
     }
@@ -545,12 +552,37 @@ Card emptyCard()
  * Displays the winner/s of mantis
  * @param currentDeck The deck being checked
  */
-void displayWinner(Game *g)
+void displayWinner(Game *m)
 {
-    printf("Winner/s:\n");
-    for (int i = 0; i < g->winnerCount; i++)
+    int i, j;
+    Player temp;
+
+    printGameOver();
+    printf("\n  PLAYER                                SCORE\n");
+    for (i = 0; i < m->winnerCount; i++)
+        printf("  %-36s  %3d pts  <-- WINNER\n", 
+            m->activePlayers[m->winner[i]].username, m->activePlayers[m->winner[i]].scorePile.totalScore);
+
+    for (i = 0; i < m->playerCount; i++)
     {
-        printf("%s\n", g->activePlayers[g->winner[i]].username);
+        for (j = 0; j < m->playerCount - 1; j++)
+        {
+            if (m->activePlayers[j].scorePile.totalScore < m->activePlayers[j + 1].scorePile.totalScore)
+            {
+                temp = m->activePlayers[j];
+                m->activePlayers[j] = m->activePlayers[j + 1];
+                m->activePlayers[j + 1] = temp;
+            }
+        }
+    }
+
+    for (i = 0; i < m->playerCount; i++)
+    {
+        if (m->activePlayers[i].scorePile.totalScore < m->settings.winningPoints)
+        {
+            printf("  %-36s  %3d pts\n", 
+                m->activePlayers[i].username, m->activePlayers[i].scorePile.totalScore);
+        }
     }
 }
 
@@ -721,7 +753,7 @@ void revealCard(Card drawnCard)
     printf("Revealing card");
     for (i = 0; i < 3; i++)
     {
-        pauseScreen(1.0);
+        // pauseScreen(1.0);
         printf(".");
     }
     printf("\n");

@@ -174,7 +174,7 @@ void displayPodium(Game *m, int displayType)
         printf("                   ________________\n");
         printf("                  |                |\n");
         printf("      2 n d       |%*s%.12s%*s|\n", leftSpace, "", m->playerData[0].username, rightSpace, "");
-        printf(" ________________ |    WINS: %2d    |\n", m->playerData[0].wins);
+        printf(" ________________ |   WINS: %-4d   |\n", m->playerData[0].wins);
         printf("|                ||                |     3 r d\n");
         nameLen = strlen(m->playerData[1].username);
         totalSpace = boxWidth - nameLen;
@@ -182,14 +182,14 @@ void displayPodium(Game *m, int displayType)
         rightSpace = totalSpace - leftSpace;
 
         printf("|%*s%.12s%*s||                | ________________\n", leftSpace, "", m->playerData[1].username, rightSpace, "");
-        printf("|    WINS: %2d    ||                ||                |\n", m->playerData[1].wins);
+        printf("|   WINS: %-4d   ||                ||                |\n", m->playerData[1].wins);
         nameLen = strlen(m->playerData[2].username);
         totalSpace = boxWidth - nameLen;
         leftSpace = totalSpace / 2;
         rightSpace = totalSpace - leftSpace;
 
         printf("|                ||                ||%*s%.12s%*s|\n", leftSpace, "", m->playerData[2].username, rightSpace, "");
-        printf("|                ||                ||    WINS: %2d    |\n", m->playerData[2].wins);
+        printf("|                ||                ||   WINS: %-4d   |\n", m->playerData[2].wins);
         printf("|________________||________________||________________|\n\n\n");           
 
          iSetColor(0);
@@ -206,7 +206,7 @@ void displayPodium(Game *m, int displayType)
         printf("                   ________________\n");
         printf("                  |                |\n");
         printf("      2 n d       |%*s%.12s%*s|\n", leftSpace, "", m->playerData[0].username, rightSpace, "");
-        printf(" ________________ |    SCORE: %2d   |\n", m->playerData[0].totalScore);
+        printf(" ________________ |   SCORE: %-4d  |\n", m->playerData[0].totalScore);
         printf("|                ||                |     3 r d\n");
         nameLen = strlen(m->playerData[1].username);
         totalSpace = boxWidth - nameLen;
@@ -214,14 +214,14 @@ void displayPodium(Game *m, int displayType)
         rightSpace = totalSpace - leftSpace;
 
         printf("|%*s%.12s%*s||                | ________________\n", leftSpace, "", m->playerData[1].username, rightSpace, "");
-        printf("|    SCORE: %2d   ||                ||                |\n", m->playerData[1].totalScore);
+        printf("|   SCORE: %-4d  ||                ||                |\n", m->playerData[1].totalScore);
         nameLen = strlen(m->playerData[2].username);
         totalSpace = boxWidth - nameLen;
         leftSpace = totalSpace / 2;
         rightSpace = totalSpace - leftSpace;
         
         printf("|                ||                ||%*s%.12s%*s|\n", leftSpace, "", m->playerData[2].username, rightSpace, "");
-        printf("|                ||                ||    SCORE: %2d   |\n", m->playerData[2].totalScore);
+        printf("|                ||                ||   SCORE: %-4d  |\n", m->playerData[2].totalScore);
         printf("|________________||________________||________________|\n\n\n");           
 
          iSetColor(0);
