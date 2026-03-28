@@ -3,7 +3,7 @@
  * Author/s : De Dios, Justin Marco C.
  *            Ocampo, Kysha Denise D.
  *  Section : S12A & S22A
- *  Last Modified : 03-05-2026
+ *  Last Modified : 03-29-2026
  */
 
 #ifndef PLAYER_C 
@@ -18,6 +18,7 @@
 /**
  * Selects from a list of available players with the option to add a new player
  * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void selectPlayers(Game *m)
 {
@@ -70,6 +71,7 @@ void selectPlayers(Game *m)
 /**
  * Displays the chosen players for the game
  * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void displayChosenPlayers(Game *m)
 {
@@ -107,7 +109,7 @@ void displayChosenPlayers(Game *m)
  * Displays the players who have not yet been chosen
  * @param m A pointer to the game structure containing the game data
  * @param playersChosen Amount of players already chosen
- * @param selectedPlayer Index of the currently selected player
+ * @return void
  */
 void displayAvailPlayers(Game *m, int playersChosen)
 {
@@ -145,6 +147,7 @@ void displayAvailPlayers(Game *m, int playersChosen)
  * Adjusts the player array by removing the chosen player and adjusting the position of the succeeding players
  * @param m A pointer to the game structure containing the game data
  * @param selectedPlayers Index of the selected player who will play the game
+ * @return void
  */
 void adjustPlayerArr(Game *m, int selectedPlayer)
 {
@@ -168,7 +171,7 @@ void addNewPlayer(Game *m)
     String36 newPlayer;
     String100 temp;
     bool foundEmptyPlayer = false;
-    bool duplicateExist;
+    bool duplicateExist = false;
     bool invalidUsername = false;
     int i = 0;
 
@@ -184,7 +187,7 @@ void addNewPlayer(Game *m)
         setColor(MAGENTA);
         scanf("%s", temp);
         setColor(WHITE);
-
+        
         if (strlen(temp) > 36)
         {   
             setColor(RED);
@@ -194,7 +197,8 @@ void addNewPlayer(Game *m)
         }
         else
         {
-            duplicateExist = playerFound(m, temp);
+            if ((searchPlayer(temp, m->activePlayers) != -1) || (searchPlayer(temp, m->playerData)) != -1)
+                duplicateExist = true;
 
             if (duplicateExist)
             {
@@ -203,7 +207,7 @@ void addNewPlayer(Game *m)
                 setColor(WHITE);
             }
         }
-
+        
         if (duplicateExist || invalidUsername)
             iClear(m->nav.x, m->nav.y, CONSOLE_WIDTH, 1);
     } while (duplicateExist || invalidUsername);
@@ -236,29 +240,6 @@ void addNewPlayer(Game *m)
 }
 
 /**
- * Checks if the new player's username already exist
- * @param m A pointer to the game structure containing the game data
- * @param newPlayer Username of the new player
- * @return True If the username already exist
- * @return False Otherwise
- */
-bool playerFound(Game *m, String36 newPlayer)
-{
-    int i = 0;
-    bool foundPlayer = false;
-
-    do
-    {
-        if (strcmp(newPlayer, m->playerData[i].username) == 0)
-            foundPlayer = true;
-        
-        i++;
-    } while (foundPlayer == false && i < m->totalPlayers);
-
-    return foundPlayer;
-}
-
-/**
  * Initializes a Player with empty values
  * @return Player with empty values
  */
@@ -269,11 +250,19 @@ Player emptyPlayer()
     return p;
 }
 
-int searchPlayer(String36 currentPlayer, Player playerList[])
+/**
+ * Searches the player list if a player already exist
+ * @param currentPlayer The player being searched for
+ * @param playerList The player list being search through
+ * @return Player's index if the player was found
+ * @return -1 If the player wasn't found
+ */
+int searchPlayer(char *currentPlayer, Player playerList[])
 {
     int i = 0;
     int playerIndex = -1;
     bool playerFound = false;
+    bool endOfPlayerList = false;
 
     do
     {
@@ -284,8 +273,11 @@ int searchPlayer(String36 currentPlayer, Player playerList[])
         }
 
         i++;
-    } while (!playerFound);
-    
+
+        if (strcmp(playerList[i].username, "") == 0)
+            endOfPlayerList = true;
+    } while (!playerFound && !endOfPlayerList);
+
     return playerIndex;
 }
 

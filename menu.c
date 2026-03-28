@@ -3,7 +3,7 @@
  * Author/s : De Dios, Justin Marco C.
  *            Ocampo, Kysha Denise D.
  *  Section : S12A & S22A
- *  Last Modified : 03-27-2026
+ *  Last Modified : 03-28-2026
  */
 
 #ifndef MENU_C 
@@ -23,6 +23,7 @@
 /**
  * Displays the Main Menu and controls Mantis' game navigation
  * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void mainMenu(Game *m)
 {
@@ -30,7 +31,7 @@ void mainMenu(Game *m)
     
     printLogo();
     printf("\nMAIN MENU\n");
-    interactiveMenu(&m->nav, menuOptions, 4);
+    interactiveMenu1D(&m->nav, menuOptions, 4);
     iClear(0, 0, MANTIS_LOGO_WIDTH, 20);
     switch(m->nav.selectedOption)
     {
@@ -39,25 +40,6 @@ void mainMenu(Game *m)
         case 2: gameSettings(m); break;
         case 3: printf("Exiting game...\n"); break;
     }
-}
-
-/**
- * Asks the user for input with input validation
- * @param option A pointer to the user's chosen option
- * @param min The minimum number that can be inputted
- * @param max The maximum number that can be inputted
- */
-void askOption(int *option, int min, int max)
-{
-    do
-    {
-        printf("\n>> ");
-        scanf("%d", option);
-
-        // Input Validation
-        if (*option < min || max < *option)
-            printf("Please select a valid option.");
-    } while (*option < min || max < *option);
 }
 
 /**
@@ -85,7 +67,7 @@ void printLogo()
  * @param optionCount Amount of navigation options
  * @return void
 */
-void interactiveMenu(Navigator *nav, String36 navOptions[], int optionCount)
+void interactiveMenu1D(Navigator *nav, String36 navOptions[], int optionCount)
 {
     int i;
     nav->selectedOption = 0;
@@ -210,24 +192,6 @@ void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int r
         
         iClear(nav->cursorPos.x, nav->cursorPos.y, CONSOLE_WIDTH, rowOptCount * 2);
     } while (!nav->optionSelected);
-}
-
-/*
- * Prints the "Game Over" screen of Mantis
- * @return void
-*/
-void printGameOver()
-{
-    setColor(MAGENTA);
-    printf("  /$$$$$$   /$$$$$$  /$$      /$$ /$$$$$$$$        /$$$$$$  /$$    /$$ /$$$$$$$$ /$$$$$$$ \n");
-    printf(" /$$__  $$ /$$__  $$| $$$    /$$$| $$_____/       /$$__  $$| $$   | $$| $$_____/| $$__  $$\n");
-    printf("| $$  \\__/| $$  \\ $$| $$$$  /$$$$| $$            | $$  \\ $$| $$   | $$| $$      | $$  \\ $$\n");
-    printf("| $$ /$$$$| $$$$$$$$| $$ $$ /$$$$| $$$$$         | $$  | $$|  $$ / $$/| $$$$$   | $$$$$$$/\n");
-    printf("| $$|_  $$| $$__  $$| $$  $$$| $$| $$__/         | $$  | $$ \\  $$ $$/ | $$__/   | $$__  $$\n");
-    printf("| $$  \\ $$| $$  | $$| $$\\  $ | $$| $$            | $$  | $$  \\  $$$/  | $$      | $$  \\ $$\n");
-    printf("|  $$$$$$/| $$  | $$| $$ \\/  | $$| $$$$$$$$      |  $$$$$$/   \\  $/   | $$$$$$$$| $$  | $$\n");
-    printf(" \\______/ |__/  |__/|__/     |__/|________/       \\______/     \\_/    |________/|__/  |__/\n");
-    setColor(WHITE);
 }
 
 #endif // MENU_C;

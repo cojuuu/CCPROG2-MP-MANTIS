@@ -17,6 +17,7 @@
 /**
  * Settings menu of Mantis where players can modify game configuration
  * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void gameSettings(Game *m)
 {
@@ -32,7 +33,7 @@ void gameSettings(Game *m)
     else
         printf("|  Shuffle Seed            %-33d|\n", m->settings.shuffleSeed);
     printf("+-----------------------------------------------------------+\n");
-    interactiveMenu(&m->nav, settingOptions, 4);
+    interactiveMenu1D(&m->nav, settingOptions, 4);
 
     switch(m->nav.selectedOption)
     {
@@ -54,7 +55,8 @@ void gameSettings(Game *m)
 
 /**
  * Sets the winning points of Mantis
- * @return The player's chosen winning points
+ * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void setWinningPoints(Game *m)
 {
@@ -94,7 +96,8 @@ void setWinningPoints(Game *m)
 
 /**
  * Sets the shuffle seed of Mantis
- * @return The player's chosen shuffle seed
+ * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void setShuffleSeed(Game *m)
 {
@@ -149,6 +152,7 @@ Config defaultSettings()
 /**
  * Saves the game settings of mantis to "settings.txt"
  * @param m A pointer to the game structure containing the game data
+ * @return void
 */
 void saveGameSettings(Game *m)
 {
@@ -165,6 +169,5 @@ void saveGameSettings(Game *m)
 
     fclose(settingsFile);
 }
-
 
 #endif // SETTINGS_C;

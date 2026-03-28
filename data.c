@@ -1,9 +1,9 @@
 /**
- * Description : Contains the functions that handles the file loading of Mantis
+ * Description : Contains the functions that handles the file loading/updating of Mantis
  * Author/s : De Dios, Justin Marco C.
  *            Ocampo, Kysha Denise D.
  *  Section : S12A & S22A
- *  Last Modified : 03-05-2026
+ *  Last Modified : 03-29-2026
  */
 
 #ifndef LOAD_C 
@@ -15,7 +15,7 @@
 #include "defs.h"
 
 /**
- * Loads player data from the "players.txt" file and storing them in m->playerData[]
+ * Loads player data from the "players.txt" file
  * @param m A pointer to the game structure containing the game data
  * @return true If the load was successful
  * @return false Otherwise
@@ -27,10 +27,8 @@ bool loadPlayerData(Game *m)
     int buffer = 0;
     int i = 0;
 
-    // Open player data file
     playerFile = fopen("players.txt", "r");
 
-    // Checks if file was opened successfully
     if (playerFile == NULL)
     {
         fprintf(stderr, "player.txt not found!");
@@ -60,14 +58,13 @@ bool loadPlayerData(Game *m)
 
     m->totalPlayers = i;    
 
-    // Close player data file
     fclose(playerFile);
 
     return loadSuccess;
 }
 
 /**
- * Loads card data from the "mantis.txt" file to m->drawPile.cards
+ * Loads card data from the "mantis.txt" file
  * @param m A pointer to the game structure
  * @return True If the load was successful
  * @return False Otherwise
@@ -79,10 +76,8 @@ bool loadCards(Game *m)
     int buffer = 0;
     int i = 0;
 
-    // Open card data file
     cardFile = fopen("mantis.txt", "r");
 
-    // Checks if file was opened successfully
     if (cardFile == NULL)
     {
         fprintf(stderr, "mantis.txt not found!");
@@ -93,7 +88,6 @@ bool loadCards(Game *m)
     {
         do
         {
-            // Parses player data into respective variables
             buffer = fscanf(cardFile, "%c | %c%c%c %d\n", 
                         &m->drawPile.cards[i].front, 
                         &m->drawPile.cards[i].back[0], &m->drawPile.cards[i].back[1], &m->drawPile.cards[i].back[2], 
@@ -119,14 +113,13 @@ bool loadCards(Game *m)
     else
         m->drawPile.cardCount = MAX_CARDS;
 
-    // Close card data file
     fclose(cardFile);
 
     return loadSuccess;
 }
 
 /**
- * Loads Mantis settings from the "settings.txt" file to m->settings
+ * Loads Mantis settings from the "settings.txt" file
  * @param m A pointer to the game structure containing the game data
  * @return True If the load was successful
  * @return False Otherwise
@@ -137,10 +130,8 @@ bool loadSettings(Game *m)
     bool loadSuccess = true;
     int buffer = 0;
 
-    // Open card data file
     settingsFile = fopen("settings.txt", "r");
 
-    // Checks if file was opened successfully
     if (settingsFile == NULL)
     {
         fprintf(stderr, "mantis.txt not found!");
@@ -149,7 +140,6 @@ bool loadSettings(Game *m)
 
     if (loadSuccess)
     {
-        // Parses player data into respective variables
         buffer = fscanf(settingsFile, "%d\n%d", &m->settings.winningPoints, &m->settings.shuffleSeed);
     
         if (buffer != 2)
@@ -159,10 +149,34 @@ bool loadSettings(Game *m)
         }  
     }
 
-    // Close card data file
     fclose(settingsFile);
 
     return loadSuccess;
+}
+
+/**
+ * Updates "player.txt" with the updated player stats
+ * @param currentDeck The deck being checked
+ * @return void
+ * @pre Game has finished
+ */
+void updatePlayerData(Game *g)
+{
+    FILE *playerFile;
+    int i;
+
+    for (i = 0; i < g->playerCount; i++)
+        g->activePlayers[i].totalScore += g->activePlayers[i].scorePile.totalScore;
+
+    playerFile = fopen("players.txt", "w");
+
+    for (i = 0; i < g->playerCount; i++)
+        fprintf(playerFile ,"%s,%d,%d\n", g->activePlayers[i].username, g->activePlayers[i].wins, g->activePlayers[i].totalScore);
+
+    for (i = 0; i < g->totalPlayers - g->playerCount; i++)
+        fprintf(playerFile ,"%s,%d,%d\n", g->playerData[i].username, g->playerData[i].wins, g->playerData[i].totalScore);
+
+    fclose(playerFile);
 }
 
 #endif // LOAD_C;

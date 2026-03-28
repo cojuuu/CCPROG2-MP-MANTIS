@@ -2,12 +2,13 @@
  * Programmed by : Thomas Tiam-Lee
  * Modified by : Justin Marco C. De Dios & Kysha Denise Ocampo
  * Description : This is a set of functions to help with the user interface for the machine project.
- * Last modified : MARCH-24-2026
+ * Last modified : MARCH-26-2026
  * Modifications :
  * 1. Added the color magenta and gray
  * 2. Added a function that waits for the user to press enter
  * 3. Added a function that "pauses" the program given a specific time which requires the <time.h> library
  * 4. Added setColor() which sets the color based on the character constant "Color" found in defs.h
+ * 5. Added a function that gets the x and y coordinates of the cursor position in the output terminal
  */ 
 
 #include <stdio.h>
@@ -185,6 +186,9 @@ void waitEnter(char *message)
   getchar();
 }
 
+/* This functions gets the x and y coordinates of the cursor position in the output terminal
+@return (void)
+*/
 void getCursorPosition(int *x, int *y)
 {
   CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -193,6 +197,7 @@ void getCursorPosition(int *x, int *y)
   *x = csbi.dwCursorPosition.X;
   *y = csbi.dwCursorPosition.Y;
 }
+
 // For Linux and MacOS terminal
 #else
 /* This function moves the cursor to the given location on the
@@ -336,6 +341,9 @@ void waitEnter()
   getchar();
 }
 
+/* This functions gets the x and y coordinates of the cursor position in the output terminal
+@return (void)
+*/
 void getCursorPosition(int *x, int *y)
 {
   printf("\033[6n");
