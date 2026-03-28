@@ -26,6 +26,12 @@ void newGame(Game *m)
     gameLoop(m);
     displayWinner(m);
     updatePlayerData(m);
+    setColor(MAGENTA);
+    waitEnter("    Press enter to go back to the main menu...");
+    setColor(WHITE);
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    memset(m, 0, sizeof(*m));
+    mainMenu(m);
 }
 
 /**
@@ -35,6 +41,13 @@ void newGame(Game *m)
 void setUpGame(Game *m)
 {
     loadSettings(m);
+
+    if (m->settings.shuffleSeed == RANDOM)
+    {
+        initRandom();
+        m->settings.shuffleSeed = randomInt();
+    }
+
     loadCards(m);
     shuffle(m->drawPile.cards, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
     distributeCards(m);
@@ -46,8 +59,6 @@ void setUpGame(Game *m)
  */
 void gameLoop(Game *m)
 {
-    int option;
-
     do
     {
         for (m->currentPlayer = 0; m->currentPlayer < m->playerCount; m->currentPlayer++)
@@ -56,14 +67,14 @@ void gameLoop(Game *m)
             displayTopDeck(m);
             displayPlayerState(m, ACTIVE);
 
-            promptPlayerMove(m, &option);
+            promptPlayerMove(m);
 
-            switch(option)
+            switch(m->nav.selectedOption)
             {
-                case 1: tryToScore(m); break;
-                case 2: tryToSteal(m); break;
+                case 0: tryToScore(m); break;
+                case 1: tryToSteal(m); break;
             }
-            waitEnter();
+            waitEnter("Press enter to continue...");
             iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
 
             checkWinner(m);
@@ -88,6 +99,7 @@ void checkWinner(Game *m)
         m->winnerCount++;
         m->foundWinner = true;
         m->gameOver = true;
+        m->currentPlayer = m->playerCount;
     }
 }
 
@@ -185,7 +197,7 @@ void displayPlayerState(Game *m, int playerType)
         {
             if (i != m->currentPlayer)
             {
-                printf("[%s]\n", m->activePlayers[i].username);
+                printf("%s ", m->activePlayers[i].username);
                 displayFrontSideDeck(m->activePlayers[i].tank, SMALL);
                 printf("\n");
                 printf("[Score: %d]\n\n", m->activePlayers[i].scorePile.totalScore);
@@ -194,8 +206,9 @@ void displayPlayerState(Game *m, int playerType)
     }
     else if (playerType == ACTIVE)
     {
-        printf("\n[%s]\n", m->activePlayers[m->currentPlayer].username);
+        printf("\n");
         displayFrontSideDeck(m->activePlayers[m->currentPlayer].tank, BIG);
+        printf("\t%s  ", m->activePlayers[m->currentPlayer].username);
         printf("[Score]: %d\n", m->activePlayers[m->currentPlayer].scorePile.totalScore);
     }
 }
@@ -212,16 +225,46 @@ void displayTopDeck(Game *m)
 }
 
 /**
+ * Prompts the current player on which player they want to steal from
+ * @param m A pointer to the game structure containing the game data
+ * @param option A pointer to the user's chosen option
+ */
+void promptSteal(Game *m)
+{
+    String36 stealOptions[MAX_PLAYERS];
+    int optionsAdded = 0;
+    int i;
+
+    for (i = 0; i < m->playerCount; i++)
+    {
+        if (i != m->currentPlayer)
+        {
+            strcpy(stealOptions[optionsAdded], m->activePlayers[i].username);
+            optionsAdded++;
+        }
+    }
+
+    getCursorPosition(&m->nav.x, &m->nav.y);
+    iClear(m->nav.x, m->nav.y - 1, 50, 5);
+    printf("%s, who would you like to steal from?\n", m->activePlayers[m->currentPlayer].username);
+    interactiveMenu(&m->nav, stealOptions, m->playerCount - 1);
+    m->stolenPlayer = m->nav.selectedOption;
+
+    if (m->stolenPlayer >= m->currentPlayer)
+        m->stolenPlayer++;
+}
+
+/**
  * Prompts the user to choose between scoring or stealing during their turn
  * @param currentPlayer The index of the currnet player making the move
  * @param option A pointer to the user's chosen option
  */
-void promptPlayerMove(Game *m, int *option)
+void promptPlayerMove(Game *m)
 {
+    String36 playerMoves[] = {"S C O R E", "S T E A L"};
+
     printf("\n%s, what would you like to do?\n", m->activePlayers[m->currentPlayer].username);
-    printf("  [1] Try to Score\n");
-    printf("  [2] Try to Steal\n");
-    askOption(option, 1, 2);
+    interactiveMenu(&m->nav, playerMoves, 2);
 }
 
 /**
@@ -236,25 +279,25 @@ void tryToScore(Game *m)
     checkSameColor(m, m->activePlayers[m->currentPlayer].tank);
     if (m->sameColorCount > 0)
     {
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("%s has (%d) ", m->activePlayers[m->currentPlayer].username, m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("card/s worth a total of (%d) pts!\n", m->sameColorPoints);
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("+%d points to %s's score pile!\n", m->sameColorPoints + m->drawnCard.points, m->activePlayers[m->currentPlayer].username);
         addToScorePile(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
     else
     {
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("%s has no ", m->activePlayers[m->currentPlayer].username);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("cards...\n");
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("Adding drawn card to %s's Tank\n", m->activePlayers[m->currentPlayer].username);
         addToTank(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
@@ -274,13 +317,13 @@ void tryToSteal(Game *m)
 
     if (m->sameColorCount > 0)
     {
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("%s has (%d) ", m->activePlayers[m->stolenPlayer].username, m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c", m->drawnCard.front);
         setColor(WHITE);
         printf(" cards/s!\n");
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("+%d (", 1 + m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c", m->drawnCard.front);
@@ -291,13 +334,13 @@ void tryToSteal(Game *m)
     }
     else
     {
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("%s has no ", m->activePlayers[m->stolenPlayer].username);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("cards...\n");
-        pauseScreen(2.0);
+        // pauseScreen(2.0);
         printf("Adding drawn card to %s's Tank\n", m->activePlayers[m->stolenPlayer].username);
         addToTank(&m->activePlayers[m->stolenPlayer], m->drawnCard);
     }
@@ -329,29 +372,6 @@ void stealTank(Player *currentPlayer, Player *stolenPlayer, Color drawnCard)
             i--;
         }
     }
-}
-
-/**
- * Prompts the current player on which player they want to steal from
- * @param m A pointer to the game structure containing the game data
- * @param option A pointer to the user's chosen option
- */
-void promptSteal(Game *m)
-{
-    printf("\nWho would you like to steal from?\n");
-    for (int i = 0; i < m->playerCount - 1; i++)
-    {
-        printf("  [%d] ", i + 1);
-        if (i >= m->currentPlayer)
-            printf("%s", m->activePlayers[i + 1].username);
-        else
-            printf("%s", m->activePlayers[i].username);
-        printf("\n");
-    }
-    askOption(&m->stolenPlayer, 1, m->playerCount - 1);
-
-    if (m->stolenPlayer <= m->currentPlayer)
-        m->stolenPlayer -= 1;
 }
 
 /**
@@ -532,12 +552,37 @@ Card emptyCard()
  * Displays the winner/s of mantis
  * @param currentDeck The deck being checked
  */
-void displayWinner(Game *g)
+void displayWinner(Game *m)
 {
-    printf("Winner/s:\n");
-    for (int i = 0; i < g->winnerCount; i++)
+    int i, j;
+    Player temp;
+
+    printGameOver();
+    printf("\n  PLAYER                                SCORE\n");
+    for (i = 0; i < m->winnerCount; i++)
+        printf("  %-36s  %3d pts  <-- WINNER\n", 
+            m->activePlayers[m->winner[i]].username, m->activePlayers[m->winner[i]].scorePile.totalScore);
+
+    for (i = 0; i < m->playerCount; i++)
     {
-        printf("%s\n", g->activePlayers[g->winner[i]].username);
+        for (j = 0; j < m->playerCount - 1; j++)
+        {
+            if (m->activePlayers[j].scorePile.totalScore < m->activePlayers[j + 1].scorePile.totalScore)
+            {
+                temp = m->activePlayers[j];
+                m->activePlayers[j] = m->activePlayers[j + 1];
+                m->activePlayers[j + 1] = temp;
+            }
+        }
+    }
+
+    for (i = 0; i < m->playerCount; i++)
+    {
+        if (m->activePlayers[i].scorePile.totalScore < m->settings.winningPoints)
+        {
+            printf("  %-36s  %3d pts\n", 
+                m->activePlayers[i].username, m->activePlayers[i].scorePile.totalScore);
+        }
     }
 }
 
@@ -708,7 +753,7 @@ void revealCard(Card drawnCard)
     printf("Revealing card");
     for (i = 0; i < 3; i++)
     {
-        pauseScreen(1.0);
+        // pauseScreen(1.0);
         printf(".");
     }
     printf("\n");

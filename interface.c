@@ -65,7 +65,7 @@ void iClear(int x, int y, int width, int height)
     {
       printf(" ");
     }
-    printf("\n");
+    // printf("\n");
   }
   iMoveCursor(x, y);
 }
@@ -179,11 +179,19 @@ void pauseScreen(double seconds)
 /* This function waits for the user to press enter to continue the program
 @return (void)
 */
-void waitEnter()
+void waitEnter(char *message)
 {
+  printf("\n%s\n", message);
   getchar();
-  printf("\nPress enter to continue...\n");
-  getchar();
+}
+
+void getCursorPosition(int *x, int *y)
+{
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+  GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+  *x = csbi.dwCursorPosition.X;
+  *y = csbi.dwCursorPosition.Y;
 }
 // For Linux and MacOS terminal
 #else
@@ -326,5 +334,11 @@ void waitEnter()
   getchar();
   printf("\nPress enter to continue...\n");
   getchar();
+}
+
+void getCursorPosition(int *x, int *y)
+{
+  printf("\033[6n");
+  scanf("\033[%d;%dR", y, x);
 }
 #endif
