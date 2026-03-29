@@ -18,7 +18,7 @@
 * 6. GeeksforGeeks - Non-Standard I/O Functions in C
 * Link: https://www.geeksforgeeks.org/c/non-standard-input-output-functions-in-c/
 * 7. Github - conio.h library alternative for Linux and MacOS
-* Link: https://github.com/zohaibwarraich1/conio.h-alternative/blob/main/conhelper.h
+* Link: https://stackoverflow.com/questions/3276546/how-to-implement-getch-function-of-c-in-linux/23035044#23035044
 * 8. Patorjk - Text to graffiti ASCII art
 * Link: https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type+Something+&x=none&v=4&h=4&w=80&we=false
 * 9. ThoughtsOrDiscoveries - Get cursor position in Windows or non-Windows terminal

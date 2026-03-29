@@ -15,7 +15,7 @@
 #ifdef _WIN32
 #include <conio.h>
 #else
-#include "conhelper.h"
+#include <conio_alt.h>
 #endif
 
 #include "defs.h"
