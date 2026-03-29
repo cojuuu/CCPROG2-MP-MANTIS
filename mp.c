@@ -23,6 +23,10 @@
 * Link: https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type+Something+&x=none&v=4&h=4&w=80&we=false
 * 9. ThoughtsOrDiscoveries - Get cursor position in Windows or non-Windows terminal
 * Link: https://thoughtsordiscoveries.wordpress.com/2017/04/26/set-and-read-cursor-position-in-terminal-windows-and-linux/#:~:text=April%2026%2C%202017%20April%2026,see%20%5B4%2C5%5D.
+* 10. Stack Overflow - Reading the Device Status Report ANSI escape sequence reply
+* Link: https://stackoverflow.com/questions/16026858/reading-the-device-status-report-ansi-escape-sequence-reply
+* 11. C stdio sscanf() Function
+* Link: https://www.w3schools.com/c/ref_stdio_sscanf.php
 */
 
 /* ----- preprocessor directives ----- */
