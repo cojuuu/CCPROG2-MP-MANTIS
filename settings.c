@@ -3,7 +3,7 @@
  * Author/s : De Dios, Justin Marco C.
  *            Ocampo, Kysha Denise D.
  *  Section : S12A & S22A
- *  Last Modified : 03-05-2026
+ *  Last Modified : 03-27-2026
  */
 
 #ifndef SETTINGS_C
@@ -17,71 +17,130 @@
 /**
  * Settings menu of Mantis where players can modify game configuration
  * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void gameSettings(Game *m)
 {
-    int option;
-
-    do
+    String36 settingOptions[] = {"S E T  W I N N I N G  P O I N T S", "S E T  S H U F F L E  S E E D", "R E S T O R E  T O  D E F A U L T", "B A C K"};
+    
+    if (!loadSettings(m))
     {
-        printf("Settings\n");
-        printf("  [1] Set Winning Points\n");
-        printf("  [2] Set Shuffle Seed\n");
-        printf("  [3] Restore to default\n");
-        printf("  [0] Back\n");
+        setColor(RED);
+        printf("\nLoading default settings...\n");
+        setColor(WHITE);
+        pauseScreen(2.0);
+        iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+        m->settings = defaultSettings();
+    }
+    printLogo();
+    printf("\nSETTINGS\n");
+    printf("+-----------------------------------------------------------+\n");
+    printf("|  Winning Points          %-33d|\n", m->settings.winningPoints);
+    if (m->settings.shuffleSeed == RANDOM)
+        printf("|  Shuffle Seed            %-33s|\n", "RANDOM");
+    else
+        printf("|  Shuffle Seed            %-33d|\n", m->settings.shuffleSeed);
+    printf("+-----------------------------------------------------------+\n");
+    interactiveMenu1D(&m->nav, settingOptions, 4);
 
-        askOption(&option, 0, 3);
-
-        switch(option)
-        {
-        case 1: m->settings.winningPoints = setWinningPoints(); break;
-        case 2: m->settings.shuffleSeed = setShuffleSeed(); break;
-        case 3: m->settings = defaultSettings(); printf("Default settings loaded!\n"); break;
-        case 0: mainMenu(m); break;
-        }
-
-        saveGameSettings(m);
-    } while (option != 0);
+    switch(m->nav.selectedOption)
+    {
+        case 0: setWinningPoints(m); break;
+        case 1: setShuffleSeed(m); break;
+        case 2: 
+            m->settings = defaultSettings(); 
+            saveGameSettings(m); 
+            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT); 
+            gameSettings(m); 
+            break;
+        case 3: 
+            saveGameSettings(m); 
+            iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT); 
+            mainMenu(m); 
+            break;
+    }
 }
 
 /**
  * Sets the winning points of Mantis
- * @return The player's chosen winning points
+ * @param m A pointer to the game structure containing the game data
+ * @return void
  */
-int setWinningPoints()
+void setWinningPoints(Game *m)
 {
-    int winningPoints;
+    int i;
 
+    getCursorPosition(&m->nav.cursorPos.x, &m->nav.cursorPos.y);
     do
     {
-        printf("Set Winning Points: ");
-        scanf("%d", &winningPoints); 
+        setColor(MAGENTA);
+        printf("\n  >> S E T  W I N N I N G  P O I N T S: ");
+        scanf("%d", &m->settings.winningPoints); 
 
-        if (winningPoints < DEFAULT_WIN_POINTS || winningPoints > MAX_WIN_POINTS)
-            printf("Minimum of 20 win points. Maximum of 100 win points. Please enter another value!\n");
-    } while (winningPoints < DEFAULT_WIN_POINTS || winningPoints > MAX_WIN_POINTS);
+        if (m->settings.winningPoints < DEFAULT_WIN_POINTS || m->settings.winningPoints > MAX_WIN_POINTS)
+        {
+            setColor(RED);
+            printf("  Minimum of 20 win points. Maximum of 100 win points. Please enter another value!");
+            iClear(m->nav.cursorPos.x, m->nav.cursorPos.y, CONSOLE_WIDTH, 2);
+        }
+    } while (m->settings.winningPoints < DEFAULT_WIN_POINTS || m->settings.winningPoints > MAX_WIN_POINTS);
 
-    return winningPoints;
+    getCursorPosition(&m->nav.cursorPos.x, &m->nav.cursorPos.y);
+    iClear(m->nav.cursorPos.x, m->nav.cursorPos.y, CONSOLE_WIDTH, 1);
+    setColor(GREEN);
+    printf("   Winning points was successfully changed!\n"); 
+    setColor(WHITE);
+
+    printf("\n   Returning to settings menu");
+    for (i = 0; i < 3; i++)
+    {
+        printf(".");
+        pauseScreen(2.0);
+    }
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    saveGameSettings(m);
+    gameSettings(m);
 }
 
 /**
  * Sets the shuffle seed of Mantis
- * @return The player's chosen shuffle seed
+ * @param m A pointer to the game structure containing the game data
+ * @return void
  */
-int setShuffleSeed()
+void setShuffleSeed(Game *m)
 {
-    int shuffleSeed;
+    int i;
 
+    getCursorPosition(&m->nav.cursorPos.x, &m->nav.cursorPos.y);
     do
     {
-        printf("Set Shuffle Seed: ");
-        scanf("%d", &shuffleSeed); 
+        setColor(MAGENTA);
+        printf("\n  >> S E T  S H U F F L E  S E E D: ");
+        scanf("%d", &m->settings.shuffleSeed); 
 
-        if (shuffleSeed < MIN_SHUFFLE_SEED || shuffleSeed > MAX_SHUFFLE_SEED)
-            printf("Please input a number ranging from 0 to 99!\n");
-    } while (shuffleSeed < MIN_SHUFFLE_SEED || shuffleSeed > MAX_SHUFFLE_SEED);
+        if (m->settings.shuffleSeed < MIN_SHUFFLE_SEED || m->settings.shuffleSeed > MAX_SHUFFLE_SEED)
+        {
+            setColor(RED);
+            printf("   Please input a number ranging from 0 to 99!\n");
+            iClear(m->nav.cursorPos.x, m->nav.cursorPos.y, 100, 2);
+        }
+    } while (m->settings.shuffleSeed < MIN_SHUFFLE_SEED || m->settings.shuffleSeed > MAX_SHUFFLE_SEED);
 
-    return shuffleSeed;
+    getCursorPosition(&m->nav.cursorPos.x, &m->nav.cursorPos.y);
+    iClear(m->nav.cursorPos.x, m->nav.cursorPos.y, 100, 1);
+    setColor(GREEN);
+    printf("   Shuffle seed was successfully changed!\n"); 
+    setColor(WHITE);
+
+    printf("\n   Returning to settings menu");
+    for (i = 0; i < 3; i++)
+    {
+        printf(".");
+        pauseScreen(1.0);
+    }
+    iClear(0, 0, 100, 50);
+    saveGameSettings(m);
+    gameSettings(m);
 }
 
 /**
@@ -101,22 +160,13 @@ Config defaultSettings()
 /**
  * Saves the game settings of mantis to "settings.txt"
  * @param m A pointer to the game structure containing the game data
+ * @return void
 */
 void saveGameSettings(Game *m)
 {
-    FILE *settingsFile;
-
-    settingsFile = fopen("settings.txt", "w");
-    
-    if (m->settings.winningPoints < 20)
-    {
-        m->settings.winningPoints = 20;
-    }
-
+    FILE *settingsFile = fopen("settings.txt", "w");
     fprintf(settingsFile, "%d\n%d", m->settings.winningPoints, m->settings.shuffleSeed);
-
     fclose(settingsFile);
 }
-
 
 #endif // SETTINGS_C;

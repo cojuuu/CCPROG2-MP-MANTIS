@@ -3,7 +3,7 @@
  * Author/s : De Dios, Justin Marco C.
  *            Ocampo, Kysha Denise D.
  *  Section : S12A & S22A
- *  Last Modified : 03-05-2026
+ *  Last Modified : 03-27-2026
  */
 
 #ifndef LEADERBOARD_C 
@@ -11,37 +11,42 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "defs.h"
 
 /**
- * Displays the leaderboard menu and handles navigation in the different leaderboard views
+ * Displays the Main Menu and controls Mantis' game navigation
  * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void leaderBoard(Game *m)
 {
-    int option;
+    String36 lbOptions[] = {"T O P  P L A Y E R S (WIN)", "T O P  P L A Y E R S (SCORE)", "B A C K"};
 
-    printf("Leaderboard\n");
-    printf("  [1] Top Players (Wins)\n");
-    printf("  [2] Top Players (Score)\n");
-
-    askOption(&option, 1, 2);
-
-    loadPlayerData(m);
-    
-    switch(option)
+    if (loadPlayerData(m))
     {
-        case 1: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
-        case 2: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
+        printLogo();
+        printf("\nLEADERBOARD\n");
+        interactiveMenu1D(&m->nav, lbOptions, 3);
+        switch(m->nav.selectedOption)
+        {
+            case 0: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
+            case 1: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
+            case 2: iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT); mainMenu(m); break;
+        }
+    }
+    else
+    {
+        errorNav(m);
     }
 }
 
 /**
  * Sorts an array of players from highest to lowest depending on the sort type
  * @param m A pointer to the game structure containing the game data
- * @param sortType Sorting method for arranging the players either by wins or scores
- * @return The function doesn't return anything
+ * @param sortType Determines the sorting criteria of the leaderboard (BY_WINS or BY_SCORE)
+ * @return void
  */
 void sortPlayers(Game *m, int sortType)
 {
@@ -71,37 +76,159 @@ void sortPlayers(Game *m, int sortType)
 /**
  * Displays the Top 10 players depending on the display type
  * @param m A pointer to the game structure containing the game data
- * @param displayType Determines the display criteria of the leaderboard (wins or scores)
- * @return The function doesn't return anything
+ * @param displayType Determines the display criteria of the leaderboard (BY_WINS or BY_SCORE)
+ * @return void
  */
 void displayLeaderboard(Game *m, int displayType)
 {
     bool emptyPlayerFound = false;
     int i = 0;
 
+    iClear(0, 0, MANTIS_LOGO_WIDTH, MANTIS_LOGO_HEIGHT);
+    printLogo();
+    printf("\nTOP PLAYERS\n");
+    printf("\n              P L A Y E R  R A N K I N G\n");   
+
     if (displayType == BY_WINS)
     {
-        do
+        for(i = 0; i < TOP_10 && emptyPlayerFound == false; i++)
         {
-            if (strcmp(m->playerData[i].username, "") != 0)
-                printf("%d: %s %d wins\n", i + 1, m->playerData[i].username, m->playerData[i].wins);
-            else if (strcmp(m->playerData[i].username, "") == 0)
+             if(strcmp(m->playerData[i].username, "") == 0)
+            {
                 emptyPlayerFound = true;
-
-            i++;
-        } while (i < TOP_10 && emptyPlayerFound == false);
+            }else
+            {
+            if(i < 3)
+            {
+                if(i == 0)
+                {
+                    displayPodium(m, displayType);
+                }
+            }else
+            {
+                if(i == 3)
+                {
+                printf("     +------+----------------------+------------+\n");
+                printf("     | RANK | USERNAME             | WINS       |\n");
+                printf("     +------+----------------------+------------+\n");
+                }
+            printf("     | %-4d | %-20s | %-10d |\n", i + 1, m->playerData[i].username, m->playerData[i].wins);
+            }
+            }
+        }
+        printf("     +------+----------------------+------------+\n");
     }
     else if (displayType == BY_SCORE)
     {
-        do
+        for(i = 0; i < TOP_10 && emptyPlayerFound == false; i++)
         {
-            if (strcmp(m->playerData[i].username, "") != 0)
-                printf("%d: %s %d score\n", i + 1, m->playerData[i].username, m->playerData[i].totalScore);
-            else if (strcmp(m->playerData[i].username, "") == 0)
+             if(strcmp(m->playerData[i].username, "") == 0)
+            {
                 emptyPlayerFound = true;
+            }else
+            
+            if(i < 3)
+            {
+                if(i == 0)
+                {
+                    displayPodium(m, displayType);
+                }
+            }else
+            {
+                if(i == 3)
+                {
+                printf("      +------+----------------------+------------+\n");
+                printf("      | RANK | USERNAME             | SCORE      |\n");
+                printf("      +------+----------------------+------------+\n");
+                }
+            printf("      | %-4d | %-20s | %-10d |\n", i + 1, m->playerData[i].username, m->playerData[i].totalScore);
+            }
+        }
+        printf("      +------+----------------------+------------+\n");
+    }
 
-            i++;
-        } while (i < TOP_10 && emptyPlayerFound == false);
+    setColor(MAGENTA);
+    waitEnter("\t    Press enter to go back...");
+    setColor(WHITE);
+
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    leaderBoard(m);
+}
+
+/**
+ * Displays the podium for the top 3 players depending on the display type
+ * @param m A pointer to the game structure containing the game data
+ * @param displayType Determines the display criteria of the leaderboard (BY_WINS or BY_SCORE)
+ * @return void
+ */
+void displayPodium(Game *m, int displayType)
+{
+    int boxWidth = 16;
+    int nameLen, totalSpace, leftSpace, rightSpace;
+
+    if (displayType == BY_WINS)
+    {
+        iSetColor(4);
+        nameLen = strlen(m->playerData[0].username);
+        totalSpace = boxWidth - nameLen;
+        leftSpace = totalSpace / 2;
+        rightSpace = totalSpace - leftSpace;
+
+        printf("                        1 s t\n");
+        printf("                   ________________\n");
+        printf("                  |                |\n");
+        printf("      2 n d       |%*s%.12s%*s|\n", leftSpace, "", m->playerData[0].username, rightSpace, "");
+        printf(" ________________ |   WINS: %-4d   |\n", m->playerData[0].wins);
+        printf("|                ||                |     3 r d\n");
+        nameLen = strlen(m->playerData[1].username);
+        totalSpace = boxWidth - nameLen;
+        leftSpace = totalSpace / 2;
+        rightSpace = totalSpace - leftSpace;
+
+        printf("|%*s%.12s%*s||                | ________________\n", leftSpace, "", m->playerData[1].username, rightSpace, "");
+        printf("|   WINS: %-4d   ||                ||                |\n", m->playerData[1].wins);
+        nameLen = strlen(m->playerData[2].username);
+        totalSpace = boxWidth - nameLen;
+        leftSpace = totalSpace / 2;
+        rightSpace = totalSpace - leftSpace;
+
+        printf("|                ||                ||%*s%.12s%*s|\n", leftSpace, "", m->playerData[2].username, rightSpace, "");
+        printf("|                ||                ||   WINS: %-4d   |\n", m->playerData[2].wins);
+        printf("|________________||________________||________________|\n\n\n");           
+
+         iSetColor(0);
+    }
+    else if(displayType == BY_SCORE)
+    {
+        iSetColor(4);
+        nameLen = strlen(m->playerData[0].username);
+        totalSpace = boxWidth - nameLen;
+        leftSpace = totalSpace / 2;
+        rightSpace = totalSpace - leftSpace;
+
+          printf("                        1 s t\n");
+        printf("                   ________________\n");
+        printf("                  |                |\n");
+        printf("      2 n d       |%*s%.12s%*s|\n", leftSpace, "", m->playerData[0].username, rightSpace, "");
+        printf(" ________________ |   SCORE: %-4d  |\n", m->playerData[0].totalScore);
+        printf("|                ||                |     3 r d\n");
+        nameLen = strlen(m->playerData[1].username);
+        totalSpace = boxWidth - nameLen;
+        leftSpace = totalSpace / 2;
+        rightSpace = totalSpace - leftSpace;
+
+        printf("|%*s%.12s%*s||                | ________________\n", leftSpace, "", m->playerData[1].username, rightSpace, "");
+        printf("|   SCORE: %-4d  ||                ||                |\n", m->playerData[1].totalScore);
+        nameLen = strlen(m->playerData[2].username);
+        totalSpace = boxWidth - nameLen;
+        leftSpace = totalSpace / 2;
+        rightSpace = totalSpace - leftSpace;
+        
+        printf("|                ||                ||%*s%.12s%*s|\n", leftSpace, "", m->playerData[2].username, rightSpace, "");
+        printf("|                ||                ||   SCORE: %-4d  |\n", m->playerData[2].totalScore);
+        printf("|________________||________________||________________|\n\n\n");           
+
+         iSetColor(0);
     }
 }
 
