@@ -52,8 +52,12 @@
 #define MANTIS_LOGO_HEIGHT 8
 #define MANTIS_LOGO_WIDTH 65
 #define SETTINGS_MENU_HEIGHT 25
-#define ENTER_KEY 13
 #define MAX_OPT_COL 3
+#ifdef _WIN32
+#define ENTER_KEY 13
+#else
+#define ENTER_KEY 10
+#endif
 
 typedef char String36[STR36];
 typedef char String100[STR100];

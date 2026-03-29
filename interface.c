@@ -17,6 +17,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include "conio_alt.h"
 #endif
 
 #include "defs.h"
@@ -208,7 +210,7 @@ command line.
 */
 void iMoveCursor(int x, int y)
 {
-  printf("\033[%d;%dH", y + 2, x + 1);
+  printf("\033[%d;%dH", y, x);
 }
 
 /* This function clears a rectangular portion of the screen, and
@@ -334,10 +336,9 @@ void pauseScreen(double seconds)
 /* This function waits for the user to press enter to continue the program
 @return (void)
 */
-void waitEnter()
+void waitEnter(char *message)
 {
-  getchar();
-  printf("\nPress enter to continue...\n");
+  printf("\n%s\n", message);
   getchar();
 }
 
@@ -346,7 +347,19 @@ void waitEnter()
 */
 void getCursorPosition(int *x, int *y)
 {
+  char buffer[32];
+  int i = 0;
+  char ch;
+
   printf("\033[6n");
-  scanf("\033[%d;%dR", y, x);
+  do
+  {
+    ch = getch();
+    buffer[i] = ch;
+
+  } while (buffer[i++] != 'R');
+  buffer[i] = '\0';
+
+  sscanf(buffer, "\033[%d;%dR]", y, x);
 }
 #endif
