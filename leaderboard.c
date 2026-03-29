@@ -3,7 +3,7 @@
  * Author/s : De Dios, Justin Marco C.
  *            Ocampo, Kysha Denise D.
  *  Section : S12A & S22A
- *  Last Modified : 03-05-2026
+ *  Last Modified : 03-27-2026
  */
 
 #ifndef LEADERBOARD_C 
@@ -11,38 +11,42 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <conio.h>
+#include <stdbool.h>
 
 #include "defs.h"
 
 /**
  * Displays the Main Menu and controls Mantis' game navigation
  * @param m A pointer to the game structure containing the game data
+ * @return void
  */
 void leaderBoard(Game *m)
 {
     String36 lbOptions[] = {"T O P  P L A Y E R S (WIN)", "T O P  P L A Y E R S (SCORE)", "B A C K"};
 
-    printLogo();
-    printf("\nLEADERBOARD\n");
-    interactiveMenu(&m->nav, lbOptions, 3);
-
-    loadPlayerData(m);
-    switch(m->nav.selectedOption)
+    if (loadPlayerData(m))
     {
-        case 0: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
-        case 1: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
-        case 2: iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT); mainMenu(m); break;
+        printLogo();
+        printf("\nLEADERBOARD\n");
+        interactiveMenu1D(&m->nav, lbOptions, 3);
+        switch(m->nav.selectedOption)
+        {
+            case 0: sortPlayers(m, BY_WINS); displayLeaderboard(m, BY_WINS); break;
+            case 1: sortPlayers(m, BY_SCORE); displayLeaderboard(m, BY_SCORE); break;
+            case 2: iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT); mainMenu(m); break;
+        }
+    }
+    else
+    {
+        errorNav(m);
     }
 }
-
-
 
 /**
  * Sorts an array of players from highest to lowest depending on the sort type
  * @param m A pointer to the game structure containing the game data
- * @param sortType Sorting method for arranging the players either by wins or scores
- * @return The function doesn't return anything
+ * @param sortType Determines the sorting criteria of the leaderboard (BY_WINS or BY_SCORE)
+ * @return void
  */
 void sortPlayers(Game *m, int sortType)
 {
@@ -72,8 +76,8 @@ void sortPlayers(Game *m, int sortType)
 /**
  * Displays the Top 10 players depending on the display type
  * @param m A pointer to the game structure containing the game data
- * @param displayType Determines the display criteria of the leaderboard (wins or scores)
- * @return The function doesn't return anything
+ * @param displayType Determines the display criteria of the leaderboard (BY_WINS or BY_SCORE)
+ * @return void
  */
 void displayLeaderboard(Game *m, int displayType)
 {
@@ -154,8 +158,8 @@ void displayLeaderboard(Game *m, int displayType)
 /**
  * Displays the podium for the top 3 players depending on the display type
  * @param m A pointer to the game structure containing the game data
- * @param displayType Determines the display criteria of the leaderboard (wins or scores)
- * @return The function doesn't return anything
+ * @param displayType Determines the display criteria of the leaderboard (BY_WINS or BY_SCORE)
+ * @return void
  */
 void displayPodium(Game *m, int displayType)
 {
