@@ -52,9 +52,13 @@ void selectPlayers(Game *m)
             displayChosenPlayers(m);
             displayAvailPlayers(m, i);
 
-            if (m->chosenPlayer == -1)
+            if (m->chosenPlayer == -1 && m->totalPlayers < MAX_PLAYER_DATA)
             {
                 addNewPlayer(m);
+                i--;
+            }
+            else if (m->chosenPlayer == -1 && m->totalPlayers == MAX_PLAYER_DATA)
+            {
                 i--;
             }
             else
