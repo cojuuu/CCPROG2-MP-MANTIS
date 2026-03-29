@@ -31,7 +31,10 @@ bool loadPlayerData(Game *m)
 
     if (playerFile == NULL)
     {
-        fprintf(stderr, "player.txt not found!");
+        printError();
+        setColor(RED);
+        printf("\nplayer.txt not found!\n");
+        setColor(WHITE);
         loadSuccess = false;
     }
 
@@ -50,14 +53,16 @@ bool loadPlayerData(Game *m)
             
             if (buffer != 3 && !feof(playerFile))
             {
-                printf("Error cannot read player data!\n");
+                printError();
+                setColor(RED);
+                printf("\nError cannot read player data!\n");
+                setColor(WHITE);
                 loadSuccess = false;
             }
         } while (!feof(playerFile) && loadSuccess == true);
+
+        m->totalPlayers = i;
     }
-
-    m->totalPlayers = i;    
-
     fclose(playerFile);
 
     return loadSuccess;
@@ -80,7 +85,10 @@ bool loadCards(Game *m)
 
     if (cardFile == NULL)
     {
-        fprintf(stderr, "mantis.txt not found!");
+        printError();
+        setColor(RED);
+        printf("\nmantis.txt not found!\n");
+        setColor(WHITE);
         loadSuccess = false;
     }
 
@@ -98,21 +106,26 @@ bool loadCards(Game *m)
             
             if (buffer != 5 && !feof(cardFile))
             {
-                printf("Error cannot read card data!\n");
+                printError();
+                setColor(RED);
+                printf("\nError cannot read card data!\n");
+                setColor(WHITE);
                 loadSuccess = false;
             }
 
-        } while (!feof(cardFile) && loadSuccess == true);
-    }
-    
-    if (i != MAX_CARDS)
-    {
-        printf("Missing cards!\n");
-        loadSuccess = false;
-    }
-    else
-        m->drawPile.cardCount = MAX_CARDS;
+        } while (!feof(cardFile) && loadSuccess);
 
+        if (i != MAX_CARDS && loadSuccess)
+        {
+            printError();
+            setColor(RED);
+            printf("\nMissing cards!\n");
+            setColor(WHITE);
+            loadSuccess = false;
+        }
+        else
+            m->drawPile.cardCount = MAX_CARDS;
+    }
     fclose(cardFile);
 
     return loadSuccess;
@@ -134,7 +147,10 @@ bool loadSettings(Game *m)
 
     if (settingsFile == NULL)
     {
-        fprintf(stderr, "mantis.txt not found!");
+        printError();
+        setColor(RED);
+        printf("\nsettings.txt not found!\n");
+        setColor(WHITE);
         loadSuccess = false;
     }
 
@@ -144,7 +160,10 @@ bool loadSettings(Game *m)
     
         if (buffer != 2)
         {
-            printf("Error cannot read card data!\n");
+            printError();
+            setColor(RED);
+            printf("\nError cannot read settings\n");
+            setColor(WHITE);
             loadSuccess = false;
         }  
     }
@@ -158,7 +177,6 @@ bool loadSettings(Game *m)
  * Updates "player.txt" with the updated player stats
  * @param currentDeck The deck being checked
  * @return void
- * @pre Game has finished
  */
 void updatePlayerData(Game *g)
 {
@@ -166,7 +184,13 @@ void updatePlayerData(Game *g)
     int i;
 
     for (i = 0; i < g->playerCount; i++)
-        g->activePlayers[i].totalScore += g->activePlayers[i].scorePile.totalScore;
+    {
+        if (g->activePlayers[i].scorePile.totalPoints >= g->settings.winningPoints)
+            g->activePlayers[i].wins++;
+    }
+
+    for (i = 0; i < g->playerCount; i++)
+        g->activePlayers[i].totalScore += g->activePlayers[i].scorePile.totalPoints;
 
     playerFile = fopen("players.txt", "w");
 

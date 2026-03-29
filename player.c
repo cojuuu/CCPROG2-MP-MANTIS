@@ -65,7 +65,10 @@ void selectPlayers(Game *m)
 
             iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
         }
+        newGame(m);
     }
+    else
+        errorNav(m);
 }
 
 /**
@@ -180,7 +183,7 @@ void addNewPlayer(Game *m)
     printf("|                     ADD NEW PLAYER                   |\n");
     printf("+------------------------------------------------------+\n");
     printf("  Enter username (max 36 chars):\n");
-    getCursorPosition(&m->nav.x, &m->nav.y);
+    getCursorPosition(&m->nav.cursorPos.x, &m->nav.cursorPos.y);
     do
     {
         printf("  > ");
@@ -209,7 +212,7 @@ void addNewPlayer(Game *m)
         }
         
         if (duplicateExist || invalidUsername)
-            iClear(m->nav.x, m->nav.y, CONSOLE_WIDTH, 1);
+            iClear(m->nav.cursorPos.x, m->nav.cursorPos.y, CONSOLE_WIDTH, 1);
     } while (duplicateExist || invalidUsername);
 
     setColor(GREEN);

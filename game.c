@@ -10,6 +10,7 @@
 #define GAME_C 
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include "defs.h"
@@ -21,32 +22,40 @@
  */
 void newGame(Game *m)
 {
-    selectPlayers(m);
-    setUpGame(m);
-    gameLoop(m);
-    displayWinner(m);
-    updatePlayerData(m);
-    goBackToMainMenu(m);
+    if (setUpGame(m))
+    {
+        gameLoop(m);
+        displayWinner(m);
+        updatePlayerData(m);
+        goBackToMainMenu(m);
+    }
+    else
+        errorNav(m);
 }
 
 /**
  * Loads the settings and cards, shuffles the Draw Pile, and deals out the cards to the players
  * @param m A pointer to the game structure containing the game data
- * @return void
+ * @return True if the set up was successful
+ * @return False Otherwise
  */
-void setUpGame(Game *m)
+bool setUpGame(Game *m)
 {
-    loadSettings(m);
+    bool setUpSuccess = false;
 
-    if (m->settings.shuffleSeed == RANDOM)
+    if (loadSettings(m) && loadCards(m))
     {
-        initRandom();
-        m->settings.shuffleSeed = randomInt();
+        if (m->settings.shuffleSeed == RANDOM)
+        {
+            initRandom();
+            m->settings.shuffleSeed = randomInt();
+        }
+        shuffle(m->drawPile.cards, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
+        distributeCards(m);
+        setUpSuccess = true;
     }
 
-    loadCards(m);
-    shuffle(m->drawPile.cards, MAX_CARDS, sizeof(Card), m->settings.shuffleSeed);
-    distributeCards(m);
+    return setUpSuccess;
 }
 
 /**
@@ -111,7 +120,7 @@ void gameLoop(Game *m)
  */
 void checkWinner(Game *m)
 {
-    if (m->activePlayers[m->currentPlayer].scorePile.totalScore >= m->settings.winningPoints)
+    if (m->activePlayers[m->currentPlayer].scorePile.totalPoints >= m->settings.winningPoints)
     {
         m->winner[0] = m->currentPlayer;
         m->winnerCount++;
@@ -135,11 +144,11 @@ void checkSpecialWinner(Game *m)
     int mostTanks = -1;
 
     for (i = 0; i < m->playerCount; i++)
-        if (m->activePlayers[i].scorePile.totalScore > mostScore)
-            mostScore = m->activePlayers[i].scorePile.totalScore;
+        if (m->activePlayers[i].scorePile.totalPoints > mostScore)
+            mostScore = m->activePlayers[i].scorePile.totalPoints;
 
     for (i = 0; i < m->playerCount; i++)
-        if (m->activePlayers[i].scorePile.totalScore == mostScore)
+        if (m->activePlayers[i].scorePile.totalPoints == mostScore)
         {
             tiedIndices[tiedCount] = i;
             tiedCount++;
@@ -232,8 +241,8 @@ void promptSteal(Game *m)
         }
     }
 
-    getCursorPosition(&m->nav.x, &m->nav.y);
-    iClear(m->nav.x, m->nav.y - 1, 50, 5);
+    getCursorPosition(&m->nav.cursorPos.x, &m->nav.cursorPos.y);
+    iClear(m->nav.cursorPos.x, m->nav.cursorPos.y - 1, 50, 5);
     printf("%s, who would you like to steal from?\n", m->activePlayers[m->currentPlayer].username);
     interactiveMenu1D(&m->nav, stealOptions, m->playerCount - 1);
     m->stolenPlayer = m->nav.selectedOption;
@@ -270,31 +279,32 @@ Card drawCard(Game *m)
  */
 void tryToScore(Game *m)
 {
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
     m->drawnCard = drawCard(m);
     revealCard(m->drawnCard);
 
     checkSameColor(m, m->activePlayers[m->currentPlayer].tank);
     if (m->sameColorCount > 0)
     {
-        // pauseScreen(2.0);
+        pauseScreen(2.0);
         printf("%s has (%d) ", m->activePlayers[m->currentPlayer].username, m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("card/s worth a total of (%d) pts!\n", m->sameColorPoints);
-        // pauseScreen(2.0);
+        pauseScreen(2.0);
         printf("+%d points to %s's score pile!\n", m->sameColorPoints + m->drawnCard.points, m->activePlayers[m->currentPlayer].username);
         addToScorePile(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
     else
     {
-        // pauseScreen(2.0);
+        pauseScreen(2.0);
         printf("%s has no ", m->activePlayers[m->currentPlayer].username);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("cards...\n");
-        // pauseScreen(2.0);
+        pauseScreen(2.0);
         printf("Adding drawn card to %s's Tank\n", m->activePlayers[m->currentPlayer].username);
         addToTank(&m->activePlayers[m->currentPlayer], m->drawnCard);
     }
@@ -308,6 +318,7 @@ void tryToScore(Game *m)
 void tryToSteal(Game *m)
 {
     promptSteal(m);
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
     m->drawnCard = drawCard(m);
     revealCard(m->drawnCard);
 
@@ -315,13 +326,13 @@ void tryToSteal(Game *m)
 
     if (m->sameColorCount > 0)
     {
-        // pauseScreen(2.0);
+        pauseScreen(2.0);
         printf("%s has (%d) ", m->activePlayers[m->stolenPlayer].username, m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c", m->drawnCard.front);
         setColor(WHITE);
         printf(" cards/s!\n");
-        // pauseScreen(2.0);
+        pauseScreen(2.0);
         printf("+%d (", 1 + m->sameColorCount);
         setColor(m->drawnCard.front);
         printf("%c", m->drawnCard.front);
@@ -332,13 +343,13 @@ void tryToSteal(Game *m)
     }
     else
     {
-        // pauseScreen(2.0);
+        pauseScreen(2.0);
         printf("%s has no ", m->activePlayers[m->stolenPlayer].username);
         setColor(m->drawnCard.front);
         printf("%c ", m->drawnCard.front);
         setColor(WHITE);
         printf("cards...\n");
-        // pauseScreen(2.0);
+        pauseScreen(2.0);
         printf("Adding drawn card to %s's Tank\n", m->activePlayers[m->stolenPlayer].username);
         addToTank(&m->activePlayers[m->stolenPlayer], m->drawnCard);
     }
@@ -454,7 +465,7 @@ void revealCard(Card drawnCard)
     printf("Revealing card");
     for (i = 0; i < 3; i++)
     {
-        // pauseScreen(1.0);
+        pauseScreen(1.0);
         printf(".");
     }
     printf("\n");
@@ -531,11 +542,11 @@ void calculateScore(Player *currentPlayer)
 {
     int i;
 
-    currentPlayer->scorePile.totalScore = 0;
+    currentPlayer->scorePile.totalPoints = 0;
 
     for (i = 0; i < currentPlayer->scorePile.cardCount; i++)
     {
-        currentPlayer->scorePile.totalScore += currentPlayer->scorePile.cards[i].points;
+        currentPlayer->scorePile.totalPoints += currentPlayer->scorePile.cards[i].points;
     }
 }
 

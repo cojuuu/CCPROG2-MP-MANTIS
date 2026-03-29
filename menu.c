@@ -35,10 +35,9 @@ void mainMenu(Game *m)
     iClear(0, 0, MANTIS_LOGO_WIDTH, 20);
     switch(m->nav.selectedOption)
     {
-        case 0: newGame(m); break;
+        case 0: selectPlayers(m); break;
         case 1: leaderBoard(m); break;
         case 2: gameSettings(m); break;
-        case 3: printf("Exiting game...\n"); break;
     }
 }
 
@@ -73,7 +72,7 @@ void interactiveMenu1D(Navigator *nav, String36 navOptions[], int optionCount)
     nav->selectedOption = 0;
     nav->optionSelected = false;
 
-    getCursorPosition(&nav->x, &nav->y);
+    getCursorPosition(&nav->cursorPos.x, &nav->cursorPos.y);
     do
     {
         for (i = 0; i < optionCount; i++)
@@ -106,7 +105,7 @@ void interactiveMenu1D(Navigator *nav, String36 navOptions[], int optionCount)
         else if (nav->selectedOption < 0)
             nav->selectedOption = optionCount - 1;
 
-        iClear(nav->x, nav->y, CONSOLE_WIDTH, optionCount * 2);
+        iClear(nav->cursorPos.x, nav->cursorPos.y, CONSOLE_WIDTH, optionCount * 2);
     } while (!nav->optionSelected);
 }
 
@@ -151,9 +150,7 @@ void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int r
         switch (nav->kbInput)
         {
             case 'w':
-            case 'W': 
-                nav->selected.y--; 
-                break;
+            case 'W': nav->selected.y--; break;
             case 's':
             case 'S': 
                 nav->selected.y++; 
@@ -161,9 +158,7 @@ void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int r
                     nav->selected.y--;
                 break;
             case 'a':
-            case 'A': 
-                nav->selected.x--; 
-                break;
+            case 'A': nav->selected.x--; break;
             case 'd':
             case 'D': 
                 nav->selected.x++;

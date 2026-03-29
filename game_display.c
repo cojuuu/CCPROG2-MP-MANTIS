@@ -27,13 +27,13 @@ void displayWinner(Game *m)
     printf("\n  PLAYER                                SCORE\n");
     for (i = 0; i < m->winnerCount; i++)
         printf("  %-36s  %3d pts  <-- WINNER\n", 
-            m->activePlayers[m->winner[i]].username, m->activePlayers[m->winner[i]].scorePile.totalScore);
+            m->activePlayers[m->winner[i]].username, m->activePlayers[m->winner[i]].scorePile.totalPoints);
 
     for (i = 0; i < m->playerCount; i++)
     {
         for (j = 0; j < m->playerCount - 1; j++)
         {
-            if (m->activePlayers[j].scorePile.totalScore < m->activePlayers[j + 1].scorePile.totalScore)
+            if (m->activePlayers[j].scorePile.totalPoints < m->activePlayers[j + 1].scorePile.totalPoints)
             {
                 temp = m->activePlayers[j];
                 m->activePlayers[j] = m->activePlayers[j + 1];
@@ -44,10 +44,10 @@ void displayWinner(Game *m)
 
     for (i = 0; i < m->playerCount; i++)
     {
-        if (m->activePlayers[i].scorePile.totalScore < m->settings.winningPoints)
+        if (m->activePlayers[i].scorePile.totalPoints < m->settings.winningPoints)
         {
             printf("  %-36s  %3d pts\n", 
-                m->activePlayers[i].username, m->activePlayers[i].scorePile.totalScore);
+                m->activePlayers[i].username, m->activePlayers[i].scorePile.totalPoints);
         }
     }
 }
@@ -71,7 +71,7 @@ void displayPlayerState(Game *m, int playerType)
                 printf("(%d) %s ", i + 1, m->activePlayers[i].username);
                 displayFrontSideDeck(m->activePlayers[i].tank, SMALL);
                 printf("\n");
-                printf("[Score: %d]\n\n", m->activePlayers[i].scorePile.totalScore);
+                printf("[Score: %d]\n\n", m->activePlayers[i].scorePile.totalPoints);
             }
         }
     }
@@ -80,7 +80,7 @@ void displayPlayerState(Game *m, int playerType)
         printf("\n");
         displayFrontSideDeck(m->activePlayers[m->currentPlayer].tank, BIG);
         printf("     (%d) %s  ", m->currentPlayer + 1, m->activePlayers[m->currentPlayer].username);
-        printf("[Score]: %d\n", m->activePlayers[m->currentPlayer].scorePile.totalScore);
+        printf("[Score]: %d\n", m->activePlayers[m->currentPlayer].scorePile.totalPoints);
     }
 }
 
@@ -237,6 +237,39 @@ void printGameOver()
     printf("|  $$$$$$/| $$  | $$| $$ \\/  | $$| $$$$$$$$      |  $$$$$$/   \\  $/   | $$$$$$$$| $$  | $$\n");
     printf(" \\______/ |__/  |__/|__/     |__/|________/       \\______/     \\_/    |________/|__/  |__/\n");
     setColor(WHITE);
+}
+
+/**
+ * Prints the "Error" screen of Mantis
+ * @return void
+*/
+void printError()
+{
+    setColor(RED);
+    printf(" /$$$$$$$$ /$$$$$$$  /$$$$$$$   /$$$$$$  /$$$$$$$\n"); 
+    printf("| $$_____/| $$__  $$| $$__  $$ /$$__  $$| $$__  $$\n");
+    printf("| $$      | $$  \\ $$| $$  \\ $$| $$  \\ $$| $$  \\ $$\n");
+    printf("| $$$$$   | $$$$$$$/| $$$$$$$/| $$  | $$| $$$$$$$/\n");
+    printf("| $$__/   | $$__  $$| $$__  $$| $$  | $$| $$__  $$\n");
+    printf("| $$      | $$  \\ $$| $$  \\ $$| $$  | $$| $$  \\ $$\n");
+    printf("| $$$$$$$$| $$  | $$| $$  | $$|  $$$$$$/| $$  | $$\n");
+    printf("|________/|__/  |__/|__/  |__/ \\______/ |__/  |__/\n");
+    setColor(WHITE);
+}
+
+/**
+ * Navigates the user back to the main menu when the program encounters an error
+ * @param m A pointer to the game structure containing the game data
+ * @return void
+*/
+void errorNav(Game *m)
+{
+    setColor(RED);
+    waitEnter("Press enter to go back to the main menu...");
+    setColor(WHITE);
+    iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);
+    memset(m, 0, sizeof(*m));
+    mainMenu(m);
 }
 
 #endif // LOAD_C;

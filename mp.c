@@ -37,7 +37,7 @@
 #include "interface.c"
 
 int main()
-{
+{   
     Game m;
     memset(&m, 0, sizeof(m));
     iClear(0, 0, CONSOLE_WIDTH, CONSOLE_HEIGHT);

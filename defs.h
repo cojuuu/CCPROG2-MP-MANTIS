@@ -49,13 +49,10 @@
 #define BACK 104
 #define ACTIVE 105
 #define INACTIVE 106
-
 #define MANTIS_LOGO_HEIGHT 8
 #define MANTIS_LOGO_WIDTH 65
 #define SETTINGS_MENU_HEIGHT 25
-
 #define ENTER_KEY 13
-
 #define MAX_OPT_COL 3
 
 typedef char String36[STR36];
@@ -67,9 +64,9 @@ typedef char Color;
  */
 typedef struct 
 {
-    Color front;   // Front color of card
+    Color front; // Front color of card
     Color back[3]; // Back color of card
-    int points;    // Point value of card
+    int points; // Point value of card
 } Card;
 
 /**
@@ -80,11 +77,14 @@ typedef struct
     int white, red, blue, green, yellow, cyan, purple;
 } Counter;
 
+/**
+ * Represents a 2D point
+ */
 typedef struct
 {
-    int x, y;
+    int x; // X coordinate
+    int y; // Y coordinate
 } Cord;
-
 
 /**
  * Represents a deck
@@ -92,9 +92,9 @@ typedef struct
 typedef struct 
 {
     Card cards[MAX_CARDS]; // Cards in the deck
-    int cardCount;         // Cards left in the deck
-    Counter colorCount;    // Amount of cards for each color
-    int totalScore;        // Total score in the deck
+    int cardCount; // Cards left in the deck
+    Counter colorCount; // Amount of cards for each color
+    int totalPoints; // Total score in the deck
 } Deck;
 
 /**
@@ -102,12 +102,12 @@ typedef struct
  */
 typedef struct
 {
-    String36 username;  // Username of the player
-    int wins;           // Total wins of the player
-    int totalScore;     // Total score of the player
+    String36 username; // Username of the player
+    int wins; // Total wins of the player
+    int totalScore; // Total score of the player
 
-    Deck tank;          // Tank deck of the player
-    Deck scorePile;     // Score pile of the player
+    Deck tank; // Tank deck of the player
+    Deck scorePile; // Score pile of the player
 } Player;
 
 /**
@@ -116,21 +116,18 @@ typedef struct
 typedef struct 
 {
     int winningPoints; // Points required to win Mantis
-    int shuffleSeed;   // Shuffle seed for shuffling cards
+    int shuffleSeed; // Shuffle seed for shuffling cards
 } Config;
 
 typedef struct 
 {
-    int x;
-    int y;
+    int kbInput; // Keyboard input of the user
+    int selectedOption; // User's selected navigation option
 
-    int kbInput;
-    int selectedOption;
+    Cord cursorPos; // Cursor position in output terminal
+    Cord selected; // Selected option coordinates
 
-    Cord cursorPos;
-    Cord selected;
-
-    bool optionSelected;
+    bool optionSelected; // Flag indicating if an option has been selected
 } Navigator;
 
 
@@ -139,24 +136,24 @@ typedef struct
  */
 typedef struct
 {
-    int playerCount;  // Amount of players who will play
+    int playerCount; // Amount of players who will play
     int totalPlayers; // Total amount of players in "players.txt"
 
-    int currentPlayer;   // Index of the player with the current turn
+    int currentPlayer; // Index of the player with the current turn
     int winner[MAX_PLAYERS]; // Index of the player/s who won the game
-    int winnerCount;     // Amount of winners
-    int stolenPlayer;    // Index of the player who got stolen from
+    int winnerCount; // Amount of winners
+    int stolenPlayer; // Index of the player who got stolen from
 
     int sameColorPoints; // Total points of the cards with the same color as drawn card
-    int sameColorCount;  // Amount of cards with the same color as drawn card
+    int sameColorCount; // Amount of cards with the same color as drawn card
 
-    int chosenPlayer;
+    int chosenPlayer; // Index of the player chosen in the player selection
 
     bool gameOver; // Flag indicating if the game is over
     bool foundWinner; // Flag indicating if the winner was found
     bool tieGame; // Flag indicating if it is a tie game
 
-    Player activePlayers[MAX_PLAYERS];  // Players who will play the game
+    Player activePlayers[MAX_PLAYERS]; // Players who will play the game
     Player playerData[MAX_PLAYER_DATA]; // Players from "players.txt"
 
     Deck drawPile; // Draw pile of Mantis
@@ -164,7 +161,7 @@ typedef struct
 
     Config settings; // Game configuration of Mantis
 
-    Navigator nav;
+    Navigator nav; // UI related navigation
 } Game;
 
 // Menu Function Prototypes
@@ -175,7 +172,7 @@ void interactiveMenu2D(Navigator *nav, String36 navOptions[][MAX_OPT_COL], int r
 
 // Game Function Prototypes
 void newGame(Game *m);
-void setUpGame(Game *m);
+bool setUpGame(Game *m);
 void distributeCards(Game *m);
 void gameLoop(Game *m);
 void checkWinner(Game *m);
@@ -205,6 +202,8 @@ void displayCard(Card currentCard, int cardSize, int cardSide);
 void printEmoticon(Color currentColor);
 void displayWinner(Game *m);
 void printGameOver();
+void printError();
+void errorNav(Game *m);
 
 // Player Function Prototypes
 void selectPlayers(Game *m);
